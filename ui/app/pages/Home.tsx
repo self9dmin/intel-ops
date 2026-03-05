@@ -177,7 +177,7 @@ export const Home = () => {
     <Flex flexDirection="column" gap={24} padding={24}>
       {/* Header */}
       <Flex flexDirection="column" gap={4}>
-        <Heading level={1}>Intel Ops</Heading>
+        <Heading level={2}>Intel Ops</Heading>
         <Text textStyle="small">
           Gamified observability training for Dynatrace
         </Text>
@@ -186,11 +186,11 @@ export const Home = () => {
       <Divider />
 
       {/* Stats Bar — metric tiles */}
-      <div style={{ display: "flex", gap: "16px" }}>
+      <div style={{ display: "flex", gap: "12px" }}>
         <div style={{ flex: 1 }}>
           <Surface>
-            <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-              <Heading level={2}>
+            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
+              <Heading level={3}>
                 <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
               </Heading>
               <Text textStyle="small">Missions Completed</Text>
@@ -199,8 +199,8 @@ export const Home = () => {
         </div>
         <div style={{ flex: 1 }}>
           <Surface>
-            <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-              <Heading level={2}>
+            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
+              <Heading level={3}>
                 <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
               </Heading>
               <Text textStyle="small">Points Earned</Text>
@@ -209,8 +209,8 @@ export const Home = () => {
         </div>
         <div style={{ flex: 1 }}>
           <Surface>
-            <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-              <Heading level={2}>
+            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
+              <Heading level={3}>
                 <span style={{ fontFamily: "monospace" }}>{rankDisplay}</span>
               </Heading>
               <Text textStyle="small">Global Rank</Text>
@@ -221,9 +221,9 @@ export const Home = () => {
 
       {/* Mission Grid */}
       <Flex flexDirection="column" gap={12}>
-        <Heading level={3}>Available Missions</Heading>
+        <Heading level={4}>Available Missions</Heading>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
           {MISSIONS.map((mission) => {
             const isLocked = mission.status === "locked";
             return (
@@ -234,8 +234,8 @@ export const Home = () => {
                 <Surface>
                   <Flex
                     flexDirection="column"
-                    padding={20}
-                    gap={12}
+                    padding={12}
+                    gap={8}
                     style={{
                       opacity: isLocked ? 0.5 : 1,
                     }}
@@ -256,7 +256,7 @@ export const Home = () => {
                     </Flex>
 
                     {/* Title */}
-                    <Heading level={4}>{mission.title}</Heading>
+                    <Heading level={5}>{mission.title}</Heading>
 
                     {/* Role chip */}
                     <Flex>
@@ -300,7 +300,7 @@ export const Home = () => {
 
       {/* Leaderboard */}
       <Flex flexDirection="column" gap={8}>
-        <Heading level={3}>Leaderboard</Heading>
+        <Heading level={4}>Leaderboard</Heading>
         {loading ? (
           <Surface>
             <Flex justifyContent="center" padding={20}>
