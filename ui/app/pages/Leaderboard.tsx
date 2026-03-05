@@ -135,9 +135,13 @@ export const Leaderboard = () => {
   }));
 
   return (
-    <Flex flexDirection="column" gap={16} padding={20}>
-      <Text textStyle="small">// GLOBAL LEADERBOARD</Text>
-      <Heading level={2}>LEADERBOARD</Heading>
+    <Flex flexDirection="column" gap={16} padding={24}>
+      <Flex flexDirection="column" gap={4}>
+        <Heading level={1}>Global Leaderboard</Heading>
+        <Text textStyle="small" style={{ opacity: 0.6 }}>
+          Top scores across all agents and missions
+        </Text>
+      </Flex>
 
       {loading ? (
         <Surface>
@@ -165,7 +169,7 @@ export const Leaderboard = () => {
 
       <Flex>
         <Button variant="emphasized" onClick={() => navigate("/")}>
-          RETURN TO MISSION BOARD
+          Back to Missions
         </Button>
       </Flex>
     </Flex>

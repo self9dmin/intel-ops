@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
+import { Divider } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
 import {
   Heading,
@@ -174,85 +175,115 @@ export const Home = () => {
     }));
 
   return (
-    <Flex flexDirection="column" gap={20} padding={20}>
+    <Flex flexDirection="column" gap={24} padding={24}>
       {/* Header */}
-      <Flex flexDirection="column" alignItems="center" gap={2}>
-        <Heading level={2}>INTEL OPS</Heading>
-        <Text textStyle="small">CLASSIFIED TRAINING PROGRAM</Text>
+      <Flex flexDirection="column" gap={4}>
+        <Heading level={1}>Intel Ops</Heading>
+        <Text textStyle="small">
+          Gamified observability training for Dynatrace
+        </Text>
       </Flex>
 
-      {/* Stats Bar */}
-      <Flex justifyContent="center" gap={16}>
+      <Divider />
+
+      {/* Stats Bar — metric tiles */}
+      <Flex gap={16}>
         <Surface>
-          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
-            <Heading level={4}>{missionsCompleted}</Heading>
+          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+            <Heading level={2}>
+              <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
+            </Heading>
             <Text textStyle="small">Missions Completed</Text>
           </Flex>
         </Surface>
         <Surface>
-          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
-            <Heading level={4}>{totalPoints}</Heading>
+          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+            <Heading level={2}>
+              <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
+            </Heading>
             <Text textStyle="small">Points Earned</Text>
           </Flex>
         </Surface>
         <Surface>
-          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
-            <Heading level={4}>{rankDisplay}</Heading>
+          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+            <Heading level={2}>
+              <span style={{ fontFamily: "monospace" }}>{rankDisplay}</span>
+            </Heading>
             <Text textStyle="small">Global Rank</Text>
           </Flex>
         </Surface>
       </Flex>
 
-      {/* Available Missions */}
+      {/* Mission Grid */}
       <Flex flexDirection="column" gap={12}>
-        <Text textStyle="small">// AVAILABLE MISSIONS</Text>
+        <Heading level={3}>Available Missions</Heading>
 
-        {MISSIONS.map((mission) => {
-          const isLocked = mission.status === "locked";
-          return (
-            <Surface key={mission.id}>
-              <Flex flexDirection="column" padding={16} gap={8}>
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Text textStyle="small">// {mission.codename}</Text>
-                  <Chip
-                    color={getDifficultyColor(mission.difficulty)}
-                    variant="emphasized"
-                  >
-                    {mission.difficulty.toUpperCase()}
-                  </Chip>
-                </Flex>
+        <Flex gap={16} style={{ flexWrap: "wrap" }}>
+          {MISSIONS.map((mission) => {
+            const isLocked = mission.status === "locked";
+            return (
+              <Surface key={mission.id}>
+                <Flex
+                  flexDirection="column"
+                  padding={20}
+                  gap={12}
+                  style={{
+                    minWidth: 380,
+                    flex: "1 1 380px",
+                    opacity: isLocked ? 0.5 : 1,
+                  }}
+                >
+                  {/* Top row: codename + difficulty */}
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Text textStyle="small">
+                      <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
+                        {mission.codename}
+                      </span>
+                    </Text>
+                    <Chip
+                      color={getDifficultyColor(mission.difficulty)}
+                      variant="emphasized"
+                    >
+                      {mission.difficulty.toUpperCase()}
+                    </Chip>
+                  </Flex>
 
-                <Heading level={4}>{mission.title}</Heading>
+                  {/* Title */}
+                  <Heading level={4}>{mission.title}</Heading>
 
-                <Flex gap={8}>
-                  <Chip color="neutral">{mission.role}</Chip>
-                </Flex>
+                  {/* Role chip */}
+                  <Flex>
+                    <Chip color="neutral">{mission.role}</Chip>
+                  </Flex>
 
-                <Text textStyle="small">
-                  {mission.description}
-                </Text>
-
-                <Flex alignItems="center" gap={12}>
-                  <Button
-                    variant="emphasized"
-                    disabled={isLocked}
-                    onClick={() => navigate(`/mission/${mission.id}`)}
-                  >
-                    {isLocked ? "LOCKED" : "INITIATE MISSION"}
-                  </Button>
-                  <Text textStyle="small">
-                    {formatMinutes(mission.timerSeconds)}
+                  {/* Description */}
+                  <Text textStyle="small" style={{ opacity: 0.7 }}>
+                    {mission.description}
                   </Text>
+
+                  {/* Bottom row: button + time */}
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Button
+                      variant="emphasized"
+                      disabled={isLocked}
+                      onClick={() => navigate(`/mission/${mission.id}`)}
+                    >
+                      {isLocked ? "Locked" : "Start Mission"}
+                    </Button>
+                    <Text textStyle="small" style={{ opacity: 0.6 }}>
+                      {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
+                    </Text>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Surface>
-          );
-        })}
+              </Surface>
+            );
+          })}
+        </Flex>
       </Flex>
 
-      {/* Global Leaderboard (mini) */}
+      {/* Leaderboard */}
       <Flex flexDirection="column" gap={8}>
-        <Text textStyle="small">// GLOBAL LEADERBOARD</Text>
+        <Heading level={3}>Leaderboard</Heading>
         {loading ? (
           <Surface>
             <Flex justifyContent="center" padding={20}>

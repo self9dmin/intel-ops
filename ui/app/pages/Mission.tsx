@@ -90,7 +90,6 @@ export const Mission = () => {
 
       const isLastCheckpoint = index === mission.checkpoints.length - 1;
       if (isLastCheckpoint) {
-        // Mission complete — calculate final score and navigate to debrief
         const newBaseScore = baseScore + points;
         const timeBonus = Math.max(0, timerSeconds * TIME_BONUS_PER_SECOND);
         const hintPenalty = hintsUsed.length * HINT_PENALTY;
@@ -126,7 +125,6 @@ export const Mission = () => {
 
       const checkpoint = mission.checkpoints[index];
 
-      // Multiple choice — answer validation
       if (checkpoint.type === "multiple-choice") {
         if (!selectedAnswer) return;
         setIsValidating(true);
@@ -147,7 +145,6 @@ export const Mission = () => {
         return;
       }
 
-      // Action checkpoints — simulated validation
       setIsValidating(true);
       setTimeout(() => {
         setIsValidating(false);
@@ -175,12 +172,12 @@ export const Mission = () => {
       <Flex flexDirection="column" gap={32} padding={32} alignItems="center">
         <Surface>
           <Flex flexDirection="column" padding={48} gap={16} alignItems="center">
-            <Heading level={2}>MISSION NOT FOUND</Heading>
+            <Heading level={2}>Mission Not Found</Heading>
             <Paragraph>
               The requested mission does not exist or has been decommissioned.
             </Paragraph>
             <Button variant="emphasized" onClick={() => navigate("/")}>
-              RETURN TO MISSION BOARD
+              Back to Missions
             </Button>
           </Flex>
         </Surface>
@@ -188,68 +185,116 @@ export const Mission = () => {
     );
   }
 
+  const timerIsLow = timerSeconds < 60;
+
   return (
-    <Flex flexDirection="column" gap={16} padding={20}>
-      {/* Mission Header */}
-      <Flex justifyContent="space-between" alignItems="center">
-        <Flex flexDirection="column" gap={2}>
-          <Text textStyle="small">// {mission.codename}</Text>
-          <Heading level={2}>{mission.title}</Heading>
-        </Flex>
-        <Chip
-          color={timerSeconds < 60 ? "critical" : "neutral"}
-          variant="emphasized"
-        >
-          {formatTime(timerSeconds)}
-        </Chip>
+    <Flex gap={24} padding={24} style={{ alignItems: "flex-start" }}>
+      {/* Left column — Briefing panel */}
+      <Flex
+        flexDirection="column"
+        gap={16}
+        style={{ flex: "0 0 40%", minWidth: 300 }}
+      >
+        <Surface>
+          <Flex flexDirection="column" padding={20} gap={12}>
+            {/* Title + codename */}
+            <Text textStyle="small">
+              <span style={{ fontFamily: "monospace", opacity: 0.6 }}>
+                {mission.codename}
+              </span>
+            </Text>
+            <Heading level={2}>{mission.title}</Heading>
+
+            {/* Role + difficulty badges */}
+            <Flex gap={8}>
+              <Chip color="neutral">{mission.role}</Chip>
+              <Chip
+                color={
+                  mission.difficulty === "rookie"
+                    ? "success"
+                    : mission.difficulty === "operator"
+                      ? "warning"
+                      : "critical"
+                }
+                variant="emphasized"
+              >
+                {mission.difficulty.toUpperCase()}
+              </Chip>
+            </Flex>
+
+            {/* Briefing */}
+            <Paragraph>{mission.briefing}</Paragraph>
+
+            {/* Timer */}
+            <Surface>
+              <Flex flexDirection="column" alignItems="center" padding={16} gap={4}>
+                <Text textStyle="small">Time Remaining</Text>
+                <Heading level={1}>
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      color: timerIsLow ? "var(--dt-colors-text-critical-default, #e74c3c)" : undefined,
+                    }}
+                  >
+                    {formatTime(timerSeconds)}
+                  </span>
+                </Heading>
+              </Flex>
+            </Surface>
+
+            {/* Hint cost notice */}
+            <Text textStyle="small" style={{ opacity: 0.6 }}>
+              Intel requested: -{HINT_PENALTY} pts per hint used
+            </Text>
+          </Flex>
+        </Surface>
       </Flex>
 
-      {/* Briefing */}
-      <Surface>
-        <Flex flexDirection="column" padding={16} gap={6}>
-          <Strong>SITUATION REPORT</Strong>
-          <Paragraph>{mission.briefing}</Paragraph>
-          <Flex gap={8}>
-            <Chip color="neutral">{mission.role}</Chip>
-            <Chip
-              color={
-                mission.difficulty === "rookie"
-                  ? "success"
-                  : mission.difficulty === "operator"
-                    ? "warning"
-                    : "critical"
-              }
-              variant="emphasized"
-            >
-              {mission.difficulty.toUpperCase()}
-            </Chip>
-          </Flex>
-        </Flex>
-      </Surface>
+      {/* Right column — Checkpoints */}
+      <Flex
+        flexDirection="column"
+        gap={8}
+        style={{ flex: "1 1 60%" }}
+      >
+        <Heading level={3}>Checkpoints</Heading>
 
-      {/* Checkpoints */}
-      <Flex flexDirection="column" gap={8}>
         {mission.checkpoints.map((checkpoint, index) => {
           const status = getCheckpointStatus(index);
           const isMultipleChoice = checkpoint.type === "multiple-choice";
           const hintAvailable = checkpoint.hint.length > 0;
           const hintRevealed = hintsRevealed.includes(checkpoint.id);
+          const isActive = status === "active";
+          const isCompleted = status === "completed";
+          const isLocked = status === "locked";
 
           return (
             <Surface key={checkpoint.id}>
-              <Flex padding={12} gap={12} alignItems="flex-start">
+              <Flex
+                padding={16}
+                gap={12}
+                alignItems="flex-start"
+                style={{
+                  opacity: isLocked ? 0.4 : 1,
+                  borderLeft: isActive
+                    ? "3px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                    : "3px solid transparent",
+                }}
+              >
                 {/* Step number / status indicator */}
                 <Flex
                   flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
+                  style={{ minWidth: 32 }}
                 >
-                  {status === "completed" ? (
+                  {isCompleted ? (
                     <SuccessIcon />
                   ) : (
-                    <Heading level={3}>
-                      {String(index + 1).padStart(2, "0")}
-                    </Heading>
+                    <Text textStyle="base-emphasized">
+                      <span style={{ fontFamily: "monospace" }}>
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </Text>
                   )}
                 </Flex>
 
@@ -257,33 +302,40 @@ export const Mission = () => {
                 <Flex flexDirection="column" gap={8} flexGrow={1}>
                   <Flex gap={8} alignItems="center">
                     <Strong>{checkpoint.title}</Strong>
-                    {status === "completed" && (
-                      <Chip color="success" variant="emphasized">
-                        Complete
-                      </Chip>
+                    {isCompleted && (
+                      <Flex gap={8} alignItems="center">
+                        <Chip color="success" variant="emphasized">
+                          Complete
+                        </Chip>
+                        <Text textStyle="small">
+                          <span style={{ fontFamily: "monospace" }}>
+                            {checkpoint.points} pts
+                          </span>
+                        </Text>
+                      </Flex>
                     )}
-                    {status === "active" && (
+                    {isActive && (
                       <Chip color="primary" variant="emphasized">
                         Active
                       </Chip>
                     )}
-                    {status === "locked" && (
+                    {isLocked && (
                       <Chip color="neutral">Locked</Chip>
                     )}
                   </Flex>
 
-                  {status !== "locked" && (
+                  {!isLocked && (
                     <Paragraph>{checkpoint.instruction}</Paragraph>
                   )}
 
                   {/* Hint system */}
-                  {status === "active" && hintAvailable && !hintRevealed && (
+                  {isActive && hintAvailable && !hintRevealed && (
                     <Flex>
                       <Button
                         variant="default"
                         onClick={() => handleRequestHint(checkpoint.id)}
                       >
-                        [ REQUEST INTEL ]
+                        Request Intel
                       </Button>
                     </Flex>
                   )}
@@ -292,18 +344,18 @@ export const Mission = () => {
                     <Surface>
                       <Flex flexDirection="column" padding={12} gap={4}>
                         <Chip color="warning" variant="emphasized">
-                          INTEL
+                          Intel
                         </Chip>
                         <Text>{checkpoint.hint}</Text>
-                        <Text textStyle="small">
-                          Intel requested: -{HINT_PENALTY} pts per hint
+                        <Text textStyle="small" style={{ opacity: 0.6 }}>
+                          Intel requested: -{HINT_PENALTY} pts
                         </Text>
                       </Flex>
                     </Surface>
                   )}
 
                   {/* Multiple choice options */}
-                  {status === "active" && isMultipleChoice && checkpoint.choices && (
+                  {isActive && isMultipleChoice && checkpoint.choices && (
                     <Flex flexDirection="column" gap={8}>
                       <RadioGroup
                         value={selectedAnswer}
@@ -324,7 +376,7 @@ export const Mission = () => {
                   )}
 
                   {/* Validate button */}
-                  {status === "active" && (
+                  {isActive && (
                     <Flex padding={4}>
                       <Button
                         variant="accent"
@@ -335,10 +387,10 @@ export const Mission = () => {
                         onClick={() => handleValidate(index)}
                       >
                         {isValidating
-                          ? "CONFIRMING..."
+                          ? "Confirming..."
                           : isMultipleChoice
-                            ? "SUBMIT ANSWER"
-                            : "CONFIRM CHECKPOINT"}
+                            ? "Submit"
+                            : "Complete"}
                       </Button>
                     </Flex>
                   )}
