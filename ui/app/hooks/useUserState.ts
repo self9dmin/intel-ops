@@ -115,21 +115,17 @@ export function useUserState(): UseUserStateResult {
         disciplines: updatedDisciplines,
       };
 
-      const list = await documentsClient.listDocuments({
-        filter: `type == '${DOCUMENT_TYPE}' and name == '${getDocumentName(currentUser.id)}'`,
-        pageSize: 1,
-      });
+      await documentsClient.deleteDocument({ id: documentId });
 
-      const version = list.documents[0]?.optimisticLockingVersion ?? "0";
-
-      await documentsClient.updateDocument({
-        id: documentId,
-        optimisticLockingVersion: version,
+      const result = await documentsClient.createDocument({
         body: {
+          name: getDocumentName(currentUser.id),
+          type: DOCUMENT_TYPE,
           content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
         },
       });
 
+      setDocumentId(result.id);
       setUserState(updatedState);
     },
     [userState, documentId, currentUser.id]
