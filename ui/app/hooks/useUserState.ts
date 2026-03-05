@@ -24,6 +24,7 @@ export function useUserState(): UseUserStateResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [documentId, setDocumentId] = useState<string | null>(null);
+  const [documentVersion, setDocumentVersion] = useState<string>("0");
 
   const currentUser = getCurrentUserDetails();
 
@@ -39,11 +40,12 @@ export function useUserState(): UseUserStateResult {
 
         if (cancelled) return;
 
-        if (list.documents.length > 0) {
+        if (list.documents && list.documents.length > 0) {
           const doc = list.documents[0];
-          setDocumentId(doc.id);
+          setDocumentId(doc.id ?? null);
+          setDocumentVersion(String(doc.version ?? "0"));
           const content = await documentsClient.downloadDocumentContent({
-            id: doc.id,
+            id: doc.id!,
           });
           const text: string = await content.get("text");
           const parsed = JSON.parse(text) as UserState;
@@ -88,7 +90,8 @@ export function useUserState(): UseUserStateResult {
         },
       });
 
-      setDocumentId(result.id);
+      setDocumentId(result.id ?? null);
+      setDocumentVersion(String(result.version ?? "0"));
       setUserState(state);
     },
     [currentUser.id, currentUser.email]
@@ -115,7 +118,10 @@ export function useUserState(): UseUserStateResult {
         disciplines: updatedDisciplines,
       };
 
-      await documentsClient.deleteDocument({ id: documentId });
+      await documentsClient.deleteDocument({
+        id: documentId,
+        optimisticLockingVersion: documentVersion,
+      });
 
       const result = await documentsClient.createDocument({
         body: {
@@ -125,10 +131,11 @@ export function useUserState(): UseUserStateResult {
         },
       });
 
-      setDocumentId(result.id);
+      setDocumentId(result.id ?? null);
+      setDocumentVersion(String(result.version ?? "0"));
       setUserState(updatedState);
     },
-    [userState, documentId, currentUser.id]
+    [userState, documentId, documentVersion, currentUser.id]
   );
 
   return { userState, loading, error, saveUserState, awardXP };
