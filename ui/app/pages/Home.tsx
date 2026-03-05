@@ -203,78 +203,64 @@ export const Home = () => {
       <Flex flexDirection="column" gap={12}>
         <Heading level={4}>Available Missions</Heading>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
           {MISSIONS.map((mission) => {
             const isLocked = mission.status === "locked";
             return (
-              <div
-                key={mission.id}
-                style={{ flex: "1 1 calc(33.333% - 12px)", maxWidth: "calc(33.333% - 12px)", minWidth: "300px", boxSizing: "border-box" }}
-              >
-                <Surface>
-                  <Flex
-                    flexDirection="column"
-                    padding={12}
-                    gap={8}
-                    style={{
-                      opacity: isLocked ? 0.5 : 1,
-                    }}
-                  >
-                    {/* Top row: codename + difficulty */}
-                    <Flex justifyContent="space-between" alignItems="center">
-                      <Text textStyle="small">
-                        <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
-                          {mission.codename}
-                        </span>
-                      </Text>
-                      <Chip
-                        color={getDifficultyColor(mission.difficulty)}
-                        variant="emphasized"
-                      >
-                        {mission.difficulty.toUpperCase()}
-                      </Chip>
-                    </Flex>
-
-                    {/* Title */}
-                    <Heading level={5}>{mission.title}</Heading>
-
-                    {/* Role chip */}
-                    <Flex>
-                      <Chip color="neutral">{mission.role}</Chip>
-                    </Flex>
-
-                    {/* Description */}
-                    <Text textStyle="small" style={{ opacity: 0.7 }}>
-                      {mission.description}
+              <Surface key={mission.id}>
+                <Flex
+                  flexDirection="column"
+                  padding={12}
+                  gap={8}
+                  style={{
+                    opacity: isLocked ? 0.5 : 1,
+                  }}
+                >
+                  {/* Top row: codename + difficulty */}
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Text textStyle="small">
+                      <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
+                        {mission.codename}
+                      </span>
                     </Text>
-
-                    {/* Bottom row: button + time */}
-                    <Flex justifyContent="space-between" alignItems="center">
-                      <Button
-                        variant="emphasized"
-                        disabled={isLocked}
-                        onClick={() => navigate(`/mission/${mission.id}`)}
-                      >
-                        {isLocked ? "Locked" : "Start Mission"}
-                      </Button>
-                      <Text textStyle="small" style={{ opacity: 0.6 }}>
-                        {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
-                      </Text>
-                    </Flex>
+                    <Chip
+                      color={getDifficultyColor(mission.difficulty)}
+                      variant="emphasized"
+                    >
+                      {mission.difficulty.toUpperCase()}
+                    </Chip>
                   </Flex>
-                </Surface>
-              </div>
+
+                  {/* Title */}
+                  <Heading level={5}>{mission.title}</Heading>
+
+                  {/* Role chip */}
+                  <Flex>
+                    <Chip color="neutral">{mission.role}</Chip>
+                  </Flex>
+
+                  {/* Description */}
+                  <Text textStyle="small" style={{ opacity: 0.7 }}>
+                    {mission.description}
+                  </Text>
+
+                  {/* Bottom row: button + time */}
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Button
+                      variant="emphasized"
+                      disabled={isLocked}
+                      onClick={() => navigate(`/mission/${mission.id}`)}
+                    >
+                      {isLocked ? "Locked" : "Start Mission"}
+                    </Button>
+                    <Text textStyle="small" style={{ opacity: 0.6 }}>
+                      {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
+                    </Text>
+                  </Flex>
+                </Flex>
+              </Surface>
             );
           })}
-          {/* Empty placeholders to align orphan row */}
-          {MISSIONS.length % 3 !== 0 &&
-            Array.from({ length: 3 - (MISSIONS.length % 3) }).map((_, i) => (
-              <div
-                key={`placeholder-${i}`}
-                style={{ flex: "1 1 calc(33.333% - 12px)", maxWidth: "calc(33.333% - 12px)", minWidth: "300px", boxSizing: "border-box" }}
-                aria-hidden="true"
-              />
-            ))}
         </div>
       </Flex>
 
