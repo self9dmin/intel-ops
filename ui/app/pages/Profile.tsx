@@ -203,7 +203,6 @@ export const Profile = () => {
 
   return (
     <Flex flexDirection="column" gap={24} padding={24}>
-      {/* Header */}
       <Flex flexDirection="column" gap={4}>
         <Text textStyle="small" style={{ opacity: 0.6 }}>Player Profile</Text>
         <Heading level={1}>{displayName}</Heading>
@@ -215,7 +214,6 @@ export const Profile = () => {
         </Flex>
       ) : (
         <>
-          {/* Skill Tree */}
           <Flex flexDirection="column" gap={8}>
             <Heading level={3}>Skill Tree</Heading>
             <div style={{
@@ -223,17 +221,16 @@ export const Profile = () => {
               gridTemplateColumns: "1fr 1fr",
               gap: "12px",
             }}>
-              {userState && disciplines.map((disc) => (
+              {disciplines.map((disc) => (
                 <DisciplineCard
                   key={disc}
                   discipline={disc}
-                  progress={userState.disciplines[disc]}
+                  progress={userState?.disciplines?.[disc] ?? { xp: 0, level: 1, levelName: "Recruit" }}
                 />
               ))}
             </div>
           </Flex>
 
-          {/* Mission History */}
           <Flex flexDirection="column" gap={8}>
             <Heading level={3}>Mission History</Heading>
             {historyData.length === 0 ? (
