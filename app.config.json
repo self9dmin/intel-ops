@@ -3,7 +3,7 @@
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
     "name": "Intel Ops",
-    "version": "0.1.17",
+    "version": "0.1.16",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "id": "my.intelops.training",
     "scopes": [
@@ -30,6 +30,10 @@
       {
         "name": "document:documents:write",
         "comment": "Write user scores and checkpoint state"
+      },
+      {
+        "name": "document:documents:delete",
+        "comment": "Delete user state for onboarding reset"
       }
     ]
   }
