@@ -11,9 +11,23 @@ import {
   type DataTableColumnDef,
 } from "@dynatrace/strato-components-preview/tables";
 import { MISSIONS } from "../data/missions";
-import type { Discipline, DisciplineProgress } from "../types/UserState";
-import { XP_THRESHOLDS } from "../types/UserState";
+import type { Discipline, DisciplineProgress, TopicId } from "../types/UserState";
+import { XP_THRESHOLDS, TOPIC_META, TOPIC_THRESHOLDS, getTopicLevel } from "../types/UserState";
 import { useUserStateContext } from "../context/UserStateContext";
+import {
+  AnalyticsIcon,
+  TracesIcon,
+  DavisAIIcon,
+  BarChartIcon,
+  LogsIcon,
+  SmartscapeIcon,
+  ContainerIcon,
+  HttpIcon,
+  ServiceLevelObjectivesIcon,
+  WorkflowsIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+} from "@dynatrace/strato-icons";
 
 interface StoredScore {
   userId: string;
@@ -133,6 +147,102 @@ function DisciplineCard({ discipline, progress }: { discipline: Discipline; prog
   );
 }
 
+const TOPIC_ICON_MAP: Record<string, typeof AnalyticsIcon> = {
+  AnalyticsIcon,
+  TracesIcon,
+  DavisAIIcon,
+  BarChartIcon,
+  LogsIcon,
+  SmartscapeIcon,
+  ContainerIcon,
+  HttpIcon,
+  ServiceLevelObjectivesIcon,
+  WorkflowsIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+};
+
+const ALL_TOPICS: TopicId[] = [
+  "dql", "traces", "davis", "metrics", "logs", "smartscape",
+  "kubernetes", "synthetics", "slo", "automation", "security", "bizevents",
+];
+
+function getNextTopicThreshold(xp: number): { nextXP: number; nextName: string } | null {
+  for (const threshold of TOPIC_THRESHOLDS) {
+    if (xp < threshold.xp) {
+      return { nextXP: threshold.xp, nextName: threshold.name };
+    }
+  }
+  return null;
+}
+
+function TopicCard({ topicId, xp }: { topicId: TopicId; xp: number }) {
+  const meta = TOPIC_META[topicId];
+  const { levelName } = getTopicLevel(xp);
+  const next = getNextTopicThreshold(xp);
+  const isMax = next === null;
+  const hasXP = xp > 0;
+
+  const currentThresholdXP = TOPIC_THRESHOLDS.find((t) => t.name === levelName)?.xp ?? 0;
+  const progressPercent = isMax
+    ? 100
+    : ((xp - currentThresholdXP) / (next.nextXP - currentThresholdXP)) * 100;
+
+  const IconComponent = TOPIC_ICON_MAP[meta.icon];
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.04)",
+      borderRadius: "8px",
+      padding: "16px",
+      opacity: hasXP ? 1 : 0.4,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+        {IconComponent && <IconComponent size="small" />}
+        <div>
+          <div style={{ fontWeight: 600, fontSize: "14px" }}>{meta.label}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>{levelName}</div>
+        </div>
+      </div>
+
+      {isMax ? (
+        <div style={{
+          background: "#4b9cf5",
+          borderRadius: "4px",
+          padding: "6px 0",
+          textAlign: "center",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "1px",
+        }}>
+          MAX
+        </div>
+      ) : (
+        <>
+          <div style={{
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            height: "8px",
+            overflow: "hidden",
+            marginBottom: "6px",
+          }}>
+            <div style={{
+              background: "#4b9cf5",
+              height: "100%",
+              width: `${progressPercent}%`,
+              borderRadius: "4px",
+              transition: "width 0.3s ease",
+            }} />
+          </div>
+          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>
+            {xp} / {next.nextXP} XP to {next.nextName}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export const Profile = () => {
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
@@ -227,6 +337,23 @@ export const Profile = () => {
                   key={disc}
                   discipline={disc}
                   progress={userState?.disciplines?.[disc] ?? { xp: 0, level: 1, levelName: "Recruit" }}
+                />
+              ))}
+            </div>
+          </Flex>
+
+          <Flex flexDirection="column" gap={8}>
+            <Heading level={3}>Topic Skills</Heading>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: "12px",
+            }}>
+              {ALL_TOPICS.map((topicId) => (
+                <TopicCard
+                  key={topicId}
+                  topicId={topicId}
+                  xp={userState?.topicXP?.[topicId] ?? 0}
                 />
               ))}
             </div>
