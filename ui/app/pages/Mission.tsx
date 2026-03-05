@@ -189,12 +189,12 @@ export const Mission = () => {
   }
 
   return (
-    <Flex flexDirection="column" gap={24} padding={32}>
+    <Flex flexDirection="column" gap={16} padding={20}>
       {/* Mission Header */}
       <Flex justifyContent="space-between" alignItems="center">
-        <Flex flexDirection="column" gap={4}>
+        <Flex flexDirection="column" gap={2}>
           <Text textStyle="small">// {mission.codename}</Text>
-          <Heading level={1}>{mission.title}</Heading>
+          <Heading level={2}>{mission.title}</Heading>
         </Flex>
         <Chip
           color={timerSeconds < 60 ? "critical" : "neutral"}
@@ -206,7 +206,7 @@ export const Mission = () => {
 
       {/* Briefing */}
       <Surface>
-        <Flex flexDirection="column" padding={24} gap={8}>
+        <Flex flexDirection="column" padding={16} gap={6}>
           <Strong>SITUATION REPORT</Strong>
           <Paragraph>{mission.briefing}</Paragraph>
           <Flex gap={8}>
@@ -228,7 +228,7 @@ export const Mission = () => {
       </Surface>
 
       {/* Checkpoints */}
-      <Flex flexDirection="column" gap={12}>
+      <Flex flexDirection="column" gap={8}>
         {mission.checkpoints.map((checkpoint, index) => {
           const status = getCheckpointStatus(index);
           const isMultipleChoice = checkpoint.type === "multiple-choice";
@@ -237,7 +237,7 @@ export const Mission = () => {
 
           return (
             <Surface key={checkpoint.id}>
-              <Flex padding={20} gap={16} alignItems="flex-start">
+              <Flex padding={12} gap={12} alignItems="flex-start">
                 {/* Step number / status indicator */}
                 <Flex
                   flexDirection="column"
@@ -290,7 +290,7 @@ export const Mission = () => {
 
                   {hintRevealed && (
                     <Surface>
-                      <Flex flexDirection="column" padding={16} gap={8}>
+                      <Flex flexDirection="column" padding={12} gap={4}>
                         <Chip color="warning" variant="emphasized">
                           INTEL
                         </Chip>

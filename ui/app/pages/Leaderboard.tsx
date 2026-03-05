@@ -135,25 +135,25 @@ export const Leaderboard = () => {
   }));
 
   return (
-    <Flex flexDirection="column" gap={32} padding={32}>
-      <Text textStyle="base-emphasized">// GLOBAL LEADERBOARD</Text>
-      <Heading level={1}>LEADERBOARD</Heading>
+    <Flex flexDirection="column" gap={16} padding={20}>
+      <Text textStyle="small">// GLOBAL LEADERBOARD</Text>
+      <Heading level={2}>LEADERBOARD</Heading>
 
       {loading ? (
         <Surface>
-          <Flex justifyContent="center" padding={32}>
+          <Flex justifyContent="center" padding={20}>
             <ProgressCircle />
           </Flex>
         </Surface>
       ) : error ? (
         <Surface>
-          <Flex justifyContent="center" padding={32}>
+          <Flex justifyContent="center" padding={16}>
             <Paragraph>{error}</Paragraph>
           </Flex>
         </Surface>
       ) : leaderboardData.length === 0 ? (
         <Surface>
-          <Flex justifyContent="center" padding={32}>
+          <Flex justifyContent="center" padding={16}>
             <Paragraph>
               No scores yet — complete a mission to appear here
             </Paragraph>

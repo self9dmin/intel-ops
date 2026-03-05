@@ -128,47 +128,47 @@ export const Profile = () => {
   }));
 
   return (
-    <Flex flexDirection="column" gap={32} padding={32}>
+    <Flex flexDirection="column" gap={20} padding={20}>
       {/* Header */}
-      <Flex flexDirection="column" gap={4}>
-        <Text textStyle="base-emphasized">// PLAYER PROFILE</Text>
-        <Heading level={1}>{displayName}</Heading>
+      <Flex flexDirection="column" gap={2}>
+        <Text textStyle="small">// PLAYER PROFILE</Text>
+        <Heading level={2}>{displayName}</Heading>
       </Flex>
 
       {/* Stats Row */}
       {loading ? (
-        <Flex justifyContent="center" padding={32}>
+        <Flex justifyContent="center" padding={20}>
           <ProgressCircle />
         </Flex>
       ) : (
         <>
-          <Flex gap={24}>
+          <Flex gap={16}>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={24} gap={4} flexGrow={1}>
-                <Heading level={2}>{missionsCompleted}</Heading>
-                <Text>Total Missions Completed</Text>
+              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
+                <Heading level={3}>{missionsCompleted}</Heading>
+                <Text textStyle="small">Total Missions Completed</Text>
               </Flex>
             </Surface>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={24} gap={4} flexGrow={1}>
-                <Heading level={2}>{totalPoints}</Heading>
-                <Text>Total Points Earned</Text>
+              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
+                <Heading level={3}>{totalPoints}</Heading>
+                <Text textStyle="small">Total Points Earned</Text>
               </Flex>
             </Surface>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={24} gap={4} flexGrow={1}>
-                <Heading level={2}>{bestScore}</Heading>
-                <Text>Best Single Score</Text>
+              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
+                <Heading level={3}>{bestScore}</Heading>
+                <Text textStyle="small">Best Single Score</Text>
               </Flex>
             </Surface>
           </Flex>
 
           {/* Mission History */}
-          <Flex flexDirection="column" gap={16}>
-            <Text textStyle="base-emphasized">// MISSION HISTORY</Text>
+          <Flex flexDirection="column" gap={8}>
+            <Text textStyle="small">// MISSION HISTORY</Text>
             {historyData.length === 0 ? (
               <Surface>
-                <Flex justifyContent="center" padding={32}>
+                <Flex justifyContent="center" padding={16}>
                   <Paragraph>
                     No missions completed yet. Return to the mission board to begin.
                   </Paragraph>

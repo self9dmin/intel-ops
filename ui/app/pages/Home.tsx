@@ -174,59 +174,44 @@ export const Home = () => {
     }));
 
   return (
-    <Flex flexDirection="column" gap={32} padding={32}>
+    <Flex flexDirection="column" gap={20} padding={20}>
       {/* Header */}
-      <Flex flexDirection="column" alignItems="center" gap={4}>
-        <Heading level={1}>INTEL OPS</Heading>
-        <Text textStyle="base-emphasized">CLASSIFIED TRAINING PROGRAM</Text>
+      <Flex flexDirection="column" alignItems="center" gap={2}>
+        <Heading level={2}>INTEL OPS</Heading>
+        <Text textStyle="small">CLASSIFIED TRAINING PROGRAM</Text>
       </Flex>
 
       {/* Stats Bar */}
-      <Flex justifyContent="center" gap={48}>
+      <Flex justifyContent="center" gap={16}>
         <Surface>
-          <Flex
-            flexDirection="column"
-            alignItems="center"
-            padding={16}
-            gap={4}
-          >
-            <Heading level={3}>{missionsCompleted}</Heading>
-            <Text>Missions Completed</Text>
+          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
+            <Heading level={4}>{missionsCompleted}</Heading>
+            <Text textStyle="small">Missions Completed</Text>
           </Flex>
         </Surface>
         <Surface>
-          <Flex
-            flexDirection="column"
-            alignItems="center"
-            padding={16}
-            gap={4}
-          >
-            <Heading level={3}>{totalPoints}</Heading>
-            <Text>Points Earned</Text>
+          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
+            <Heading level={4}>{totalPoints}</Heading>
+            <Text textStyle="small">Points Earned</Text>
           </Flex>
         </Surface>
         <Surface>
-          <Flex
-            flexDirection="column"
-            alignItems="center"
-            padding={16}
-            gap={4}
-          >
-            <Heading level={3}>{rankDisplay}</Heading>
-            <Text>Global Rank</Text>
+          <Flex flexDirection="column" alignItems="center" padding={12} gap={2}>
+            <Heading level={4}>{rankDisplay}</Heading>
+            <Text textStyle="small">Global Rank</Text>
           </Flex>
         </Surface>
       </Flex>
 
       {/* Available Missions */}
-      <Flex flexDirection="column" gap={24}>
-        <Text textStyle="base-emphasized">// AVAILABLE MISSIONS</Text>
+      <Flex flexDirection="column" gap={12}>
+        <Text textStyle="small">// AVAILABLE MISSIONS</Text>
 
         {MISSIONS.map((mission) => {
           const isLocked = mission.status === "locked";
           return (
             <Surface key={mission.id}>
-              <Flex flexDirection="column" padding={24} gap={12}>
+              <Flex flexDirection="column" padding={16} gap={8}>
                 <Flex justifyContent="space-between" alignItems="center">
                   <Text textStyle="small">// {mission.codename}</Text>
                   <Chip
@@ -237,7 +222,7 @@ export const Home = () => {
                   </Chip>
                 </Flex>
 
-                <Heading level={3}>{mission.title}</Heading>
+                <Heading level={4}>{mission.title}</Heading>
 
                 <Flex gap={8}>
                   <Chip color="neutral">{mission.role}</Chip>
@@ -266,23 +251,23 @@ export const Home = () => {
       </Flex>
 
       {/* Global Leaderboard (mini) */}
-      <Flex flexDirection="column" gap={16}>
-        <Text textStyle="base-emphasized">// GLOBAL LEADERBOARD</Text>
+      <Flex flexDirection="column" gap={8}>
+        <Text textStyle="small">// GLOBAL LEADERBOARD</Text>
         {loading ? (
           <Surface>
-            <Flex justifyContent="center" padding={32}>
+            <Flex justifyContent="center" padding={20}>
               <ProgressCircle />
             </Flex>
           </Surface>
         ) : error ? (
           <Surface>
-            <Flex justifyContent="center" padding={32}>
+            <Flex justifyContent="center" padding={16}>
               <Paragraph>{error}</Paragraph>
             </Flex>
           </Surface>
         ) : leaderboardData.length === 0 ? (
           <Surface>
-            <Flex justifyContent="center" padding={32}>
+            <Flex justifyContent="center" padding={16}>
               <Paragraph>
                 No scores yet — complete a mission to appear here
               </Paragraph>

@@ -105,14 +105,14 @@ export const Debrief = () => {
   const codename = state.codename || mission?.codename || "UNKNOWN";
 
   return (
-    <Flex flexDirection="column" gap={32} padding={32}>
-      <Text textStyle="base-emphasized">
+    <Flex flexDirection="column" gap={20} padding={20}>
+      <Text textStyle="small">
         // MISSION DEBRIEF — {codename}
       </Text>
 
-      <Flex flexDirection="column" alignItems="center" gap={16}>
+      <Flex flexDirection="column" alignItems="center" gap={8}>
         <SuccessIcon size="large" />
-        <Heading level={1}>MISSION COMPLETE</Heading>
+        <Heading level={2}>MISSION COMPLETE</Heading>
         <Text textStyle="base-emphasized">
           OPERATION {codename} — SUCCESS
         </Text>
@@ -120,9 +120,9 @@ export const Debrief = () => {
 
       {/* Score Breakdown */}
       <Surface>
-        <Flex flexDirection="column" padding={32} gap={16}>
-          <Text textStyle="base-emphasized">// SCORE BREAKDOWN</Text>
-          <Flex flexDirection="column" gap={8}>
+        <Flex flexDirection="column" padding={16} gap={8}>
+          <Text textStyle="small">// SCORE BREAKDOWN</Text>
+          <Flex flexDirection="column" gap={4}>
             <Flex justifyContent="space-between">
               <Text>Base Score</Text>
               <Strong>{state.baseScore} pts</Strong>
@@ -138,8 +138,8 @@ export const Debrief = () => {
               </Strong>
             </Flex>
             <Flex justifyContent="space-between">
-              <Heading level={3}>Total Score</Heading>
-              <Heading level={3}>{state.totalScore} pts</Heading>
+              <Heading level={4}>Total Score</Heading>
+              <Heading level={4}>{state.totalScore} pts</Heading>
             </Flex>
           </Flex>
           {saveStatus === "saving" && (
@@ -160,9 +160,9 @@ export const Debrief = () => {
 
       {/* Checkpoint Summary */}
       <Surface>
-        <Flex flexDirection="column" padding={32} gap={16}>
-          <Text textStyle="base-emphasized">// CHECKPOINT SUMMARY</Text>
-          <Flex flexDirection="column" gap={8}>
+        <Flex flexDirection="column" padding={16} gap={8}>
+          <Text textStyle="small">// CHECKPOINT SUMMARY</Text>
+          <Flex flexDirection="column" gap={4}>
             {state.checkpoints.map((cp) => (
               <Flex key={cp.id} justifyContent="space-between" alignItems="center">
                 <Flex gap={8} alignItems="center">
