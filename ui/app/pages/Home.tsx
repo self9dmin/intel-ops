@@ -19,6 +19,14 @@ import {
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { MISSIONS } from "../data/missions";
 import type { Mission } from "../types/mission.types";
+import type { UserRole } from "../types/UserState";
+
+const ROLE_RECOMMENDED_MISSIONS: Record<UserRole, string[]> = {
+  sre: ["operation-silent-rollout", "operation-3am-database-spike"],
+  developer: ["operation-ghost-in-the-trace", "operation-silent-rollout"],
+  "incident-commander": ["operation-3am-database-spike", "operation-flatline"],
+  "platform-engineer": ["operation-k8s-meltdown", "operation-3am-database-spike"],
+};
 
 interface StoredScore {
   userName: string;
@@ -84,7 +92,11 @@ function formatMissionName(key: string): string {
   return key;
 }
 
-export const Home = () => {
+interface HomeProps {
+  userRole: UserRole;
+}
+
+export const Home = ({ userRole }: HomeProps) => {
   const navigate = useNavigate();
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
@@ -199,9 +211,66 @@ export const Home = () => {
         </div>
       </div>
 
+      {/* Recommended for Role */}
+      <Flex flexDirection="column" gap={12}>
+        <Heading level={4}>Recommended for your role</Heading>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+          {MISSIONS.filter((m) =>
+            ROLE_RECOMMENDED_MISSIONS[userRole]?.includes(m.id)
+          ).map((mission) => {
+            const isLocked = mission.status === "locked";
+            return (
+              <div
+                key={mission.id}
+                style={{ flex: "1 1 calc(50% - 12px)", maxWidth: "calc(50% - 12px)", minWidth: "300px", boxSizing: "border-box" }}
+              >
+                <Surface>
+                  <Flex
+                    flexDirection="column"
+                    padding={12}
+                    gap={8}
+                    style={{ opacity: isLocked ? 0.5 : 1 }}
+                  >
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Text textStyle="small">
+                        <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
+                          {mission.codename}
+                        </span>
+                      </Text>
+                      <Chip
+                        color={getDifficultyColor(mission.difficulty)}
+                        variant="emphasized"
+                      >
+                        {mission.difficulty.toUpperCase()}
+                      </Chip>
+                    </Flex>
+                    <Heading level={5}>{mission.title}</Heading>
+                    <Text textStyle="small" style={{ opacity: 0.7 }}>
+                      {mission.description}
+                    </Text>
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Button
+                        variant="emphasized"
+                        disabled={isLocked}
+                        onClick={() => navigate(`/mission/${mission.id}`)}
+                      >
+                        {isLocked ? "Locked" : "Start Mission"}
+                      </Button>
+                      <Text textStyle="small" style={{ opacity: 0.6 }}>
+                        {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                </Surface>
+              </div>
+            );
+          })}
+        </div>
+      </Flex>
+
       {/* Mission Grid */}
       <Flex flexDirection="column" gap={12}>
-        <Heading level={4}>Available Missions</Heading>
+        <Heading level={4}>All Missions</Heading>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
           {MISSIONS.map((mission) => {
