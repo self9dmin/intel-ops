@@ -16,11 +16,14 @@ import {
   type DataTableColumnDef,
 } from "@dynatrace/strato-components-preview/tables";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
+import { MISSIONS } from "../data/missions";
+import type { Mission } from "../types/mission.types";
 
-interface ScoreRecord {
+interface StoredScore {
   userName: string;
   userId: string;
   mission: string;
+  missionId?: string;
   role: string;
   difficulty: string;
   baseScore: number;
@@ -47,12 +50,22 @@ const leaderboardColumns: DataTableColumnDef[] = [
   { accessor: "date", header: "Date" },
 ];
 
-const MISSION_LABELS: Record<string, string> = {
-  "operation-3am-database-spike": "3am Database Spike",
-};
+function getDifficultyColor(
+  difficulty: Mission["difficulty"]
+): "success" | "warning" | "critical" {
+  switch (difficulty) {
+    case "rookie":
+      return "success";
+    case "operator":
+      return "warning";
+    case "elite":
+    case "legend":
+      return "critical";
+  }
+}
 
-function formatMissionName(key: string): string {
-  return MISSION_LABELS[key] ?? key;
+function formatMinutes(seconds: number): string {
+  return `~${Math.round(seconds / 60)} min`;
 }
 
 function formatDate(iso: string): string {
@@ -64,9 +77,15 @@ function formatDate(iso: string): string {
   });
 }
 
+function formatMissionName(key: string): string {
+  const mission = MISSIONS.find((m) => m.id === key);
+  if (mission) return mission.title;
+  return key;
+}
+
 export const Home = () => {
   const navigate = useNavigate();
-  const [scores, setScores] = useState<ScoreRecord[]>([]);
+  const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -80,14 +99,14 @@ export const Home = () => {
           pageSize: 100,
         });
 
-        const results: ScoreRecord[] = [];
+        const results: StoredScore[] = [];
         for (const doc of list.documents) {
           try {
             const content = await documentsClient.downloadDocumentContent({
               id: doc.id,
             });
             const text: string = await content.get("text");
-            const parsed = JSON.parse(text) as ScoreRecord;
+            const parsed = JSON.parse(text) as StoredScore;
             results.push(parsed);
           } catch (docError: unknown) {
             console.error(
@@ -139,15 +158,16 @@ export const Home = () => {
     currentUserRankIndex >= 0 ? `#${currentUserRankIndex + 1}` : "Unranked";
 
   const leaderboardData: LeaderboardRow[] = sortedScores
-    .slice(0, 10)
+    .slice(0, 5)
     .map((s, i) => ({
       rank: i + 1,
-      player: !s.userName || s.userName === "Unknown"
-        ? "Anonymous"
-        : s.userName.includes("dt.missing")
-          ? `${s.userId.slice(0, 8)}...`
-          : s.userName,
-      mission: formatMissionName(s.mission),
+      player:
+        !s.userName || s.userName === "Unknown"
+          ? "Anonymous"
+          : s.userName.includes("dt.missing")
+            ? `${s.userId.slice(0, 8)}...`
+            : s.userName,
+      mission: formatMissionName(s.missionId ?? s.mission),
       difficulty: s.difficulty,
       score: s.totalScore,
       date: formatDate(s.completedAt),
@@ -155,12 +175,10 @@ export const Home = () => {
 
   return (
     <Flex flexDirection="column" gap={32} padding={32}>
-      {/* Title Section */}
-      <Flex flexDirection="column" alignItems="center" gap={8}>
+      {/* Header */}
+      <Flex flexDirection="column" alignItems="center" gap={4}>
         <Heading level={1}>INTEL OPS</Heading>
-        <Paragraph>
-          Gamified Observability Training — Learn by Doing. Compete to Win.
-        </Paragraph>
+        <Text textStyle="base-emphasized">CLASSIFIED TRAINING PROGRAM</Text>
       </Flex>
 
       {/* Stats Bar */}
@@ -195,44 +213,59 @@ export const Home = () => {
             gap={4}
           >
             <Heading level={3}>{rankDisplay}</Heading>
-            <Text>Rank</Text>
+            <Text>Global Rank</Text>
           </Flex>
         </Surface>
       </Flex>
 
       {/* Available Missions */}
       <Flex flexDirection="column" gap={16}>
-        <Heading level={2}>Available Missions</Heading>
-        <Surface>
-          <Flex flexDirection="column" padding={24} gap={16}>
-            <Heading level={3}>Operation: 3am Database Spike</Heading>
-            <Flex gap={8}>
-              <Chip color="primary" variant="emphasized">
-                Incident Commander
-              </Chip>
-              <Chip color="success" variant="emphasized">
-                Rookie
-              </Chip>
-            </Flex>
-            <Paragraph>
-              Production database is spiking. Find the root cause before the
-              business wakes up.
-            </Paragraph>
-            <Flex>
-              <Button
-                variant="emphasized"
-                onClick={() => navigate("/mission")}
-              >
-                Start Mission
-              </Button>
-            </Flex>
-          </Flex>
-        </Surface>
+        <Text textStyle="base-emphasized">// AVAILABLE MISSIONS</Text>
+
+        {MISSIONS.map((mission) => {
+          const isLocked = mission.status === "locked";
+          return (
+            <Surface key={mission.id}>
+              <Flex flexDirection="column" padding={24} gap={12}>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Text textStyle="small">// {mission.codename}</Text>
+                  <Chip
+                    color={getDifficultyColor(mission.difficulty)}
+                    variant="emphasized"
+                  >
+                    {mission.difficulty.toUpperCase()}
+                  </Chip>
+                </Flex>
+
+                <Heading level={3}>{mission.title}</Heading>
+
+                <Flex gap={8}>
+                  <Chip color="neutral">{mission.role}</Chip>
+                </Flex>
+
+                <Paragraph>{mission.description}</Paragraph>
+
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Button
+                    variant="emphasized"
+                    disabled={isLocked}
+                    onClick={() => navigate(`/mission/${mission.id}`)}
+                  >
+                    {isLocked ? "LOCKED" : "INITIATE MISSION"}
+                  </Button>
+                  <Text textStyle="small">
+                    {formatMinutes(mission.timerSeconds)}
+                  </Text>
+                </Flex>
+              </Flex>
+            </Surface>
+          );
+        })}
       </Flex>
 
-      {/* Leaderboard */}
+      {/* Global Leaderboard (mini) */}
       <Flex flexDirection="column" gap={16}>
-        <Heading level={2}>Leaderboard</Heading>
+        <Text textStyle="base-emphasized">// GLOBAL LEADERBOARD</Text>
         {loading ? (
           <Surface>
             <Flex justifyContent="center" padding={32}>
@@ -256,11 +289,6 @@ export const Home = () => {
         ) : (
           <DataTable columns={leaderboardColumns} data={leaderboardData} />
         )}
-      </Flex>
-
-      {/* Footer */}
-      <Flex justifyContent="center" padding={16}>
-        <Text>More missions coming soon</Text>
       </Flex>
     </Flex>
   );
