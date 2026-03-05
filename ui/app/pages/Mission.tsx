@@ -19,7 +19,7 @@ import { getMissionById } from "../data/missions";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
-const TIME_BONUS_PER_SECOND = 2;
+const TIME_BONUS_PER_SECOND = 0.5;
 const HINT_PENALTY = 50;
 const WRONG_ANSWER_PENALTY = 100;
 
@@ -288,13 +288,16 @@ export const Mission = () => {
                     </Flex>
                   )}
 
-                  {status === "active" && hintRevealed && (
+                  {hintRevealed && (
                     <Surface>
-                      <Flex flexDirection="column" padding={16} gap={4}>
+                      <Flex flexDirection="column" padding={16} gap={8}>
                         <Chip color="warning" variant="emphasized">
-                          INTEL (-{HINT_PENALTY} pts)
+                          INTEL
                         </Chip>
                         <Text>{checkpoint.hint}</Text>
+                        <Text textStyle="small">
+                          Intel requested: -{HINT_PENALTY} pts per hint
+                        </Text>
                       </Flex>
                     </Surface>
                   )}

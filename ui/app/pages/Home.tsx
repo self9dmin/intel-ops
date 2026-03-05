@@ -219,7 +219,7 @@ export const Home = () => {
       </Flex>
 
       {/* Available Missions */}
-      <Flex flexDirection="column" gap={16}>
+      <Flex flexDirection="column" gap={24}>
         <Text textStyle="base-emphasized">// AVAILABLE MISSIONS</Text>
 
         {MISSIONS.map((mission) => {
@@ -243,9 +243,11 @@ export const Home = () => {
                   <Chip color="neutral">{mission.role}</Chip>
                 </Flex>
 
-                <Paragraph>{mission.description}</Paragraph>
+                <Text textStyle="small">
+                  {mission.description}
+                </Text>
 
-                <Flex justifyContent="space-between" alignItems="center">
+                <Flex alignItems="center" gap={12}>
                   <Button
                     variant="emphasized"
                     disabled={isLocked}

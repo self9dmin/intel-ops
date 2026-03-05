@@ -113,9 +113,9 @@ export const Debrief = () => {
       <Flex flexDirection="column" alignItems="center" gap={16}>
         <SuccessIcon size="large" />
         <Heading level={1}>MISSION COMPLETE</Heading>
-        <Chip color="success" variant="emphasized">
+        <Text textStyle="base-emphasized">
           OPERATION {codename} — SUCCESS
-        </Chip>
+        </Text>
       </Flex>
 
       {/* Score Breakdown */}
