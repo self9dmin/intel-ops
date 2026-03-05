@@ -318,6 +318,29 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                     <Text textStyle="small" style={{ opacity: 0.7 }}>
                       {mission.description}
                     </Text>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {mission.disciplines.map((d) => {
+                        const meta = DISCIPLINE_META[d.track];
+                        return (
+                          <span
+                            key={d.track}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "3px",
+                              fontSize: "11px",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              background: `${meta.color}22`,
+                              color: meta.color,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {meta.icon} {meta.label} +{d.xp} XP
+                          </span>
+                        );
+                      })}
+                    </div>
                     <Flex justifyContent="space-between" alignItems="center">
                       <Button
                         variant="emphasized"
@@ -386,6 +409,31 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                     <Text textStyle="small" style={{ opacity: 0.7 }}>
                       {mission.description}
                     </Text>
+
+                    {/* Discipline XP chips */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {mission.disciplines.map((d) => {
+                        const meta = DISCIPLINE_META[d.track];
+                        return (
+                          <span
+                            key={d.track}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "3px",
+                              fontSize: "11px",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              background: `${meta.color}22`,
+                              color: meta.color,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {meta.icon} {meta.label} +{d.xp} XP
+                          </span>
+                        );
+                      })}
+                    </div>
 
                     {/* Bottom row: button + time */}
                     <Flex justifyContent="space-between" alignItems="center">

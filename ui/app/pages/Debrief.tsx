@@ -15,8 +15,16 @@ import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint } from "../types/mission.types";
+import type { Discipline } from "../types/UserState";
 import { getMissionById } from "../data/missions";
 import { useUserStateContext } from "../context/UserStateContext";
+
+const DISCIPLINE_META: Record<Discipline, { label: string; icon: string; color: string }> = {
+  sre: { label: "SRE", icon: "\u{1F6E1}\uFE0F", color: "#4b9cf5" },
+  developer: { label: "Developer", icon: "\u{1F4BB}", color: "#7c5cbf" },
+  "incident-commander": { label: "Incident Commander", icon: "\u{1F6A8}", color: "#e8734a" },
+  "platform-engineer": { label: "Platform Engineer", icon: "\u2699\uFE0F", color: "#3dba7e" },
+};
 
 interface DebriefState {
   baseScore: number;
@@ -195,6 +203,31 @@ export const Debrief = () => {
           </Flex>
         </Flex>
       </Surface>
+
+      {/* XP Earned */}
+      {mission?.disciplines && mission.disciplines.length > 0 && (
+        <Surface>
+          <Flex flexDirection="column" padding={20} gap={8}>
+            <Heading level={4}>XP Earned</Heading>
+            <Flex flexDirection="column" gap={6}>
+              {mission.disciplines.map((d) => {
+                const meta = DISCIPLINE_META[d.track];
+                return (
+                  <Flex key={d.track} justifyContent="space-between" alignItems="center">
+                    <Flex gap={8} alignItems="center">
+                      <span style={{ fontSize: "16px" }}>{meta.icon}</span>
+                      <Text style={{ color: meta.color, fontWeight: 500 }}>{meta.label}</Text>
+                    </Flex>
+                    <Text textStyle="small">
+                      <span style={{ fontFamily: "monospace", color: meta.color }}>+{d.xp} XP</span>
+                    </Text>
+                  </Flex>
+                );
+              })}
+            </Flex>
+          </Flex>
+        </Surface>
+      )}
 
       {/* Actions */}
       <Flex gap={16} justifyContent="center">
