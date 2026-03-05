@@ -19,7 +19,9 @@ import {
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { MISSIONS } from "../data/missions";
 import type { Mission } from "../types/mission.types";
-import type { Discipline } from "../types/UserState";
+import type { Discipline, DisciplineProgress } from "../types/UserState";
+import { XP_THRESHOLDS } from "../types/UserState";
+import { useUserStateContext } from "../context/UserStateContext";
 
 const DISCIPLINE_RECOMMENDED_MISSIONS: Record<Discipline, string[]> = {
   sre: ["operation-silent-rollout", "operation-3am-database-spike"],
@@ -92,12 +94,66 @@ function formatMissionName(key: string): string {
   return key;
 }
 
+const DISCIPLINE_META: Record<Discipline, { label: string; icon: string; color: string }> = {
+  sre: { label: "SRE", icon: "\u{1F6E1}\uFE0F", color: "#4b9cf5" },
+  developer: { label: "Developer", icon: "\u{1F4BB}", color: "#7c5cbf" },
+  "incident-commander": { label: "Incident Commander", icon: "\u{1F6A8}", color: "#e8734a" },
+  "platform-engineer": { label: "Platform Engineer", icon: "\u2699\uFE0F", color: "#3dba7e" },
+};
+
+const ALL_DISCIPLINES: Discipline[] = ["sre", "developer", "incident-commander", "platform-engineer"];
+
+function getNextThreshold(xp: number): { nextXP: number; nextName: string } | null {
+  for (const threshold of XP_THRESHOLDS) {
+    if (xp < threshold.xp) {
+      return { nextXP: threshold.xp, nextName: threshold.name };
+    }
+  }
+  return null;
+}
+
+function MiniDisciplineCard({ discipline, progress }: { discipline: Discipline; progress: DisciplineProgress }) {
+  const meta = DISCIPLINE_META[discipline];
+  const next = getNextThreshold(progress.xp);
+  const isMax = next === null;
+
+  const currentThresholdXP = XP_THRESHOLDS.find((t) => t.level === progress.level)?.xp ?? 0;
+  const progressPercent = isMax
+    ? 100
+    : ((progress.xp - currentThresholdXP) / (next.nextXP - currentThresholdXP)) * 100;
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "6px", padding: "10px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
+        <span style={{ fontSize: "16px" }}>{meta.icon}</span>
+        <span style={{ fontWeight: 600, fontSize: "12px" }}>{meta.label}</span>
+        <span style={{ fontSize: "11px", color: meta.color, fontWeight: 500, marginLeft: "auto" }}>{progress.levelName}</span>
+      </div>
+      <div style={{
+        background: "rgba(255,255,255,0.1)",
+        borderRadius: "3px",
+        height: "4px",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          background: meta.color,
+          height: "100%",
+          width: `${progressPercent}%`,
+          borderRadius: "3px",
+          transition: "width 0.3s ease",
+        }} />
+      </div>
+    </div>
+  );
+}
+
 interface HomeProps {
   startingDiscipline: Discipline;
 }
 
 export const Home = ({ startingDiscipline }: HomeProps) => {
   const navigate = useNavigate();
+  const { userState } = useUserStateContext();
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -210,6 +266,20 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
           <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Global Rank</div>
         </div>
       </div>
+
+      {/* Mini Skill Tree */}
+      <Flex flexDirection="column" gap={8}>
+        <Heading level={5}>Skill Tracks</Heading>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+          {ALL_DISCIPLINES.map((disc) => (
+            <MiniDisciplineCard
+              key={disc}
+              discipline={disc}
+              progress={userState?.disciplines?.[disc] ?? { xp: 0, level: 1, levelName: "Recruit" }}
+            />
+          ))}
+        </div>
+      </Flex>
 
       {/* Recommended for Role */}
       <Flex flexDirection="column" gap={12}>

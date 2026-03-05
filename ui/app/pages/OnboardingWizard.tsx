@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
@@ -68,6 +69,7 @@ const DISCIPLINES: DisciplineOption[] = [
 ];
 
 export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null);
   const [saving, setSaving] = useState(false);
@@ -84,6 +86,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     setSaving(true);
     try {
       await onComplete(selectedDiscipline);
+      navigate("/");
     } catch (err: unknown) {
       console.error("Failed to save user state:", err);
       setSaving(false);
