@@ -147,16 +147,13 @@ export const Home = () => {
     (s) => s.userId === currentUser.id
   );
   const missionsCompleted = currentUserScores.length;
-  const totalPoints = currentUserScores.reduce(
-    (sum, s) => sum + s.totalScore,
-    0
+  const totalPoints = Math.round(
+    currentUserScores.reduce((sum, s) => sum + s.totalScore, 0)
   );
 
   const currentUserRankIndex = sortedScores.findIndex(
     (s) => s.userId === currentUser.id
   );
-  const rankDisplay =
-    currentUserRankIndex >= 0 ? `#${currentUserRankIndex + 1}` : "Unranked";
 
   const leaderboardData: LeaderboardRow[] = sortedScores
     .slice(0, 5)
@@ -178,7 +175,7 @@ export const Home = () => {
     <Flex flexDirection="column" gap={24} padding={24}>
       {/* Header */}
       <Flex flexDirection="column" gap={4}>
-        <Heading level={1}>Intel Ops</Heading>
+        <Heading level={2}>Intel Ops</Heading>
         <Text textStyle="small">
           Gamified observability training for Dynatrace
         </Text>
@@ -186,104 +183,104 @@ export const Home = () => {
 
       <Divider />
 
-      {/* Stats Bar — metric tiles */}
-      <Flex gap={16}>
-        <Surface>
-          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-            <Heading level={2}>
-              <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
-            </Heading>
-            <Text textStyle="small">Missions Completed</Text>
-          </Flex>
-        </Surface>
-        <Surface>
-          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-            <Heading level={2}>
-              <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
-            </Heading>
-            <Text textStyle="small">Points Earned</Text>
-          </Flex>
-        </Surface>
-        <Surface>
-          <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-            <Heading level={2}>
-              <span style={{ fontFamily: "monospace" }}>{rankDisplay}</span>
-            </Heading>
-            <Text textStyle="small">Global Rank</Text>
-          </Flex>
-        </Surface>
-      </Flex>
+      {/* Stats Bar — compact stat strip */}
+      <div style={{ display: "flex", gap: "48px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "24px" }}>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{missionsCompleted}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Missions Completed</div>
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{totalPoints}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Points Earned</div>
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{currentUserRankIndex >= 0 ? `#${currentUserRankIndex + 1}` : "—"}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Global Rank</div>
+        </div>
+      </div>
 
       {/* Mission Grid */}
       <Flex flexDirection="column" gap={12}>
-        <Heading level={3}>Available Missions</Heading>
+        <Heading level={4}>Available Missions</Heading>
 
-        <Flex gap={16} style={{ flexWrap: "wrap" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
           {MISSIONS.map((mission) => {
             const isLocked = mission.status === "locked";
             return (
-              <Surface key={mission.id}>
-                <Flex
-                  flexDirection="column"
-                  padding={20}
-                  gap={12}
-                  style={{
-                    minWidth: 380,
-                    flex: "1 1 380px",
-                    opacity: isLocked ? 0.5 : 1,
-                  }}
-                >
-                  {/* Top row: codename + difficulty */}
-                  <Flex justifyContent="space-between" alignItems="center">
-                    <Text textStyle="small">
-                      <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
-                        {mission.codename}
-                      </span>
+              <div
+                key={mission.id}
+                style={{ flex: "1 1 calc(33.333% - 12px)", maxWidth: "calc(33.333% - 12px)", minWidth: "300px", boxSizing: "border-box" }}
+              >
+                <Surface>
+                  <Flex
+                    flexDirection="column"
+                    padding={12}
+                    gap={8}
+                    style={{
+                      opacity: isLocked ? 0.5 : 1,
+                    }}
+                  >
+                    {/* Top row: codename + difficulty */}
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Text textStyle="small">
+                        <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
+                          {mission.codename}
+                        </span>
+                      </Text>
+                      <Chip
+                        color={getDifficultyColor(mission.difficulty)}
+                        variant="emphasized"
+                      >
+                        {mission.difficulty.toUpperCase()}
+                      </Chip>
+                    </Flex>
+
+                    {/* Title */}
+                    <Heading level={5}>{mission.title}</Heading>
+
+                    {/* Role chip */}
+                    <Flex>
+                      <Chip color="neutral">{mission.role}</Chip>
+                    </Flex>
+
+                    {/* Description */}
+                    <Text textStyle="small" style={{ opacity: 0.7 }}>
+                      {mission.description}
                     </Text>
-                    <Chip
-                      color={getDifficultyColor(mission.difficulty)}
-                      variant="emphasized"
-                    >
-                      {mission.difficulty.toUpperCase()}
-                    </Chip>
+
+                    {/* Bottom row: button + time */}
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Button
+                        variant="emphasized"
+                        disabled={isLocked}
+                        onClick={() => navigate(`/mission/${mission.id}`)}
+                      >
+                        {isLocked ? "Locked" : "Start Mission"}
+                      </Button>
+                      <Text textStyle="small" style={{ opacity: 0.6 }}>
+                        {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
+                      </Text>
+                    </Flex>
                   </Flex>
-
-                  {/* Title */}
-                  <Heading level={4}>{mission.title}</Heading>
-
-                  {/* Role chip */}
-                  <Flex>
-                    <Chip color="neutral">{mission.role}</Chip>
-                  </Flex>
-
-                  {/* Description */}
-                  <Text textStyle="small" style={{ opacity: 0.7 }}>
-                    {mission.description}
-                  </Text>
-
-                  {/* Bottom row: button + time */}
-                  <Flex justifyContent="space-between" alignItems="center">
-                    <Button
-                      variant="emphasized"
-                      disabled={isLocked}
-                      onClick={() => navigate(`/mission/${mission.id}`)}
-                    >
-                      {isLocked ? "Locked" : "Start Mission"}
-                    </Button>
-                    <Text textStyle="small" style={{ opacity: 0.6 }}>
-                      {isLocked ? "Locked" : formatMinutes(mission.timerSeconds)}
-                    </Text>
-                  </Flex>
-                </Flex>
-              </Surface>
+                </Surface>
+              </div>
             );
           })}
-        </Flex>
+          {/* Empty placeholders to align orphan row */}
+          {MISSIONS.length % 3 !== 0 &&
+            Array.from({ length: 3 - (MISSIONS.length % 3) }).map((_, i) => (
+              <div
+                key={`placeholder-${i}`}
+                style={{ flex: "1 1 calc(33.333% - 12px)", maxWidth: "calc(33.333% - 12px)", minWidth: "300px", boxSizing: "border-box" }}
+                aria-hidden="true"
+              />
+            ))}
+        </div>
       </Flex>
 
       {/* Leaderboard */}
       <Flex flexDirection="column" gap={8}>
-        <Heading level={3}>Leaderboard</Heading>
+        <Heading level={4}>Leaderboard</Heading>
         {loading ? (
           <Surface>
             <Flex justifyContent="center" padding={20}>
