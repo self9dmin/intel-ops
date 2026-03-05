@@ -74,7 +74,6 @@ export interface UserState {
   streakDays: number;
   lastActiveDate: string;
   badges: string[];
-  topicXP: Record<string, number>;
 }
 
 export function migrateUserState(loaded: Record<string, unknown>): UserState {

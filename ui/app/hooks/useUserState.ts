@@ -109,7 +109,6 @@ export function useUserState(): UseUserStateResult {
         streakDays: 0,
         lastActiveDate: "",
         badges: [],
-        topicXP: {},
       };
 
       const result = await documentsClient.createDocument({
