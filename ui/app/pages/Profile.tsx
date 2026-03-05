@@ -128,11 +128,11 @@ export const Profile = () => {
   }));
 
   return (
-    <Flex flexDirection="column" gap={20} padding={20}>
+    <Flex flexDirection="column" gap={24} padding={24}>
       {/* Header */}
-      <Flex flexDirection="column" gap={2}>
-        <Text textStyle="small">// PLAYER PROFILE</Text>
-        <Heading level={2}>{displayName}</Heading>
+      <Flex flexDirection="column" gap={4}>
+        <Text textStyle="small" style={{ opacity: 0.6 }}>Player Profile</Text>
+        <Heading level={1}>{displayName}</Heading>
       </Flex>
 
       {/* Stats Row */}
@@ -144,28 +144,34 @@ export const Profile = () => {
         <>
           <Flex gap={16}>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
-                <Heading level={3}>{missionsCompleted}</Heading>
-                <Text textStyle="small">Total Missions Completed</Text>
+              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+                <Heading level={2}>
+                  <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
+                </Heading>
+                <Text textStyle="small">Missions Completed</Text>
               </Flex>
             </Surface>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
-                <Heading level={3}>{totalPoints}</Heading>
-                <Text textStyle="small">Total Points Earned</Text>
+              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+                <Heading level={2}>
+                  <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
+                </Heading>
+                <Text textStyle="small">Total Points</Text>
               </Flex>
             </Surface>
             <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={12} gap={2} flexGrow={1}>
-                <Heading level={3}>{bestScore}</Heading>
-                <Text textStyle="small">Best Single Score</Text>
+              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
+                <Heading level={2}>
+                  <span style={{ fontFamily: "monospace" }}>{bestScore}</span>
+                </Heading>
+                <Text textStyle="small">Best Score</Text>
               </Flex>
             </Surface>
           </Flex>
 
           {/* Mission History */}
           <Flex flexDirection="column" gap={8}>
-            <Text textStyle="small">// MISSION HISTORY</Text>
+            <Heading level={3}>Mission History</Heading>
             {historyData.length === 0 ? (
               <Surface>
                 <Flex justifyContent="center" padding={16}>

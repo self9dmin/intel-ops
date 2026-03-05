@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
+import { Divider } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
 import {
   Heading,
@@ -87,13 +88,13 @@ export const Debrief = () => {
       <Flex flexDirection="column" gap={32} padding={32} alignItems="center">
         <Surface>
           <Flex flexDirection="column" padding={48} gap={16} alignItems="center">
-            <Heading level={2}>NO DEBRIEF DATA</Heading>
+            <Heading level={2}>No Debrief Data</Heading>
             <Paragraph>
               Mission debrief data is unavailable. Complete a mission to view
               your after-action report.
             </Paragraph>
             <Button variant="emphasized" onClick={() => navigate("/")}>
-              RETURN TO MISSION BOARD
+              Back to Missions
             </Button>
           </Flex>
         </Surface>
@@ -105,41 +106,51 @@ export const Debrief = () => {
   const codename = state.codename || mission?.codename || "UNKNOWN";
 
   return (
-    <Flex flexDirection="column" gap={20} padding={20}>
-      <Text textStyle="small">
-        // MISSION DEBRIEF — {codename}
-      </Text>
-
+    <Flex flexDirection="column" gap={24} padding={24} style={{ maxWidth: 720, margin: "0 auto" }}>
+      {/* Top — success header */}
       <Flex flexDirection="column" alignItems="center" gap={8}>
         <SuccessIcon size="large" />
-        <Heading level={2}>MISSION COMPLETE</Heading>
-        <Text textStyle="base-emphasized">
-          OPERATION {codename} — SUCCESS
+        <Heading level={1}>Mission Complete</Heading>
+        <Text textStyle="small" style={{ opacity: 0.6 }}>
+          <span style={{ fontFamily: "monospace" }}>{codename}</span> — Success
         </Text>
       </Flex>
 
+      <Divider />
+
       {/* Score Breakdown */}
       <Surface>
-        <Flex flexDirection="column" padding={16} gap={8}>
-          <Text textStyle="small">// SCORE BREAKDOWN</Text>
-          <Flex flexDirection="column" gap={4}>
+        <Flex flexDirection="column" padding={20} gap={12}>
+          <Heading level={4}>Score Breakdown</Heading>
+          <Flex flexDirection="column" gap={6}>
             <Flex justifyContent="space-between">
               <Text>Base Score</Text>
-              <Strong>{state.baseScore} pts</Strong>
+              <Text>
+                <span style={{ fontFamily: "monospace" }}>{state.baseScore} pts</span>
+              </Text>
             </Flex>
             <Flex justifyContent="space-between">
               <Text>Time Bonus</Text>
-              <Strong>+{state.timeBonus} pts</Strong>
+              <Text>
+                <span style={{ fontFamily: "monospace" }}>+{Math.round(state.timeBonus)} pts</span>
+              </Text>
             </Flex>
             <Flex justifyContent="space-between">
-              <Text>Hints Used ({state.hintsUsed})</Text>
-              <Strong>
-                {hintPenalty > 0 ? `-${hintPenalty}` : "0"} pts
-              </Strong>
+              <Text>Hints Penalty ({state.hintsUsed})</Text>
+              <Text>
+                <span style={{ fontFamily: "monospace" }}>
+                  {hintPenalty > 0 ? `-${hintPenalty}` : "0"} pts
+                </span>
+              </Text>
             </Flex>
-            <Flex justifyContent="space-between">
-              <Heading level={4}>Total Score</Heading>
-              <Heading level={4}>{state.totalScore} pts</Heading>
+            <Divider />
+            <Flex justifyContent="space-between" alignItems="center">
+              <Strong>Total Score</Strong>
+              <Heading level={2}>
+                <span style={{ fontFamily: "monospace" }}>
+                  {Math.round(state.totalScore)}
+                </span>
+              </Heading>
             </Flex>
           </Flex>
           {saveStatus === "saving" && (
@@ -160,16 +171,18 @@ export const Debrief = () => {
 
       {/* Checkpoint Summary */}
       <Surface>
-        <Flex flexDirection="column" padding={16} gap={8}>
-          <Text textStyle="small">// CHECKPOINT SUMMARY</Text>
-          <Flex flexDirection="column" gap={4}>
+        <Flex flexDirection="column" padding={20} gap={8}>
+          <Heading level={4}>Checkpoint Summary</Heading>
+          <Flex flexDirection="column" gap={6}>
             {state.checkpoints.map((cp) => (
               <Flex key={cp.id} justifyContent="space-between" alignItems="center">
                 <Flex gap={8} alignItems="center">
                   <SuccessIcon />
                   <Text>{cp.title}</Text>
                 </Flex>
-                <Text>{cp.points} pts</Text>
+                <Text textStyle="small">
+                  <span style={{ fontFamily: "monospace" }}>{cp.points} pts</span>
+                </Text>
               </Flex>
             ))}
           </Flex>
@@ -179,10 +192,10 @@ export const Debrief = () => {
       {/* Actions */}
       <Flex gap={16} justifyContent="center">
         <Button variant="emphasized" onClick={() => navigate("/")}>
-          RETURN TO MISSION BOARD
+          Back to Missions
         </Button>
         <Button variant="default" onClick={() => navigate("/leaderboard")}>
-          VIEW LEADERBOARD
+          View Leaderboard
         </Button>
       </Flex>
     </Flex>
