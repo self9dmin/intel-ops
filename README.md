@@ -1,49 +1,120 @@
-# Getting Started with your Dynatrace App
+# Intel Ops
 
-This project was bootstrapped with Dynatrace App Toolkit.
+**Gamified observability training built on Dynatrace AppEngine.**  
+Learn by doing. Compete to win.
 
-It uses React in combination with TypeScript, to provide great developer experience.
+---
 
-## Available Scripts
+## What Is This
 
-In the project directory, you can run:
+Intel Ops is a scenario-based training app that runs natively inside the Dynatrace platform. Instead of reading documentation, users complete real observability missions — navigating the actual Dynatrace UI, querying Grail, and investigating problems — then get scored and ranked on a leaderboard.
 
-### `npm run start`
+The core loop: **Scenario → Real DT Action → Validation → Score → Leaderboard**
 
-Runs the app in the development mode. A new browser window with your running app will be automatically opened.
+Built with React + TypeScript on Dynatrace AppEngine using the Strato design system.
 
-Edit a component file in `ui` and save it. The page will reload when you make changes. You may also see any errors in the console.
+---
 
-### `npm run build`
+## Current Status
 
-Builds the app for production to the `dist` folder. It correctly bundles your app in production mode and optimizes the build for the best performance.
+**Phase 1 — In Progress**
 
-### `npm run deploy`
+- [x] Home screen with mission board and leaderboard
+- [x] Mission flow with timer, checkpoints, and scoring
+- [x] Simulated checkpoint validation (mock)
+- [ ] Score persistence via Document Service
+- [ ] Live leaderboard from stored scores
+- [ ] Real DQL validation against tenant data
+- [ ] Synthetic scenario data injection
 
-Builds the app and deploys it to the specified environment in `app.config.json`.
+---
 
-### `npm run uninstall
+## Missions
 
-Uninstalls the app from the specified environment in `app.config.json`.
+| Mission | Role | Difficulty | Status |
+|---|---|---|---|
+| Operation: 3am Database Spike | Incident Commander | Rookie | ✅ Built |
+| More coming in Phase 2 | — | — | 🔒 Locked |
 
-### `npm run generate:function`
+---
 
-Generates a new serverless function for your app in the `api` folder.
+## Tech Stack
 
-### `npm run update`
+- **Runtime:** Dynatrace AppEngine
+- **Frontend:** React + TypeScript
+- **UI:** Strato Design System (`@dynatrace/strato-components`)
+- **Data:** Grail via DQL, Document Service for persistence
+- **Tooling:** Dynatrace App Toolkit (`dt-app`)
 
-Updates @dynatrace-scoped packages to the latest version and applies automatic migrations.
+---
 
-### `npm run info`
+## Getting Started
 
-Outputs the CLI and environment information.
+### Prerequisites
 
-### `npm run help`
+- Node.js v22
+- Access to a Dynatrace SaaS tenant
+- Ports 3000–3005 and 30000 available locally
 
-Outputs help for the Dynatrace App Toolkit.
+### Install & Run
 
-## Learn more
+```bash
+npm install
+npx dt-app dev
+```
 
-You can find more information on how to use all the features of the new Dynatrace Platform in [Dynatrace Developer](https://dt-url.net/developers).
+The dev server will open a browser window to authenticate against your configured tenant. Your app runs at `http://localhost:3000/ui` and live inside your tenant at the URL shown in the terminal.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Configuration
+
+Edit `app.config.json` to set your environment URL and app scopes:
+
+```json
+{
+  "environmentUrl": "https://your-tenant.apps.dynatrace.com/",
+  "app": {
+    "name": "Intel Ops",
+    "id": "com.intelops.training"
+  }
+}
+```
+
+---
+
+## Available Commands
+
+| Command | Description |
+|---|---|
+| `npx dt-app dev` | Start local dev server with hot reload |
+| `npx dt-app build` | Build for production |
+| `npx dt-app deploy` | Build and deploy to configured tenant |
+| `npx dt-app uninstall` | Remove app from tenant |
+| `npx dt-app update` | Update DT packages to latest |
+| `npx dt-app info` | Print CLI and environment info |
+
+---
+
+## Project Structure
+
+```
+intel-ops/
+├── ui/
+│   ├── app/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Route-level pages (Home, Mission)
+│   │   └── App.tsx        # Root component and routing
+│   └── assets/
+├── app.config.json         # App manifest — scopes, ID, env URL
+├── CLAUDE.md               # AI coding agent instructions
+└── README.md
+```
+
+---
+
+## Contributing
+
+This is an early-stage project. If you're a Dynatrace user, CSM, or developer interested in contributing scenarios, validation logic, or new roles — open an issue or PR.
+
+---
+
+Built by [Dan Quintero](https://danquintero.com)
