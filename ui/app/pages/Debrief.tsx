@@ -14,47 +14,10 @@ import {
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
-import type { Checkpoint } from "../types/mission.types";
-import type { Discipline } from "../types/UserState";
-import { TOPIC_META } from "../types/UserState";
+import type { Checkpoint, XPGrant } from "../types/mission.types";
 import { getMissionById } from "../data/missions";
 import { useUserStateContext } from "../context/UserStateContext";
-import {
-  AnalyticsIcon,
-  TracesIcon,
-  DavisAIIcon,
-  BarChartIcon,
-  LogsIcon,
-  SmartscapeIcon,
-  ContainerIcon,
-  HttpIcon,
-  ServiceLevelObjectivesIcon,
-  WorkflowsIcon,
-  ApplicationSecurityIcon,
-  EventIcon,
-} from "@dynatrace/strato-icons";
-
-const TOPIC_ICON_MAP: Record<string, typeof AnalyticsIcon> = {
-  AnalyticsIcon,
-  TracesIcon,
-  DavisAIIcon,
-  BarChartIcon,
-  LogsIcon,
-  SmartscapeIcon,
-  ContainerIcon,
-  HttpIcon,
-  ServiceLevelObjectivesIcon,
-  WorkflowsIcon,
-  ApplicationSecurityIcon,
-  EventIcon,
-};
-
-const DISCIPLINE_META: Record<Discipline, { label: string; icon: string; color: string }> = {
-  sre: { label: "SRE", icon: "\u{1F6E1}\uFE0F", color: "#4b9cf5" },
-  developer: { label: "Developer", icon: "\u{1F4BB}", color: "#7c5cbf" },
-  "incident-commander": { label: "Incident Commander", icon: "\u{1F6A8}", color: "#e8734a" },
-  "platform-engineer": { label: "Platform Engineer", icon: "\u2699\uFE0F", color: "#3dba7e" },
-};
+import { useLeaderboardContext } from "../context/LeaderboardContext";
 
 interface DebriefState {
   baseScore: number;
@@ -77,14 +40,15 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
-  const { awardXP } = useUserStateContext();
+  const { awardXP, completeMission, updateStreak } = useUserStateContext();
+  const { markStale } = useLeaderboardContext();
 
   const state = location.state as DebriefState | undefined;
   const mission = id ? getMissionById(id) : undefined;
 
   // Save score to Document Service on mount
   useEffect(() => {
-    if (!state || !id) return;
+    if (!state || !id || !mission) return;
     if (scoreSaved.current) return;
     scoreSaved.current = true;
 
@@ -108,6 +72,25 @@ export const Debrief = () => {
       completedAt: new Date().toISOString(),
     });
 
+    // Step 1: Update user state (completeMission + streak + XP)
+    completeMission(id);
+    updateStreak();
+
+    // Step 2: Build XP grants from mission data
+    const xpGrants: XPGrant[] = [];
+    for (const disc of mission.disciplines) {
+      xpGrants.push({ discipline: disc.track, amount: disc.xp });
+    }
+    for (const topic of mission.topics ?? []) {
+      xpGrants.push({ topic, amount: 25 });
+    }
+
+    // Step 3: Award XP (writes user state)
+    awardXP(xpGrants).catch((xpError: unknown) => {
+      console.error("Failed to award XP for mission", id, xpError);
+    });
+
+    // Step 4: Save score document
     documentsClient
       .createDocument({
         body: {
@@ -118,15 +101,13 @@ export const Debrief = () => {
       })
       .then(() => {
         setSaveStatus("saved");
-        awardXP(id).catch((xpError: unknown) => {
-          console.error("Failed to award XP for mission", id, xpError);
-        });
+        markStale();
       })
-      .catch((error: unknown) => {
-        console.error("Failed to save score:", error);
+      .catch((saveError: unknown) => {
+        console.error("Failed to save score:", saveError);
         setSaveStatus("failed");
       });
-  }, [state, id, awardXP]);
+  }, [state, id, mission, awardXP, completeMission, updateStreak, markStale]);
 
   if (!state || !id) {
     return (
@@ -138,7 +119,7 @@ export const Debrief = () => {
               Mission debrief data is unavailable. Complete a mission to view
               your after-action report.
             </Paragraph>
-            <Button variant="emphasized" onClick={() => navigate("/")}>
+            <Button variant="emphasized" onClick={() => navigate("/missions")}>
               Back to Missions
             </Button>
           </Flex>
@@ -234,61 +215,12 @@ export const Debrief = () => {
         </Flex>
       </Surface>
 
-      {/* XP Earned */}
-      {mission?.disciplines && mission.disciplines.length > 0 && (
-        <Surface>
-          <Flex flexDirection="column" padding={20} gap={8}>
-            <Heading level={4}>XP Earned</Heading>
-            <Text textStyle="small" style={{ opacity: 0.5 }}>Disciplines</Text>
-            <Flex flexDirection="column" gap={6}>
-              {mission.disciplines.map((d) => {
-                const meta = DISCIPLINE_META[d.track];
-                return (
-                  <Flex key={d.track} justifyContent="space-between" alignItems="center">
-                    <Flex gap={8} alignItems="center">
-                      <span style={{ fontSize: "16px" }}>{meta.icon}</span>
-                      <Text style={{ color: meta.color, fontWeight: 500 }}>{meta.label}</Text>
-                    </Flex>
-                    <Text textStyle="small">
-                      <span style={{ fontFamily: "monospace", color: meta.color }}>+{d.xp} XP</span>
-                    </Text>
-                  </Flex>
-                );
-              })}
-            </Flex>
-            {mission.topics && mission.topics.length > 0 && (
-              <>
-                <Divider />
-                <Text textStyle="small" style={{ opacity: 0.5 }}>Topics</Text>
-                <Flex flexDirection="column" gap={6}>
-                  {mission.topics.map((topicId) => {
-                    const topicMeta = TOPIC_META[topicId];
-                    const IconComponent = TOPIC_ICON_MAP[topicMeta.icon];
-                    return (
-                      <Flex key={topicId} justifyContent="space-between" alignItems="center">
-                        <Flex gap={8} alignItems="center">
-                          {IconComponent && <IconComponent size="small" />}
-                          <Text style={{ fontWeight: 500 }}>{topicMeta.label}</Text>
-                        </Flex>
-                        <Text textStyle="small">
-                          <span style={{ fontFamily: "monospace" }}>+50 XP</span>
-                        </Text>
-                      </Flex>
-                    );
-                  })}
-                </Flex>
-              </>
-            )}
-          </Flex>
-        </Surface>
-      )}
-
       {/* Actions */}
       <Flex gap={16} justifyContent="center">
-        <Button variant="emphasized" onClick={() => navigate("/")}>
+        <Button variant="emphasized" onClick={() => navigate("/missions")}>
           Back to Missions
         </Button>
-        <Button variant="default" onClick={() => navigate("/leaderboard")}>
+        <Button variant="default" onClick={() => navigate("/progress?tab=leaderboard")}>
           View Leaderboard
         </Button>
       </Flex>

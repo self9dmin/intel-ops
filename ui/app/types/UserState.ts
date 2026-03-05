@@ -70,6 +70,26 @@ export interface UserState {
   topicXP: Partial<Record<TopicId, number>>;
   onboardingComplete: boolean;
   createdAt: string;
+  completedMissions: string[];
+  streakDays: number;
+  lastActiveDate: string;
+  badges: string[];
+  topicXP: Record<string, number>;
+}
+
+export function migrateUserState(loaded: Record<string, unknown>): UserState {
+  return {
+    ...(loaded as unknown as UserState),
+    completedMissions: (loaded.completedMissions as string[] | undefined) ?? [],
+    streakDays: (loaded.streakDays as number | undefined) ?? 0,
+    lastActiveDate: (loaded.lastActiveDate as string | undefined) ?? "",
+    badges: (loaded.badges as string[] | undefined) ?? [],
+    topicXP: (loaded.topicXP as Record<string, number> | undefined) ?? {},
+  };
+}
+
+export function computeTotalXP(disciplines: Record<string, DisciplineProgress>): number {
+  return Object.values(disciplines).reduce((sum, d) => sum + d.xp, 0);
 }
 
 export const XP_THRESHOLDS: { level: DisciplineProgress["level"]; name: DisciplineLevelName; xp: number }[] = [

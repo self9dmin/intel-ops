@@ -6,15 +6,12 @@ export const Header = () => {
   return (
     <AppHeader>
       <AppHeader.NavItems>
-        <AppHeader.AppNavLink as={Link} to="/" />
-        <AppHeader.NavItem as={Link} to="/">
+        <AppHeader.AppNavLink as={Link} to="/missions" />
+        <AppHeader.NavItem as={Link} to="/missions">
           Missions
         </AppHeader.NavItem>
-        <AppHeader.NavItem as={Link} to="/leaderboard">
-          Leaderboard
-        </AppHeader.NavItem>
-        <AppHeader.NavItem as={Link} to="/profile">
-          Profile
+        <AppHeader.NavItem as={Link} to="/progress">
+          Progress
         </AppHeader.NavItem>
       </AppHeader.NavItems>
     </AppHeader>
