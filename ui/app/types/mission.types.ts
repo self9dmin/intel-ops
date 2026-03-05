@@ -9,6 +9,13 @@ export interface Checkpoint {
   points: number;
 }
 
+import type { Discipline } from "./UserState";
+
+export interface MissionDisciplineXP {
+  track: Discipline;
+  xp: number;
+}
+
 export interface Mission {
   id: string;
   title: string;
@@ -20,6 +27,7 @@ export interface Mission {
   timerSeconds: number;
   checkpoints: Checkpoint[];
   status: "available" | "locked";
+  disciplines: MissionDisciplineXP[];
 }
 
 export interface ScoreRecord {

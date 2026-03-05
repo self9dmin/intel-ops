@@ -19,9 +19,9 @@ import {
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { MISSIONS } from "../data/missions";
 import type { Mission } from "../types/mission.types";
-import type { UserRole } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 
-const ROLE_RECOMMENDED_MISSIONS: Record<UserRole, string[]> = {
+const DISCIPLINE_RECOMMENDED_MISSIONS: Record<Discipline, string[]> = {
   sre: ["operation-silent-rollout", "operation-3am-database-spike"],
   developer: ["operation-ghost-in-the-trace", "operation-silent-rollout"],
   "incident-commander": ["operation-3am-database-spike", "operation-flatline"],
@@ -93,10 +93,10 @@ function formatMissionName(key: string): string {
 }
 
 interface HomeProps {
-  userRole: UserRole;
+  startingDiscipline: Discipline;
 }
 
-export const Home = ({ userRole }: HomeProps) => {
+export const Home = ({ startingDiscipline }: HomeProps) => {
   const navigate = useNavigate();
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,10 +213,10 @@ export const Home = ({ userRole }: HomeProps) => {
 
       {/* Recommended for Role */}
       <Flex flexDirection="column" gap={12}>
-        <Heading level={4}>Recommended for your role</Heading>
+        <Heading level={4}>Recommended for you</Heading>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
           {MISSIONS.filter((m) =>
-            ROLE_RECOMMENDED_MISSIONS[userRole]?.includes(m.id)
+            DISCIPLINE_RECOMMENDED_MISSIONS[startingDiscipline]?.includes(m.id)
           ).map((mission) => {
             const isLocked = mission.status === "locked";
             return (

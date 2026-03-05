@@ -43,7 +43,7 @@ export const App = () => {
       </Page.Header>
       <Page.Main>
         <Routes>
-          <Route path="/" element={<Home userRole={userState.role} />} />
+          <Route path="/" element={<Home startingDiscipline={userState.startingDiscipline} />} />
           <Route path="/mission/:id" element={<Mission />} />
           <Route path="/debrief/:id" element={<Debrief />} />
           <Route path="/leaderboard" element={<Leaderboard />} />

@@ -13,6 +13,10 @@ export const MISSIONS: Mission[] = [
       "0300 hours. PagerDuty just fired. The primary production database is showing anomalous behavior — latency is climbing and error rates are spiking. Your job is to identify the root cause before the business wakes up and customers start calling.",
     timerSeconds: 900,
     status: "available",
+    disciplines: [
+      { track: "sre", xp: 75 },
+      { track: "incident-commander", xp: 75 },
+    ],
     checkpoints: [
       {
         id: "cp1",
@@ -88,6 +92,10 @@ export const MISSIONS: Mission[] = [
       "A backend service was deployed 20 minutes ago. Automated checks passed. No alerts fired. But a senior engineer has a gut feeling — response times are subtly degraded and one SLO is quietly burning down. Your job: confirm whether the deployment caused a regression before it becomes a customer-facing incident.",
     timerSeconds: 720,
     status: "available",
+    disciplines: [
+      { track: "sre", xp: 100 },
+      { track: "developer", xp: 50 },
+    ],
     checkpoints: [
       {
         id: "cp1",
@@ -154,6 +162,10 @@ export const MISSIONS: Mission[] = [
       "The e-commerce checkout flow is slow. Not broken — just slow. P99 latency doubled in the last hour. No errors in the logs. No alerts from Davis. The problem is hiding somewhere in the distributed call chain. Your job: find the ghost.",
     timerSeconds: 720,
     status: "available",
+    disciplines: [
+      { track: "developer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
     checkpoints: [
       {
         id: "cp1",
@@ -220,6 +232,10 @@ export const MISSIONS: Mission[] = [
       "CRITICAL. Three production services have gone dark simultaneously. Cascading failures are spreading. Customer impact is confirmed. You have 8 minutes to identify the blast radius, find the origin, and call the remediation path. No hints. No hand-holding. Move.",
     timerSeconds: 480,
     status: "available",
+    disciplines: [
+      { track: "incident-commander", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
     checkpoints: [
       {
         id: "cp1",
@@ -287,6 +303,10 @@ export const MISSIONS: Mission[] = [
       "The production Kubernetes cluster is degrading. Pods in the payments namespace are crash-looping. The on-call platform engineer is unreachable. You're up. Find out what's killing the pods, whether it's spreading, and what needs to happen to stabilize the cluster.",
     timerSeconds: 720,
     status: "available",
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
     checkpoints: [
       {
         id: "cp1",
