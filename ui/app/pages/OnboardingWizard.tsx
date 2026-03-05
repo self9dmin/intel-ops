@@ -6,21 +6,21 @@ import { Container } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
-import type { UserRole } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 
 interface OnboardingWizardProps {
-  onComplete: (role: UserRole) => Promise<void>;
+  onComplete: (startingDiscipline: Discipline) => Promise<void>;
 }
 
-interface RoleOption {
-  id: UserRole;
+interface DisciplineOption {
+  id: Discipline;
   icon: string;
   title: string;
   description: string;
   bullets: string[];
 }
 
-const ROLES: RoleOption[] = [
+const DISCIPLINES: DisciplineOption[] = [
   {
     id: "sre",
     icon: "\u{1F6E1}\uFE0F",
@@ -69,7 +69,7 @@ const ROLES: RoleOption[] = [
 
 export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [step, setStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline | null>(null);
   const [saving, setSaving] = useState(false);
 
   const currentUser = getCurrentUserDetails();
@@ -77,13 +77,13 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     currentUser.name?.split(" ")[0] ?? currentUser.email?.split("@")[0] ?? "Operator";
   const displayEmail = currentUser.email ?? "";
 
-  const selectedRoleOption = ROLES.find((r) => r.id === selectedRole);
+  const selectedOption = DISCIPLINES.find((d) => d.id === selectedDiscipline);
 
   async function handleFinish() {
-    if (!selectedRole) return;
+    if (!selectedDiscipline) return;
     setSaving(true);
     try {
-      await onComplete(selectedRole);
+      await onComplete(selectedDiscipline);
     } catch (err: unknown) {
       console.error("Failed to save user state:", err);
       setSaving(false);
@@ -127,9 +127,9 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         {step === 1 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>What&apos;s your primary role?</Heading>
+              <Heading level={2}>Where do you want to start?</Heading>
               <Text textStyle="small" style={{ opacity: 0.7 }}>
-                This helps us recommend the right missions for you.
+                You&apos;ll earn XP across all disciplines — this just sets your starting focus
               </Text>
             </Flex>
 
@@ -140,34 +140,34 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 gap: "12px",
               }}
             >
-              {ROLES.map((role) => {
-                const isSelected = selectedRole === role.id;
+              {DISCIPLINES.map((discipline) => {
+                const isSelected = selectedDiscipline === discipline.id;
                 return isSelected ? (
                   <Container
-                    key={role.id}
+                    key={discipline.id}
                     color="warning"
-                    onClick={() => setSelectedRole(role.id)}
+                    onClick={() => setSelectedDiscipline(discipline.id)}
                     style={{ cursor: "pointer" }}
                   >
                     <Flex flexDirection="column" gap={8} padding={16}>
-                      <Text style={{ fontSize: "28px" }}>{role.icon}</Text>
-                      <Heading level={5}>{role.title}</Heading>
+                      <Text style={{ fontSize: "28px" }}>{discipline.icon}</Text>
+                      <Heading level={5}>{discipline.title}</Heading>
                       <Text textStyle="small" style={{ opacity: 0.7 }}>
-                        {role.description}
+                        {discipline.description}
                       </Text>
                     </Flex>
                   </Container>
                 ) : (
                   <Surface
-                    key={role.id}
-                    onClick={() => setSelectedRole(role.id)}
+                    key={discipline.id}
+                    onClick={() => setSelectedDiscipline(discipline.id)}
                     style={{ cursor: "pointer" }}
                   >
                     <Flex flexDirection="column" gap={8} padding={16}>
-                      <Text style={{ fontSize: "28px" }}>{role.icon}</Text>
-                      <Heading level={5}>{role.title}</Heading>
+                      <Text style={{ fontSize: "28px" }}>{discipline.icon}</Text>
+                      <Heading level={5}>{discipline.title}</Heading>
                       <Text textStyle="small" style={{ opacity: 0.7 }}>
-                        {role.description}
+                        {discipline.description}
                       </Text>
                     </Flex>
                   </Surface>
@@ -178,7 +178,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
             <Flex justifyContent="center">
               <Button
                 variant="emphasized"
-                disabled={!selectedRole}
+                disabled={!selectedDiscipline}
                 onClick={() => setStep(2)}
               >
                 Continue
@@ -187,17 +187,17 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {step === 2 && selectedRoleOption && (
+        {step === 2 && selectedOption && (
           <Flex flexDirection="column" alignItems="center" gap={24}>
             <Heading level={2}>You&apos;re all set, {firstName}</Heading>
             <Text textStyle="base" style={{ textAlign: "center", opacity: 0.7 }}>
-              As a <strong>{selectedRoleOption.title}</strong>, here&apos;s what
-              you&apos;ll do:
+              Starting with <strong>{selectedOption.title}</strong> — here&apos;s what
+              you&apos;ll focus on first:
             </Text>
 
             <Surface>
               <Flex flexDirection="column" padding={20} gap={12}>
-                {selectedRoleOption.bullets.map((bullet) => (
+                {selectedOption.bullets.map((bullet) => (
                   <Flex key={bullet} gap={8} alignItems="flex-start">
                     <Text style={{ opacity: 0.5 }}>{"\u2022"}</Text>
                     <Text textStyle="base">{bullet}</Text>

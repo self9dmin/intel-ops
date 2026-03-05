@@ -10,6 +10,9 @@ import {
   type DataTableColumnDef,
 } from "@dynatrace/strato-components-preview/tables";
 import { MISSIONS } from "../data/missions";
+import type { Discipline, DisciplineProgress } from "../types/UserState";
+import { XP_THRESHOLDS } from "../types/UserState";
+import { useUserState } from "../hooks/useUserState";
 
 interface StoredScore {
   userId: string;
@@ -55,9 +58,84 @@ function formatDate(iso: string): string {
   });
 }
 
+const DISCIPLINE_META: Record<Discipline, { label: string; icon: string; color: string }> = {
+  sre: { label: "SRE", icon: "\u{1F6E1}\uFE0F", color: "#4b9cf5" },
+  developer: { label: "Developer", icon: "\u{1F4BB}", color: "#7c5cbf" },
+  "incident-commander": { label: "Incident Commander", icon: "\u{1F6A8}", color: "#e8734a" },
+  "platform-engineer": { label: "Platform Engineer", icon: "\u2699\uFE0F", color: "#3dba7e" },
+};
+
+function getNextThreshold(xp: number): { nextXP: number; nextName: string } | null {
+  for (const threshold of XP_THRESHOLDS) {
+    if (xp < threshold.xp) {
+      return { nextXP: threshold.xp, nextName: threshold.name };
+    }
+  }
+  return null;
+}
+
+function DisciplineCard({ discipline, progress }: { discipline: Discipline; progress: DisciplineProgress }) {
+  const meta = DISCIPLINE_META[discipline];
+  const next = getNextThreshold(progress.xp);
+  const isMax = next === null;
+
+  const currentThresholdXP = XP_THRESHOLDS.find((t) => t.level === progress.level)?.xp ?? 0;
+  const progressPercent = isMax
+    ? 100
+    : ((progress.xp - currentThresholdXP) / (next.nextXP - currentThresholdXP)) * 100;
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "8px", padding: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+        <span style={{ fontSize: "24px" }}>{meta.icon}</span>
+        <div>
+          <div style={{ fontWeight: 600, fontSize: "14px" }}>{meta.label}</div>
+          <div style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>{progress.levelName}</div>
+        </div>
+      </div>
+
+      {isMax ? (
+        <div style={{
+          background: meta.color,
+          borderRadius: "4px",
+          padding: "6px 0",
+          textAlign: "center",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "1px",
+        }}>
+          MAX
+        </div>
+      ) : (
+        <>
+          <div style={{
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            height: "8px",
+            overflow: "hidden",
+            marginBottom: "6px",
+          }}>
+            <div style={{
+              background: meta.color,
+              height: "100%",
+              width: `${progressPercent}%`,
+              borderRadius: "4px",
+              transition: "width 0.3s ease",
+            }} />
+          </div>
+          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>
+            {progress.xp} / {next.nextXP} XP to {next.nextName}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export const Profile = () => {
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
+  const { userState } = useUserState();
 
   const currentUser = getCurrentUserDetails();
   const displayName =
@@ -109,12 +187,6 @@ export const Profile = () => {
     };
   }, [currentUser.id]);
 
-  const missionsCompleted = scores.length;
-  const totalPoints = scores.reduce((sum, s) => sum + s.totalScore, 0);
-  const bestScore = scores.length > 0
-    ? Math.max(...scores.map((s) => s.totalScore))
-    : 0;
-
   const sortedScores = [...scores].sort(
     (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
   );
@@ -127,6 +199,8 @@ export const Profile = () => {
     date: formatDate(s.completedAt),
   }));
 
+  const disciplines: Discipline[] = ["sre", "developer", "incident-commander", "platform-engineer"];
+
   return (
     <Flex flexDirection="column" gap={24} padding={24}>
       {/* Header */}
@@ -135,38 +209,28 @@ export const Profile = () => {
         <Heading level={1}>{displayName}</Heading>
       </Flex>
 
-      {/* Stats Row */}
       {loading ? (
         <Flex justifyContent="center" padding={20}>
           <ProgressCircle />
         </Flex>
       ) : (
         <>
-          <Flex gap={16}>
-            <Surface>
-              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-                <Heading level={2}>
-                  <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
-                </Heading>
-                <Text textStyle="small">Missions Completed</Text>
-              </Flex>
-            </Surface>
-            <Surface>
-              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-                <Heading level={2}>
-                  <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
-                </Heading>
-                <Text textStyle="small">Total Points</Text>
-              </Flex>
-            </Surface>
-            <Surface>
-              <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
-                <Heading level={2}>
-                  <span style={{ fontFamily: "monospace" }}>{bestScore}</span>
-                </Heading>
-                <Text textStyle="small">Best Score</Text>
-              </Flex>
-            </Surface>
+          {/* Skill Tree */}
+          <Flex flexDirection="column" gap={8}>
+            <Heading level={3}>Skill Tree</Heading>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "12px",
+            }}>
+              {userState && disciplines.map((disc) => (
+                <DisciplineCard
+                  key={disc}
+                  discipline={disc}
+                  progress={userState.disciplines[disc]}
+                />
+              ))}
+            </div>
           </Flex>
 
           {/* Mission History */}
