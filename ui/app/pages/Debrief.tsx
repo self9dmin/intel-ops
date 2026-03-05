@@ -80,7 +80,9 @@ export const Debrief = () => {
       })
       .then(() => {
         setSaveStatus("saved");
-        return awardXP(id);
+        awardXP(id).catch((xpError: unknown) => {
+          console.error("Failed to award XP for mission", id, xpError);
+        });
       })
       .catch((error: unknown) => {
         console.error("Failed to save score:", error);

@@ -119,22 +119,27 @@ export function useUserState(): UseUserStateResult {
         disciplines: updatedDisciplines,
       };
 
-      await documentsClient.deleteDocument({
-        id: documentId,
-        optimisticLockingVersion: documentVersion,
-      });
+      try {
+        await documentsClient.deleteDocument({
+          id: documentId,
+          optimisticLockingVersion: documentVersion,
+        });
 
-      const result = await documentsClient.createDocument({
-        body: {
-          name: getDocumentName(currentUser.id),
-          type: DOCUMENT_TYPE,
-          content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
-        },
-      });
+        const result = await documentsClient.createDocument({
+          body: {
+            name: getDocumentName(currentUser.id),
+            type: DOCUMENT_TYPE,
+            content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
+          },
+        });
 
-      setDocumentId(result.id ?? null);
-      setDocumentVersion(String(result.version ?? "0"));
-      setUserState(updatedState);
+        setDocumentId(result.id ?? null);
+        setDocumentVersion(String(result.version ?? "0"));
+        setUserState(updatedState);
+      } catch (err: unknown) {
+        console.error("awardXP failed for mission", missionId, "docId", documentId, "version", documentVersion, err);
+        throw err;
+      }
     },
     [userState, documentId, documentVersion, currentUser.id]
   );
