@@ -7,6 +7,9 @@ export const Header = () => {
     <AppHeader>
       <AppHeader.NavItems>
         <AppHeader.AppNavLink as={Link} to="/" />
+        <AppHeader.NavItem as={Link} to="/">
+          Missions
+        </AppHeader.NavItem>
         <AppHeader.NavItem as={Link} to="/leaderboard">
           Leaderboard
         </AppHeader.NavItem>

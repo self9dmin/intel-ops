@@ -111,9 +111,25 @@ intel-ops/
 
 ---
 
+## Deployment
+
+Merging to `master` automatically deploys to the configured Dynatrace tenant via GitHub Actions.
+
+For manual deploys:
+1. Bump the version in `app.config.json`
+2. Run `npx dt-app deploy`
+
+---
+
 ## Contributing
 
-This is an early-stage project. If you're a Dynatrace user, CSM, or developer interested in contributing scenarios, validation logic, or new roles — open an issue or PR.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add missions, run locally, and submit PRs.
+
+---
+
+## License
+
+MIT — see [LICENSE](./LICENSE)
 
 ---
 
