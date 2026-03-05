@@ -119,7 +119,6 @@ export function useUserState(): UseUserStateResult {
         id: documentId,
         body: {
           content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
-          optimisticLockingVersion: undefined as unknown as string,
         },
       });
 
