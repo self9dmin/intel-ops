@@ -1,20 +1,21 @@
 import { Page } from "@dynatrace/strato-components-preview/layouts";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
+import { Button } from "@dynatrace/strato-components/buttons";
+import { Paragraph } from "@dynatrace/strato-components/typography";
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { Header } from "./components/Header";
-import { Home } from "./pages/Home";
+import { MissionsPage } from "./pages/MissionsPage";
 import { Mission } from "./pages/Mission";
 import { Debrief } from "./pages/Debrief";
-import { Leaderboard } from "./pages/Leaderboard";
-import { Profile } from "./pages/Profile";
-import { Data } from "./pages/Data";
+import { ProgressPage } from "./pages/ProgressPage";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
 import { UserStateProvider, useUserStateContext } from "./context/UserStateContext";
+import { LeaderboardProvider } from "./context/LeaderboardContext";
 
 const AppContent = () => {
-  const { userState, loading, saveUserState } = useUserStateContext();
+  const { userState, loading, error, saveUserState, retry } = useUserStateContext();
 
   if (loading) {
     return (
@@ -32,6 +33,27 @@ const AppContent = () => {
     );
   }
 
+  if (error) {
+    return (
+      <Page>
+        <Page.Main>
+          <Flex
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            gap={16}
+            style={{ minHeight: "100vh" }}
+          >
+            <Paragraph>{error}</Paragraph>
+            <Button variant="emphasized" onClick={retry}>
+              Retry
+            </Button>
+          </Flex>
+        </Page.Main>
+      </Page>
+    );
+  }
+
   if (!userState) {
     return <OnboardingWizard onComplete={saveUserState} />;
   }
@@ -43,12 +65,11 @@ const AppContent = () => {
       </Page.Header>
       <Page.Main>
         <Routes>
-          <Route path="/" element={<Home startingDiscipline={userState.startingDiscipline} />} />
-          <Route path="/mission/:id" element={<Mission />} />
+          <Route path="/" element={<Navigate to="/missions" replace />} />
+          <Route path="/missions" element={<MissionsPage />} />
+          <Route path="/missions/:id" element={<Mission />} />
           <Route path="/debrief/:id" element={<Debrief />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/data" element={<Data />} />
+          <Route path="/progress" element={<ProgressPage />} />
         </Routes>
       </Page.Main>
     </Page>
@@ -58,7 +79,9 @@ const AppContent = () => {
 export const App = () => {
   return (
     <UserStateProvider>
-      <AppContent />
+      <LeaderboardProvider>
+        <AppContent />
+      </LeaderboardProvider>
     </UserStateProvider>
   );
 };

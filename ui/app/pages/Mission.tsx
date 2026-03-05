@@ -176,7 +176,7 @@ export const Mission = () => {
             <Paragraph>
               The requested mission does not exist or has been decommissioned.
             </Paragraph>
-            <Button variant="emphasized" onClick={() => navigate("/")}>
+            <Button variant="emphasized" onClick={() => navigate("/missions")}>
               Back to Missions
             </Button>
           </Flex>

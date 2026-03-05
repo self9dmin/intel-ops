@@ -14,9 +14,10 @@ import {
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
-import type { Checkpoint } from "../types/mission.types";
+import type { Checkpoint, XPGrant } from "../types/mission.types";
 import { getMissionById } from "../data/missions";
 import { useUserStateContext } from "../context/UserStateContext";
+import { useLeaderboardContext } from "../context/LeaderboardContext";
 
 interface DebriefState {
   baseScore: number;
@@ -39,14 +40,15 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
-  const { awardXP } = useUserStateContext();
+  const { awardXP, completeMission, updateStreak } = useUserStateContext();
+  const { markStale } = useLeaderboardContext();
 
   const state = location.state as DebriefState | undefined;
   const mission = id ? getMissionById(id) : undefined;
 
   // Save score to Document Service on mount
   useEffect(() => {
-    if (!state || !id) return;
+    if (!state || !id || !mission) return;
     if (scoreSaved.current) return;
     scoreSaved.current = true;
 
@@ -70,6 +72,25 @@ export const Debrief = () => {
       completedAt: new Date().toISOString(),
     });
 
+    // Step 1: Update user state (completeMission + streak + XP)
+    completeMission(id);
+    updateStreak();
+
+    // Step 2: Build XP grants from mission data
+    const xpGrants: XPGrant[] = [];
+    for (const disc of mission.disciplines) {
+      xpGrants.push({ discipline: disc.track, amount: disc.xp });
+    }
+    for (const topic of mission.topics ?? []) {
+      xpGrants.push({ topic, amount: 25 });
+    }
+
+    // Step 3: Award XP (writes user state)
+    awardXP(xpGrants).catch((xpError: unknown) => {
+      console.error("Failed to award XP for mission", id, xpError);
+    });
+
+    // Step 4: Save score document
     documentsClient
       .createDocument({
         body: {
@@ -80,15 +101,13 @@ export const Debrief = () => {
       })
       .then(() => {
         setSaveStatus("saved");
-        awardXP(id).catch((xpError: unknown) => {
-          console.error("Failed to award XP for mission", id, xpError);
-        });
+        markStale();
       })
-      .catch((error: unknown) => {
-        console.error("Failed to save score:", error);
+      .catch((saveError: unknown) => {
+        console.error("Failed to save score:", saveError);
         setSaveStatus("failed");
       });
-  }, [state, id, awardXP]);
+  }, [state, id, mission, awardXP, completeMission, updateStreak, markStale]);
 
   if (!state || !id) {
     return (
@@ -100,7 +119,7 @@ export const Debrief = () => {
               Mission debrief data is unavailable. Complete a mission to view
               your after-action report.
             </Paragraph>
-            <Button variant="emphasized" onClick={() => navigate("/")}>
+            <Button variant="emphasized" onClick={() => navigate("/missions")}>
               Back to Missions
             </Button>
           </Flex>
@@ -198,10 +217,10 @@ export const Debrief = () => {
 
       {/* Actions */}
       <Flex gap={16} justifyContent="center">
-        <Button variant="emphasized" onClick={() => navigate("/")}>
+        <Button variant="emphasized" onClick={() => navigate("/missions")}>
           Back to Missions
         </Button>
-        <Button variant="default" onClick={() => navigate("/leaderboard")}>
+        <Button variant="default" onClick={() => navigate("/progress?tab=leaderboard")}>
           View Leaderboard
         </Button>
       </Flex>

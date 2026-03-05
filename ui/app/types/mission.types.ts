@@ -28,6 +28,14 @@ export interface Mission {
   checkpoints: Checkpoint[];
   status: "available" | "locked";
   disciplines: MissionDisciplineXP[];
+  prerequisites: string[];
+  topics: string[];
+}
+
+export interface XPGrant {
+  discipline?: Discipline;
+  topic?: string;
+  amount: number;
 }
 
 export interface ScoreRecord {
