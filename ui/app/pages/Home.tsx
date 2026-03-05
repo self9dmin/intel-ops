@@ -186,7 +186,7 @@ export const Home = () => {
       <Divider />
 
       {/* Stats Bar — metric tiles */}
-      <Flex gap={16}>
+      <div style={{ display: "flex", gap: "16px" }}>
         <div style={{ flex: 1 }}>
           <Surface>
             <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
@@ -217,7 +217,7 @@ export const Home = () => {
             </Flex>
           </Surface>
         </div>
-      </Flex>
+      </div>
 
       {/* Mission Grid */}
       <Flex flexDirection="column" gap={12}>
