@@ -3,12 +3,16 @@
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
     "name": "Intel Ops",
-    "version": "0.0.0",
-    "description": "A starting project with routing, fetching data, and charting",
-    "id": "my.intel.ops",
+    "version": "0.1.0",
+    "description": "Gamified observability training. Learn Dynatrace by doing.",
+    "id": "com.intelops.training",
     "scopes": [
-      { "name": "storage:logs:read", "comment": "default template" },
-      { "name": "storage:buckets:read", "comment": "default template" }
+      { "name": "storage:logs:read", "comment": "Read logs for scenario validation" },
+      { "name": "storage:buckets:read", "comment": "Read Grail buckets" },
+      { "name": "storage:events:read", "comment": "Read DT Intelligence events" },
+      { "name": "storage:metrics:read", "comment": "Read metrics for checkpoints" },
+      { "name": "document:documents:read", "comment": "Read user progress and leaderboard" },
+      { "name": "document:documents:write", "comment": "Write user scores and checkpoint state" }
     ]
   }
 }
