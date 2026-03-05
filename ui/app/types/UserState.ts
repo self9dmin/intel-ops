@@ -19,10 +19,10 @@ export interface UserState {
 
 export const XP_THRESHOLDS: { level: DisciplineProgress["level"]; name: DisciplineLevelName; xp: number }[] = [
   { level: 1, name: "Recruit", xp: 0 },
-  { level: 2, name: "Analyst", xp: 100 },
-  { level: 3, name: "Specialist", xp: 300 },
-  { level: 4, name: "Expert", xp: 600 },
-  { level: 5, name: "Elite", xp: 1000 },
+  { level: 2, name: "Analyst", xp: 500 },
+  { level: 3, name: "Specialist", xp: 1500 },
+  { level: 4, name: "Expert", xp: 3000 },
+  { level: 5, name: "Elite", xp: 6000 },
 ];
 
 export function calculateLevel(xp: number): Pick<DisciplineProgress, "level" | "levelName"> {
