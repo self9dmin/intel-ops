@@ -1,4 +1,6 @@
 import { Page } from "@dynatrace/strato-components-preview/layouts";
+import { Flex } from "@dynatrace/strato-components/layouts";
+import { ProgressCircle } from "@dynatrace/strato-components/content";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Header } from "./components/Header";
@@ -8,8 +10,32 @@ import { Debrief } from "./pages/Debrief";
 import { Leaderboard } from "./pages/Leaderboard";
 import { Profile } from "./pages/Profile";
 import { Data } from "./pages/Data";
+import { OnboardingWizard } from "./pages/OnboardingWizard";
+import { useUserState } from "./hooks/useUserState";
 
 export const App = () => {
+  const { userState, loading, saveUserState } = useUserState();
+
+  if (loading) {
+    return (
+      <Page>
+        <Page.Main>
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            style={{ minHeight: "100vh" }}
+          >
+            <ProgressCircle />
+          </Flex>
+        </Page.Main>
+      </Page>
+    );
+  }
+
+  if (!userState) {
+    return <OnboardingWizard onComplete={saveUserState} />;
+  }
+
   return (
     <Page>
       <Page.Header>
@@ -17,7 +43,7 @@ export const App = () => {
       </Page.Header>
       <Page.Main>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home userRole={userState.role} />} />
           <Route path="/mission/:id" element={<Mission />} />
           <Route path="/debrief/:id" element={<Debrief />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
