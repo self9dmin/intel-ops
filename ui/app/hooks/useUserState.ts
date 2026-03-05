@@ -78,7 +78,8 @@ export function useUserState(): UseUserStateResult {
         body: {
           name: getDocumentName(currentUser.id),
           type: DOCUMENT_TYPE,
-          content: JSON.stringify(state),
+          content: new Blob([JSON.stringify(state)], { type: "application/json" }),
+
         },
       });
 
