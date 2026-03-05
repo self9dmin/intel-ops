@@ -154,8 +154,6 @@ export const Home = () => {
   const currentUserRankIndex = sortedScores.findIndex(
     (s) => s.userId === currentUser.id
   );
-  const rankDisplay =
-    currentUserRankIndex >= 0 ? `#${currentUserRankIndex + 1}` : "Unranked";
 
   const leaderboardData: LeaderboardRow[] = sortedScores
     .slice(0, 5)
@@ -185,37 +183,19 @@ export const Home = () => {
 
       <Divider />
 
-      {/* Stats Bar — metric tiles */}
-      <div style={{ display: "flex", gap: "12px" }}>
-        <div style={{ flex: 1 }}>
-          <Surface>
-            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
-              <Heading level={3}>
-                <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
-              </Heading>
-              <Text textStyle="small">Missions Completed</Text>
-            </Flex>
-          </Surface>
+      {/* Stats Bar — compact stat strip */}
+      <div style={{ display: "flex", gap: "48px", padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "24px" }}>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{missionsCompleted}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Missions Completed</div>
         </div>
-        <div style={{ flex: 1 }}>
-          <Surface>
-            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
-              <Heading level={3}>
-                <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
-              </Heading>
-              <Text textStyle="small">Points Earned</Text>
-            </Flex>
-          </Surface>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{totalPoints}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Points Earned</div>
         </div>
-        <div style={{ flex: 1 }}>
-          <Surface>
-            <Flex flexDirection="column" padding={12} gap={4} style={{ minWidth: 140 }}>
-              <Heading level={3}>
-                <span style={{ fontFamily: "monospace" }}>{rankDisplay}</span>
-              </Heading>
-              <Text textStyle="small">Global Rank</Text>
-            </Flex>
-          </Surface>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: 1 }}>{currentUserRankIndex >= 0 ? `#${currentUserRankIndex + 1}` : "—"}</div>
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", marginTop: "4px" }}>Global Rank</div>
         </div>
       </div>
 
