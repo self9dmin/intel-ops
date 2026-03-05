@@ -107,7 +107,7 @@ export function useUserState(): UseUserStateResult {
         });
 
         setDocumentId(docId);
-        setDocumentVersion(String(result.version ?? "0"));
+        setDocumentVersion(String(result.optimisticLockingVersion ?? "0"));
         setUserState(state);
       };
 
