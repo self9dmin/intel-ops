@@ -4,6 +4,7 @@ import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
 import { Heading, Paragraph, Text } from "@dynatrace/strato-components/typography";
+import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import {
   DataTable,
@@ -135,7 +136,7 @@ function DisciplineCard({ discipline, progress }: { discipline: Discipline; prog
 export const Profile = () => {
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userState } = useUserState();
+  const { userState, resetUserState } = useUserState();
 
   const currentUser = getCurrentUserDetails();
   const displayName =
@@ -229,6 +230,12 @@ export const Profile = () => {
                 />
               ))}
             </div>
+          </Flex>
+
+          <Flex>
+            <Button variant="default" color="critical" onClick={() => { void resetUserState(); }}>
+              Reset Onboarding
+            </Button>
           </Flex>
 
           <Flex flexDirection="column" gap={8}>
