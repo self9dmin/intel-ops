@@ -178,6 +178,8 @@ function getNextTopicThreshold(xp: number): { nextXP: number; nextName: string }
 
 function TopicCard({ topicId, xp }: { topicId: TopicId; xp: number }) {
   const meta = TOPIC_META[topicId];
+  if (!meta) return null;
+
   const { levelName } = getTopicLevel(xp);
   const next = getNextTopicThreshold(xp);
   const isMax = next === null;
@@ -188,7 +190,7 @@ function TopicCard({ topicId, xp }: { topicId: TopicId; xp: number }) {
     ? 100
     : ((xp - currentThresholdXP) / (next.nextXP - currentThresholdXP)) * 100;
 
-  const IconComponent = TOPIC_ICON_MAP[meta.icon];
+  const IconComponent = meta.icon ? TOPIC_ICON_MAP[meta.icon] : undefined;
 
   return (
     <div style={{

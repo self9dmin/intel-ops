@@ -50,6 +50,10 @@ export function useUserState(): UseUserStateResult {
           });
           const text: string = await content.get("text");
           const parsed = JSON.parse(text) as UserState;
+          // Migrate old user states that pre-date the topicXP field
+          if (!parsed.topicXP) {
+            parsed.topicXP = {};
+          }
           if (!cancelled) {
             setUserState(parsed);
           }
