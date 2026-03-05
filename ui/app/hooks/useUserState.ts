@@ -115,12 +115,15 @@ export function useUserState(): UseUserStateResult {
         disciplines: updatedDisciplines,
       };
 
-      await documentsClient.updateDocument({
-        id: documentId,
-        body: {
-          content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
-        },
-      });
+ const doc = await documentsClient.getDocument({ id: documentId });
+
+await documentsClient.updateDocument({
+  id: documentId,
+  optimisticLockingVersion: doc.optimisticLockingVersion,
+  body: {
+    content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
+  },
+});
 
       setUserState(updatedState);
     },
