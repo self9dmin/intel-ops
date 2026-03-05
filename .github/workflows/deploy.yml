@@ -1,0 +1,29 @@
+name: Deploy to Dynatrace
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Dynatrace
+        run: npx dt-app deploy
+        env:
+          DYNATRACE_CLIENT_ID: ${{ secrets.DYNATRACE_CLIENT_ID }}
+          DYNATRACE_CLIENT_SECRET: ${{ secrets.DYNATRACE_CLIENT_SECRET }}
+          DYNATRACE_SSO_URL: ${{ secrets.DYNATRACE_SSO_URL }}
