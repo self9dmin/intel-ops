@@ -13,7 +13,7 @@ import {
 import { MISSIONS } from "../data/missions";
 import type { Discipline, DisciplineProgress } from "../types/UserState";
 import { XP_THRESHOLDS } from "../types/UserState";
-import { useUserState } from "../hooks/useUserState";
+import { useUserStateContext } from "../context/UserStateContext";
 
 interface StoredScore {
   userId: string;
@@ -136,7 +136,7 @@ function DisciplineCard({ discipline, progress }: { discipline: Discipline; prog
 export const Profile = () => {
   const [scores, setScores] = useState<StoredScore[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userState, resetUserState } = useUserState();
+  const { userState, resetUserState } = useUserStateContext();
 
   const currentUser = getCurrentUserDetails();
   const displayName =

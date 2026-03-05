@@ -11,10 +11,10 @@ import { Leaderboard } from "./pages/Leaderboard";
 import { Profile } from "./pages/Profile";
 import { Data } from "./pages/Data";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
-import { useUserState } from "./hooks/useUserState";
+import { UserStateProvider, useUserStateContext } from "./context/UserStateContext";
 
-export const App = () => {
-  const { userState, loading, saveUserState } = useUserState();
+const AppContent = () => {
+  const { userState, loading, saveUserState } = useUserStateContext();
 
   if (loading) {
     return (
@@ -52,5 +52,13 @@ export const App = () => {
         </Routes>
       </Page.Main>
     </Page>
+  );
+};
+
+export const App = () => {
+  return (
+    <UserStateProvider>
+      <AppContent />
+    </UserStateProvider>
   );
 };
