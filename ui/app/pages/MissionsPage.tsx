@@ -17,26 +17,16 @@ import type { MissionFilters } from "../hooks/useFilteredMissions";
 import { useRecommendedMissions } from "../hooks/useRecommendedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
-import { computeTotalXP } from "../types/UserState";
+import { computeTotalXP, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 import type { Discipline } from "../types/UserState";
 
-const ALL_TOPICS = [
-  { value: "databases", label: "Databases" },
-  { value: "kubernetes", label: "Kubernetes" },
-  { value: "tracing", label: "Tracing" },
-  { value: "metrics", label: "Metrics" },
-  { value: "logs", label: "Logs" },
-  { value: "alerting", label: "Alerting" },
-  { value: "dashboards", label: "Dashboards" },
-  { value: "slos", label: "SLOs" },
-];
+const ALL_DISCIPLINES: { value: Discipline; label: string }[] = (
+  Object.keys(DISCIPLINE_META) as Discipline[]
+).map((key) => ({ value: key, label: DISCIPLINE_META[key].label }));
 
-const ALL_DISCIPLINES: { value: Discipline; label: string }[] = [
-  { value: "sre", label: "SRE" },
-  { value: "developer", label: "Developer" },
-  { value: "incident-commander", label: "Incident Commander" },
-  { value: "platform-engineer", label: "Platform Engineer" },
-];
+const ALL_TOPICS: { value: string; label: string }[] = Object.entries(TOPIC_META).map(
+  ([key, meta]) => ({ value: key, label: meta.label })
+);
 
 const ALL_DIFFICULTIES: { value: string; label: string }[] = [
   { value: "rookie", label: "Rookie" },
@@ -46,10 +36,10 @@ const ALL_DIFFICULTIES: { value: string; label: string }[] = [
 ];
 
 const MAX_TIME_OPTIONS: { value: string; label: string }[] = [
-  { value: "5", label: "5 min" },
-  { value: "10", label: "10 min" },
   { value: "15", label: "15 min" },
-  { value: "20", label: "20 min" },
+  { value: "30", label: "30 min" },
+  { value: "45", label: "45 min" },
+  { value: "60", label: "60 min" },
 ];
 
 export const MissionsPage = () => {
@@ -174,7 +164,7 @@ export const MissionsPage = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gridTemplateColumns: `repeat(${Math.min(recommendations.length, 2)}, 1fr)`,
               gap: "16px",
             }}
           >
@@ -200,6 +190,13 @@ export const MissionsPage = () => {
       <Flex flexDirection="column" gap={8}>
         <Heading level={4}>Learning Paths</Heading>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <Chip
+            color={selectedPath === null ? "primary" : "neutral"}
+            variant={selectedPath === null ? "emphasized" : undefined}
+            onClick={() => handlePathSelect(null)}
+          >
+            All
+          </Chip>
           {LEARNING_PATHS.map((path) => (
             <Chip
               key={path.id}

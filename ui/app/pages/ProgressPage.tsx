@@ -3,13 +3,10 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
-import { Surface } from "@dynatrace/strato-components/layouts";
 import {
   Heading,
-  Paragraph,
   Text,
 } from "@dynatrace/strato-components/typography";
-import { Button } from "@dynatrace/strato-components/buttons";
 import {
   DataTable,
   type DataTableColumnDef,
@@ -23,31 +20,9 @@ import { SkeletonRows } from "../components/SkeletonRows";
 import { ErrorRetry } from "../components/ErrorRetry";
 import { EmptyState } from "../components/EmptyState";
 import type { Discipline, DisciplineProgress } from "../types/UserState";
-import { XP_THRESHOLDS } from "../types/UserState";
+import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 
 // --- Skills Tab ---
-
-const DISCIPLINE_META: Record<Discipline, { label: string; color: string }> = {
-  sre: { label: "SRE", color: "#4b9cf5" },
-  developer: { label: "Developer", color: "#7c5cbf" },
-  "incident-commander": { label: "Incident Commander", color: "#e8734a" },
-  "platform-engineer": { label: "Platform Engineer", color: "#3dba7e" },
-};
-
-const ALL_TOPIC_LABELS: Record<string, string> = {
-  databases: "Databases",
-  kubernetes: "Kubernetes",
-  tracing: "Tracing",
-  metrics: "Metrics",
-  logs: "Logs",
-  alerting: "Alerting",
-  dashboards: "Dashboards",
-  slos: "SLOs",
-  "cloud-automation": "Cloud Automation",
-  security: "Security",
-  rum: "Real User Monitoring",
-  synthetics: "Synthetics",
-};
 
 function getNextThreshold(xp: number): { nextXP: number; nextName: string } | null {
   for (const threshold of XP_THRESHOLDS) {
@@ -58,94 +33,140 @@ function getNextThreshold(xp: number): { nextXP: number; nextName: string } | nu
   return null;
 }
 
-function XPBar({ xp, color, label }: { xp: number; color: string; label: string }) {
-  const next = getNextThreshold(xp);
-  const isMax = next === null;
-  const currentThresholdXP =
-    XP_THRESHOLDS.slice()
-      .reverse()
-      .find((t) => xp >= t.xp)?.xp ?? 0;
-  const progressPercent = isMax
-    ? 100
-    : ((xp - currentThresholdXP) / (next.nextXP - currentThresholdXP)) * 100;
+function SkillRow({
+  label,
+  color,
+  xp,
+  thresholds,
+  missionCount,
+  filterUrl,
+}: {
+  label: string;
+  color: string;
+  xp: number;
+  thresholds: { xp: number; name: string }[];
+  missionCount: number;
+  filterUrl: string;
+}) {
+  const navigate = useNavigate();
 
   const levelName =
-    XP_THRESHOLDS.slice()
+    thresholds
+      .slice()
       .reverse()
-      .find((t) => xp >= t.xp)?.name ?? "Recruit";
+      .find((t) => xp >= t.xp)?.name ?? thresholds[0]?.name ?? "—";
+
+  const currentThresholdXP =
+    thresholds
+      .slice()
+      .reverse()
+      .find((t) => xp >= t.xp)?.xp ?? 0;
+
+  const next = thresholds.find((t) => xp < t.xp);
+  const isMax = !next;
+  const progressPercent = isMax
+    ? 100
+    : ((xp - currentThresholdXP) / (next.xp - currentThresholdXP)) * 100;
 
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.04)",
-        borderRadius: "8px",
-        padding: "12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        padding: "8px 0",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "8px",
+          width: "4px",
+          height: "28px",
+          borderRadius: "2px",
+          background: color,
+          flexShrink: 0,
+        }}
+      />
+      <div style={{ width: "160px", flexShrink: 0 }}>
+        <div style={{ fontSize: "13px", fontWeight: 600 }}>{label}</div>
+      </div>
+      <div
+        style={{
+          width: "80px",
+          flexShrink: 0,
+          fontSize: "12px",
+          color,
+          fontWeight: 500,
         }}
       >
-        <span style={{ fontWeight: 600, fontSize: "14px" }}>{label}</span>
-        <span style={{ fontSize: "12px", color, fontWeight: 500 }}>{levelName}</span>
+        {levelName}
       </div>
-      {isMax ? (
+      <div style={{ flex: 1, minWidth: "100px" }}>
         <div
           style={{
-            background: color,
+            background: "rgba(255,255,255,0.1)",
             borderRadius: "4px",
-            padding: "4px 0",
-            textAlign: "center",
-            fontSize: "11px",
-            fontWeight: 700,
-            letterSpacing: "1px",
+            height: "6px",
+            overflow: "hidden",
           }}
         >
-          MAX
-        </div>
-      ) : (
-        <>
           <div
             style={{
-              background: "rgba(255,255,255,0.1)",
+              background: color,
+              height: "100%",
+              width: `${progressPercent}%`,
               borderRadius: "4px",
-              height: "8px",
-              overflow: "hidden",
-              marginBottom: "4px",
+              transition: "width 0.3s ease",
             }}
-          >
-            <div
-              style={{
-                background: color,
-                height: "100%",
-                width: `${progressPercent}%`,
-                borderRadius: "4px",
-                transition: "width 0.3s ease",
-              }}
-            />
-          </div>
-          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>
-            {xp} / {next.nextXP} XP to {next.nextName}
-          </div>
-        </>
-      )}
+          />
+        </div>
+      </div>
+      <div
+        style={{
+          width: "100px",
+          flexShrink: 0,
+          fontSize: "12px",
+          color: "rgba(255,255,255,0.6)",
+          textAlign: "right",
+        }}
+      >
+        {xp} / {isMax ? "MAX" : `${next.xp} XP`}
+      </div>
+      <div
+        style={{
+          width: "90px",
+          flexShrink: 0,
+          textAlign: "right",
+        }}
+      >
+        <span
+          style={{
+            fontSize: "12px",
+            color: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate(filterUrl)}
+        >
+          {missionCount} missions
+        </span>
+      </div>
     </div>
   );
 }
 
 function SkillsTab() {
   const { userState } = useUserStateContext();
-  const navigate = useNavigate();
 
   if (!userState) return null;
 
-  const disciplines: Discipline[] = ["sre", "developer", "incident-commander", "platform-engineer"];
+  const disciplines: Discipline[] = [
+    "sre",
+    "developer",
+    "incident-commander",
+    "platform-engineer",
+  ];
   const topicXP = userState.topicXP ?? {};
 
-  // Count missions per topic
   const missionCountByTopic = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const m of MISSIONS) {
@@ -156,7 +177,6 @@ function SkillsTab() {
     return counts;
   }, []);
 
-  // Count missions per discipline
   const missionCountByDiscipline = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const m of MISSIONS) {
@@ -168,58 +188,38 @@ function SkillsTab() {
   }, []);
 
   return (
-    <Flex flexDirection="column" gap={24}>
+    <Flex flexDirection="column" gap={20}>
       <Heading level={4}>Discipline Tracks</Heading>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: "12px",
-        }}
-      >
+      <div>
         {disciplines.map((disc) => {
           const meta = DISCIPLINE_META[disc];
           const progress = userState.disciplines[disc];
           return (
-            <Surface key={disc}>
-              <Flex flexDirection="column" padding={12} gap={8}>
-                <XPBar xp={progress.xp} color={meta.color} label={meta.label} />
-                <Button
-                  variant="default"
-                  onClick={() => navigate(`/missions?discipline=${disc}`)}
-                >
-                  Related missions ({missionCountByDiscipline[disc] ?? 0})
-                </Button>
-              </Flex>
-            </Surface>
+            <SkillRow
+              key={disc}
+              label={meta.label}
+              color={meta.color}
+              xp={progress.xp}
+              thresholds={XP_THRESHOLDS}
+              missionCount={missionCountByDiscipline[disc] ?? 0}
+              filterUrl={`/missions?discipline=${disc}`}
+            />
           );
         })}
       </div>
 
       <Heading level={4}>Topic Tracks</Heading>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-          gap: "12px",
-        }}
-      >
-        {Object.entries(ALL_TOPIC_LABELS).map(([topicId, topicLabel]) => (
-          <Surface key={topicId}>
-            <Flex flexDirection="column" padding={12} gap={8}>
-              <XPBar
-                xp={topicXP[topicId] ?? 0}
-                color="#888"
-                label={topicLabel}
-              />
-              <Button
-                variant="default"
-                onClick={() => navigate(`/missions?topic=${topicId}`)}
-              >
-                Related missions ({missionCountByTopic[topicId] ?? 0})
-              </Button>
-            </Flex>
-          </Surface>
+      <div>
+        {Object.entries(TOPIC_META).map(([topicId, meta]) => (
+          <SkillRow
+            key={topicId}
+            label={meta.label}
+            color="#888"
+            xp={topicXP[topicId] ?? 0}
+            thresholds={XP_THRESHOLDS}
+            missionCount={missionCountByTopic[topicId] ?? 0}
+            filterUrl={`/missions?topic=${topicId}`}
+          />
         ))}
       </div>
     </Flex>
@@ -490,36 +490,32 @@ function AchievementsTab() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-        gap: "16px",
+        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+        gap: "8px",
       }}
     >
       {ALL_BADGES.map((badge) => {
         const isEarned = earnedBadges.has(badge.id);
         return (
-          <Surface key={badge.id}>
-            <Flex
-              flexDirection="column"
-              padding={16}
-              gap={8}
-              alignItems="center"
-              style={{ opacity: isEarned ? 1 : 0.4, textAlign: "center" }}
-            >
-              <div style={{ fontSize: "32px" }}>
-                {isEarned ? getBadgeEmoji(badge.icon) : getBadgeEmoji(badge.icon)}
-              </div>
-              <Text textStyle="base-emphasized">{badge.name}</Text>
-              {isEarned ? (
-                <Text textStyle="small" style={{ opacity: 0.7 }}>
-                  {badge.description}
-                </Text>
-              ) : (
-                <Text textStyle="small" style={{ opacity: 0.5 }}>
-                  {badge.howToEarn}
-                </Text>
-              )}
-            </Flex>
-          </Surface>
+          <div
+            key={badge.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 12px",
+              borderRadius: "6px",
+              background: "rgba(255,255,255,0.04)",
+              opacity: isEarned ? 1 : 0.35,
+            }}
+          >
+            <span style={{ fontSize: "18px", flexShrink: 0 }}>
+              {getBadgeEmoji(badge.icon)}
+            </span>
+            <span style={{ fontSize: "13px", fontWeight: isEarned ? 600 : 400 }}>
+              {badge.name}
+            </span>
+          </div>
         );
       })}
     </div>

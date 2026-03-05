@@ -8,6 +8,27 @@ interface PlayerStatusStripProps {
   streakDays: number;
 }
 
+function StatCell({ value, label }: { value: string; label: string }) {
+  return (
+    <div style={{ textAlign: "center", minWidth: "80px" }}>
+      <div style={{ fontSize: "24px", fontWeight: 600, lineHeight: 1 }}>
+        {value}
+      </div>
+      <div
+        style={{
+          fontSize: "11px",
+          color: "rgba(255,255,255,0.5)",
+          marginTop: "4px",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
 export const PlayerStatusStrip = ({
   playerName,
   totalXP,
@@ -18,82 +39,27 @@ export const PlayerStatusStrip = ({
   return (
     <div
       style={{
-        display: "flex",
-        gap: "48px",
         padding: "16px 0",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
-        flexWrap: "wrap",
       }}
     >
-      <div>
-        <div style={{ fontSize: "14px", fontWeight: 600, lineHeight: 1 }}>
-          {playerName}
-        </div>
-        <div
-          style={{
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.5)",
-            marginTop: "4px",
-          }}
-        >
-          Player
-        </div>
+      <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "12px" }}>
+        {playerName}
       </div>
-      <div>
-        <div style={{ fontSize: "28px", fontWeight: 600, lineHeight: 1 }}>
-          {totalXP}
-        </div>
-        <div
-          style={{
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.5)",
-            marginTop: "4px",
-          }}
-        >
-          Total XP
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: "28px", fontWeight: 600, lineHeight: 1 }}>
-          {globalRank !== null ? `#${globalRank}` : "\u2014"}
-        </div>
-        <div
-          style={{
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.5)",
-            marginTop: "4px",
-          }}
-        >
-          Global Rank
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: "28px", fontWeight: 600, lineHeight: 1 }}>
-          {missionsCompleted}
-        </div>
-        <div
-          style={{
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.5)",
-            marginTop: "4px",
-          }}
-        >
-          Missions Completed
-        </div>
-      </div>
-      <div>
-        <div style={{ fontSize: "28px", fontWeight: 600, lineHeight: 1 }}>
-          {streakDays}
-        </div>
-        <div
-          style={{
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.5)",
-            marginTop: "4px",
-          }}
-        >
-          Current Streak
-        </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "32px",
+          flexWrap: "wrap",
+        }}
+      >
+        <StatCell value={String(totalXP)} label="XP" />
+        <StatCell
+          value={globalRank !== null ? `#${globalRank}` : "\u2014"}
+          label="Rank"
+        />
+        <StatCell value={String(missionsCompleted)} label="Missions" />
+        <StatCell value={String(streakDays)} label="Streak" />
       </div>
     </div>
   );
