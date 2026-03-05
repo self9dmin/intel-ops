@@ -147,9 +147,8 @@ export const Home = () => {
     (s) => s.userId === currentUser.id
   );
   const missionsCompleted = currentUserScores.length;
-  const totalPoints = currentUserScores.reduce(
-    (sum, s) => sum + s.totalScore,
-    0
+  const totalPoints = Math.round(
+    currentUserScores.reduce((sum, s) => sum + s.totalScore, 0)
   );
 
   const currentUserRankIndex = sortedScores.findIndex(
@@ -188,7 +187,7 @@ export const Home = () => {
 
       {/* Stats Bar — metric tiles */}
       <Flex gap={16}>
-        <Surface>
+        <Surface style={{ flex: 1 }}>
           <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
             <Heading level={2}>
               <span style={{ fontFamily: "monospace" }}>{missionsCompleted}</span>
@@ -196,7 +195,7 @@ export const Home = () => {
             <Text textStyle="small">Missions Completed</Text>
           </Flex>
         </Surface>
-        <Surface>
+        <Surface style={{ flex: 1 }}>
           <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
             <Heading level={2}>
               <span style={{ fontFamily: "monospace" }}>{totalPoints}</span>
@@ -204,7 +203,7 @@ export const Home = () => {
             <Text textStyle="small">Points Earned</Text>
           </Flex>
         </Surface>
-        <Surface>
+        <Surface style={{ flex: 1 }}>
           <Flex flexDirection="column" padding={16} gap={4} style={{ minWidth: 160 }}>
             <Heading level={2}>
               <span style={{ fontFamily: "monospace" }}>{rankDisplay}</span>
@@ -222,14 +221,12 @@ export const Home = () => {
           {MISSIONS.map((mission) => {
             const isLocked = mission.status === "locked";
             return (
-              <Surface key={mission.id}>
+              <Surface key={mission.id} style={{ flex: "1 1 380px", maxWidth: "calc(33.333% - 11px)", minWidth: 380 }}>
                 <Flex
                   flexDirection="column"
                   padding={20}
                   gap={12}
                   style={{
-                    minWidth: 380,
-                    flex: "1 1 380px",
                     opacity: isLocked ? 0.5 : 1,
                   }}
                 >
@@ -278,6 +275,15 @@ export const Home = () => {
               </Surface>
             );
           })}
+          {/* Invisible placeholder to fill orphan row */}
+          {MISSIONS.length % 3 !== 0 &&
+            Array.from({ length: 3 - (MISSIONS.length % 3) }).map((_, i) => (
+              <div
+                key={`placeholder-${i}`}
+                style={{ flex: "1 1 380px", maxWidth: "calc(33.333% - 11px)", minWidth: 380, visibility: "hidden" }}
+                aria-hidden="true"
+              />
+            ))}
         </Flex>
       </Flex>
 
