@@ -1,5 +1,59 @@
 export type Discipline = "sre" | "developer" | "incident-commander" | "platform-engineer";
 
+export type TopicId =
+  | "dql"
+  | "traces"
+  | "davis"
+  | "metrics"
+  | "logs"
+  | "smartscape"
+  | "kubernetes"
+  | "synthetics"
+  | "slo"
+  | "automation"
+  | "security"
+  | "bizevents";
+
+export type TopicLevelName = "Novice" | "Apprentice" | "Practitioner" | "Expert" | "Master";
+
+export interface TopicMeta {
+  id: TopicId;
+  label: string;
+  icon: string;
+}
+
+export const TOPIC_META: Record<TopicId, TopicMeta> = {
+  dql: { id: "dql", label: "DQL", icon: "AnalyticsIcon" },
+  traces: { id: "traces", label: "Traces", icon: "TracesIcon" },
+  davis: { id: "davis", label: "Davis AI", icon: "DavisAIIcon" },
+  metrics: { id: "metrics", label: "Metrics", icon: "BarChartIcon" },
+  logs: { id: "logs", label: "Logs", icon: "LogsIcon" },
+  smartscape: { id: "smartscape", label: "Smartscape", icon: "SmartscapeIcon" },
+  kubernetes: { id: "kubernetes", label: "Kubernetes", icon: "ContainerIcon" },
+  synthetics: { id: "synthetics", label: "Synthetics", icon: "HttpIcon" },
+  slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon" },
+  automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon" },
+  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon" },
+  bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon" },
+};
+
+export const TOPIC_THRESHOLDS: { level: number; name: TopicLevelName; xp: number }[] = [
+  { level: 1, name: "Novice", xp: 0 },
+  { level: 2, name: "Apprentice", xp: 100 },
+  { level: 3, name: "Practitioner", xp: 300 },
+  { level: 4, name: "Expert", xp: 600 },
+  { level: 5, name: "Master", xp: 2000 },
+];
+
+export function getTopicLevel(xp: number): { level: number; levelName: TopicLevelName } {
+  for (let i = TOPIC_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (xp >= TOPIC_THRESHOLDS[i].xp) {
+      return { level: TOPIC_THRESHOLDS[i].level, levelName: TOPIC_THRESHOLDS[i].name };
+    }
+  }
+  return { level: 1, levelName: "Novice" };
+}
+
 export type DisciplineLevelName = "Recruit" | "Analyst" | "Specialist" | "Expert" | "Elite";
 
 export interface DisciplineProgress {
@@ -13,6 +67,7 @@ export interface UserState {
   userEmail: string;
   startingDiscipline: Discipline;
   disciplines: Record<Discipline, DisciplineProgress>;
+  topicXP: Partial<Record<TopicId, number>>;
   onboardingComplete: boolean;
   createdAt: string;
 }

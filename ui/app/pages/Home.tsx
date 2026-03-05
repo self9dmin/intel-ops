@@ -20,7 +20,7 @@ import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { MISSIONS } from "../data/missions";
 import type { Mission } from "../types/mission.types";
 import type { Discipline, DisciplineProgress } from "../types/UserState";
-import { XP_THRESHOLDS } from "../types/UserState";
+import { XP_THRESHOLDS, TOPIC_META } from "../types/UserState";
 import { useUserStateContext } from "../context/UserStateContext";
 
 const DISCIPLINE_RECOMMENDED_MISSIONS: Record<Discipline, string[]> = {
@@ -341,6 +341,27 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                         );
                       })}
                     </div>
+                    {mission.topics && mission.topics.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                        {mission.topics.map((topicId) => (
+                          <span
+                            key={topicId}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              fontSize: "10px",
+                              padding: "1px 6px",
+                              borderRadius: "4px",
+                              border: "1px solid rgba(255,255,255,0.2)",
+                              color: "rgba(255,255,255,0.7)",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {TOPIC_META[topicId].label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <Flex justifyContent="space-between" alignItems="center">
                       <Button
                         variant="emphasized"
@@ -434,6 +455,29 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                         );
                       })}
                     </div>
+
+                    {/* Topic chips */}
+                    {mission.topics && mission.topics.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                        {mission.topics.map((topicId) => (
+                          <span
+                            key={topicId}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              fontSize: "10px",
+                              padding: "1px 6px",
+                              borderRadius: "4px",
+                              border: "1px solid rgba(255,255,255,0.2)",
+                              color: "rgba(255,255,255,0.7)",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {TOPIC_META[topicId].label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Bottom row: button + time */}
                     <Flex justifyContent="space-between" alignItems="center">

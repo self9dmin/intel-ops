@@ -16,8 +16,38 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint } from "../types/mission.types";
 import type { Discipline } from "../types/UserState";
+import { TOPIC_META } from "../types/UserState";
 import { getMissionById } from "../data/missions";
 import { useUserStateContext } from "../context/UserStateContext";
+import {
+  AnalyticsIcon,
+  TracesIcon,
+  DavisAIIcon,
+  BarChartIcon,
+  LogsIcon,
+  SmartscapeIcon,
+  ContainerIcon,
+  HttpIcon,
+  ServiceLevelObjectivesIcon,
+  WorkflowsIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+} from "@dynatrace/strato-icons";
+
+const TOPIC_ICON_MAP: Record<string, typeof AnalyticsIcon> = {
+  AnalyticsIcon,
+  TracesIcon,
+  DavisAIIcon,
+  BarChartIcon,
+  LogsIcon,
+  SmartscapeIcon,
+  ContainerIcon,
+  HttpIcon,
+  ServiceLevelObjectivesIcon,
+  WorkflowsIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+};
 
 const DISCIPLINE_META: Record<Discipline, { label: string; icon: string; color: string }> = {
   sre: { label: "SRE", icon: "\u{1F6E1}\uFE0F", color: "#4b9cf5" },
@@ -209,6 +239,7 @@ export const Debrief = () => {
         <Surface>
           <Flex flexDirection="column" padding={20} gap={8}>
             <Heading level={4}>XP Earned</Heading>
+            <Text textStyle="small" style={{ opacity: 0.5 }}>Disciplines</Text>
             <Flex flexDirection="column" gap={6}>
               {mission.disciplines.map((d) => {
                 const meta = DISCIPLINE_META[d.track];
@@ -225,6 +256,29 @@ export const Debrief = () => {
                 );
               })}
             </Flex>
+            {mission.topics && mission.topics.length > 0 && (
+              <>
+                <Divider />
+                <Text textStyle="small" style={{ opacity: 0.5 }}>Topics</Text>
+                <Flex flexDirection="column" gap={6}>
+                  {mission.topics.map((topicId) => {
+                    const topicMeta = TOPIC_META[topicId];
+                    const IconComponent = TOPIC_ICON_MAP[topicMeta.icon];
+                    return (
+                      <Flex key={topicId} justifyContent="space-between" alignItems="center">
+                        <Flex gap={8} alignItems="center">
+                          {IconComponent && <IconComponent size="small" />}
+                          <Text style={{ fontWeight: 500 }}>{topicMeta.label}</Text>
+                        </Flex>
+                        <Text textStyle="small">
+                          <span style={{ fontFamily: "monospace" }}>+50 XP</span>
+                        </Text>
+                      </Flex>
+                    );
+                  })}
+                </Flex>
+              </>
+            )}
           </Flex>
         </Surface>
       )}

@@ -79,6 +79,7 @@ export function useUserState(): UseUserStateResult {
         userEmail: currentUser.email ?? "",
         startingDiscipline,
         disciplines: createDefaultDisciplines(),
+        topicXP: {},
         onboardingComplete: true,
         createdAt: new Date().toISOString(),
       };
@@ -114,9 +115,15 @@ export function useUserState(): UseUserStateResult {
         updatedDisciplines[disc.track] = { xp: newXP, level, levelName };
       }
 
+      const updatedTopicXP: Partial<Record<string, number>> = { ...(userState.topicXP ?? {}) };
+      for (const topic of mission.topics ?? []) {
+        updatedTopicXP[topic] = (updatedTopicXP[topic] ?? 0) + 50;
+      }
+
       const updatedState: UserState = {
         ...userState,
         disciplines: updatedDisciplines,
+        topicXP: updatedTopicXP,
       };
 
       try {
