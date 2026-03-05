@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { documentsClient } from "@dynatrace-sdk/client-document";
-import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
 import {
@@ -17,58 +15,13 @@ import {
   Radio,
 } from "@dynatrace/strato-components-preview/forms";
 import { SuccessIcon } from "@dynatrace/strato-icons";
+import { getMissionById } from "../data/missions";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
-interface CheckpointDefinition {
-  title: string;
-  instruction: string;
-}
-
-const CHECKPOINTS: CheckpointDefinition[] = [
-  {
-    title: "Open the Problems Feed",
-    instruction:
-      "Navigate to the Problems app in Dynatrace and locate the active anomaly.",
-  },
-  {
-    title: "Identify the Affected Service",
-    instruction:
-      "Use the topology map to find which service is impacted.",
-  },
-  {
-    title: "Read the Root Cause Chain",
-    instruction:
-      "Open the problem detail and review what DT Intelligence identified as the root cause.",
-  },
-  {
-    title: "Find the Preceding Log Event",
-    instruction:
-      "Query the Logs app to find the log entry that appeared before the spike.",
-  },
-  {
-    title: "Identify the Origin Host",
-    instruction:
-      "Drill into infrastructure to find which host or container is the source.",
-  },
-  {
-    title: "Submit Root Cause",
-    instruction: "Select the correct root cause from the options below.",
-  },
-];
-
-const ROOT_CAUSE_OPTIONS = [
-  "Memory leak in database process",
-  "Network latency spike from upstream service",
-  "Disk I/O saturation on the database host",
-] as const;
-
-const CORRECT_ANSWER = ROOT_CAUSE_OPTIONS[2];
-const INITIAL_SECONDS = 900;
-const POINTS_PER_CHECKPOINT = 150;
-const CHECKPOINT_6_BONUS = 200;
-const CHECKPOINT_6_WRONG = 100;
-const TIME_BONUS_PER_SECOND = 2;
+const TIME_BONUS_PER_SECOND = 0.5;
+const HINT_PENALTY = 50;
+const WRONG_ANSWER_PENALTY = 100;
 
 function formatTime(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
@@ -77,26 +30,33 @@ function formatTime(totalSeconds: number): string {
 }
 
 export const Mission = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const mission = id ? getMissionById(id) : undefined;
+
   const [currentCheckpoint, setCurrentCheckpoint] = useState(0);
   const [completedCheckpoints, setCompletedCheckpoints] = useState<number[]>(
     []
   );
-  const [timerSeconds, setTimerSeconds] = useState(INITIAL_SECONDS);
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
-  const [missionComplete, setMissionComplete] = useState(false);
   const [baseScore, setBaseScore] = useState(0);
-  const [checkpoint6Wrong, setCheckpoint6Wrong] = useState(false);
-  const [checkpoint6Error, setCheckpoint6Error] = useState("");
-  const [saveStatus, setSaveStatus] = useState<
-    "idle" | "saving" | "saved" | "failed"
-  >("idle");
-  const scoreSaved = useRef(false);
+  const [wrongAnswerGiven, setWrongAnswerGiven] = useState(false);
+  const [answerError, setAnswerError] = useState("");
+  const [hintsUsed, setHintsUsed] = useState<string[]>([]);
+  const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
 
-  // Timer
+  // Initialize timer when mission loads
   useEffect(() => {
-    if (missionComplete) return;
+    if (mission) {
+      setTimerSeconds(mission.timerSeconds);
+    }
+  }, [mission]);
+
+  // Timer countdown
+  useEffect(() => {
+    if (!mission) return;
     if (timerSeconds <= 0) return;
 
     const interval = setInterval(() => {
@@ -110,48 +70,7 @@ export const Mission = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [missionComplete, timerSeconds]);
-
-  // Save score to Document Service on mission complete
-  useEffect(() => {
-    if (!missionComplete) return;
-    if (scoreSaved.current) return;
-    scoreSaved.current = true;
-
-    const computedTimeBonus = timerSeconds * TIME_BONUS_PER_SECOND;
-    const computedTotal = baseScore + computedTimeBonus;
-
-    setSaveStatus("saving");
-    const user = getCurrentUserDetails();
-    const scoreContent = JSON.stringify({
-      userName:
-        (user.name && !user.name.includes("dt.missing") && user.name) ||
-        (user.email && !user.email.includes("dt.missing") && user.email) ||
-        user.id,
-      userId: user.id,
-      mission: "operation-3am-database-spike",
-      role: "incident-commander",
-      difficulty: "rookie",
-      baseScore,
-      timeBonus: computedTimeBonus,
-      totalScore: computedTotal,
-      completedAt: new Date().toISOString(),
-    });
-
-    documentsClient
-      .createDocument({
-        body: {
-          name: `score-${Date.now()}`,
-          type: "intelops-score",
-          content: new Blob([scoreContent], { type: "application/json" }),
-        },
-      })
-      .then(() => setSaveStatus("saved"))
-      .catch((error: unknown) => {
-        console.error("Failed to save score:", error);
-        setSaveStatus("failed");
-      });
-  }, [missionComplete, baseScore, timerSeconds]);
+  }, [mission, timerSeconds]);
 
   const getCheckpointStatus = useCallback(
     (index: number): CheckpointStatus => {
@@ -164,96 +83,104 @@ export const Mission = () => {
 
   const completeCheckpoint = useCallback(
     (index: number, points: number) => {
+      if (!mission) return;
+
       setCompletedCheckpoints((prev) => [...prev, index]);
       setBaseScore((prev) => prev + points);
 
-      if (index === 5) {
-        // All checkpoints done
-        setMissionComplete(true);
+      const isLastCheckpoint = index === mission.checkpoints.length - 1;
+      if (isLastCheckpoint) {
+        // Mission complete — calculate final score and navigate to debrief
+        const newBaseScore = baseScore + points;
+        const timeBonus = Math.max(0, timerSeconds * TIME_BONUS_PER_SECOND);
+        const hintPenalty = hintsUsed.length * HINT_PENALTY;
+        const totalScore = Math.max(0, newBaseScore + timeBonus - hintPenalty);
+
+        navigate(`/debrief/${mission.id}`, {
+          state: {
+            baseScore: newBaseScore,
+            timeBonus,
+            hintsUsed: hintsUsed.length,
+            totalScore,
+            timerSecondsRemaining: timerSeconds,
+            checkpoints: mission.checkpoints,
+            missionTitle: mission.title,
+            codename: mission.codename,
+            role: mission.role,
+            difficulty: mission.difficulty,
+          },
+        });
       } else {
         setCurrentCheckpoint(index + 1);
+        setSelectedAnswer("");
+        setAnswerError("");
+        setWrongAnswerGiven(false);
       }
     },
-    []
+    [mission, baseScore, timerSeconds, hintsUsed, navigate]
   );
 
   const handleValidate = useCallback(
     (index: number) => {
-      if (isValidating) return;
+      if (isValidating || !mission) return;
 
-      // Checkpoint 6 — answer validation
-      if (index === 5) {
+      const checkpoint = mission.checkpoints[index];
+
+      // Multiple choice — answer validation
+      if (checkpoint.type === "multiple-choice") {
         if (!selectedAnswer) return;
         setIsValidating(true);
-        setCheckpoint6Error("");
+        setAnswerError("");
 
         setTimeout(() => {
           setIsValidating(false);
-          if (selectedAnswer === CORRECT_ANSWER) {
-            const points = checkpoint6Wrong
-              ? CHECKPOINT_6_WRONG
-              : CHECKPOINT_6_BONUS;
-            completeCheckpoint(index, points);
+          if (selectedAnswer === checkpoint.correctChoice) {
+            const points = wrongAnswerGiven
+              ? checkpoint.points - WRONG_ANSWER_PENALTY
+              : checkpoint.points;
+            completeCheckpoint(index, Math.max(0, points));
           } else {
-            setCheckpoint6Wrong(true);
-            setCheckpoint6Error(
-              "Incorrect — review the logs and try again"
-            );
+            setWrongAnswerGiven(true);
+            setAnswerError("Incorrect — review the evidence and try again");
           }
         }, 1000);
         return;
       }
 
-      // Checkpoints 1–5 — simulated validation
+      // Action checkpoints — simulated validation
       setIsValidating(true);
       setTimeout(() => {
         setIsValidating(false);
-        completeCheckpoint(index, POINTS_PER_CHECKPOINT);
+        completeCheckpoint(index, checkpoint.points);
       }, 1000);
     },
-    [isValidating, selectedAnswer, checkpoint6Wrong, completeCheckpoint]
+    [isValidating, mission, selectedAnswer, wrongAnswerGiven, completeCheckpoint]
   );
 
-  const timeBonus = timerSeconds * TIME_BONUS_PER_SECOND;
-  const totalScore = baseScore + timeBonus;
+  const handleRequestHint = useCallback(
+    (checkpointId: string) => {
+      if (!hintsUsed.includes(checkpointId)) {
+        setHintsUsed((prev) => [...prev, checkpointId]);
+      }
+      if (!hintsRevealed.includes(checkpointId)) {
+        setHintsRevealed((prev) => [...prev, checkpointId]);
+      }
+    },
+    [hintsUsed, hintsRevealed]
+  );
 
-  if (missionComplete) {
+  // Mission not found
+  if (!mission) {
     return (
       <Flex flexDirection="column" gap={32} padding={32} alignItems="center">
         <Surface>
-          <Flex
-            flexDirection="column"
-            alignItems="center"
-            padding={48}
-            gap={24}
-          >
-            <SuccessIcon size="large" />
-            <Heading level={1}>MISSION COMPLETE</Heading>
-            <Flex flexDirection="column" gap={8} alignItems="center">
-              <Text>
-                Base Score: <Strong>{baseScore}</Strong>
-              </Text>
-              <Text>
-                Time Remaining: <Strong>{formatTime(timerSeconds)}</Strong> (+
-                {timeBonus} pts)
-              </Text>
-              <Heading level={2}>Total Score: {totalScore}</Heading>
-            </Flex>
-            {saveStatus === "saving" && (
-              <Chip color="neutral">Saving score...</Chip>
-            )}
-            {saveStatus === "saved" && (
-              <Chip color="success" variant="emphasized">
-                Score saved!
-              </Chip>
-            )}
-            {saveStatus === "failed" && (
-              <Chip color="critical" variant="emphasized">
-                Score save failed — check console
-              </Chip>
-            )}
+          <Flex flexDirection="column" padding={48} gap={16} alignItems="center">
+            <Heading level={2}>MISSION NOT FOUND</Heading>
+            <Paragraph>
+              The requested mission does not exist or has been decommissioned.
+            </Paragraph>
             <Button variant="emphasized" onClick={() => navigate("/")}>
-              Return to Mission Board
+              RETURN TO MISSION BOARD
             </Button>
           </Flex>
         </Surface>
@@ -262,12 +189,15 @@ export const Mission = () => {
   }
 
   return (
-    <Flex flexDirection="column" gap={24} padding={32}>
+    <Flex flexDirection="column" gap={16} padding={20}>
       {/* Mission Header */}
       <Flex justifyContent="space-between" alignItems="center">
-        <Heading level={1}>Operation: 3am Database Spike</Heading>
+        <Flex flexDirection="column" gap={2}>
+          <Text textStyle="small">// {mission.codename}</Text>
+          <Heading level={2}>{mission.title}</Heading>
+        </Flex>
         <Chip
-          color={timerSeconds < 120 ? "critical" : "neutral"}
+          color={timerSeconds < 60 ? "critical" : "neutral"}
           variant="emphasized"
         >
           {formatTime(timerSeconds)}
@@ -276,30 +206,43 @@ export const Mission = () => {
 
       {/* Briefing */}
       <Surface>
-        <Flex flexDirection="column" padding={24} gap={8}>
+        <Flex flexDirection="column" padding={16} gap={6}>
           <Strong>SITUATION REPORT</Strong>
-          <Paragraph>
-            03:17 local time. Your database response times just spiked 400%.
-            Davis Intelligence has flagged an anomaly. The on-call engineer is
-            unavailable. You are the Incident Commander. Find the root cause
-            before business hours.
-          </Paragraph>
+          <Paragraph>{mission.briefing}</Paragraph>
+          <Flex gap={8}>
+            <Chip color="neutral">{mission.role}</Chip>
+            <Chip
+              color={
+                mission.difficulty === "rookie"
+                  ? "success"
+                  : mission.difficulty === "operator"
+                    ? "warning"
+                    : "critical"
+              }
+              variant="emphasized"
+            >
+              {mission.difficulty.toUpperCase()}
+            </Chip>
+          </Flex>
         </Flex>
       </Surface>
 
       {/* Checkpoints */}
-      <Flex flexDirection="column" gap={12}>
-        {CHECKPOINTS.map((checkpoint, index) => {
+      <Flex flexDirection="column" gap={8}>
+        {mission.checkpoints.map((checkpoint, index) => {
           const status = getCheckpointStatus(index);
+          const isMultipleChoice = checkpoint.type === "multiple-choice";
+          const hintAvailable = checkpoint.hint.length > 0;
+          const hintRevealed = hintsRevealed.includes(checkpoint.id);
+
           return (
-            <Surface key={index}>
-              <Flex padding={20} gap={16} alignItems="flex-start">
+            <Surface key={checkpoint.id}>
+              <Flex padding={12} gap={12} alignItems="flex-start">
                 {/* Step number / status indicator */}
                 <Flex
                   flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
-                  style={{ minWidth: 40 }}
                 >
                   {status === "completed" ? (
                     <SuccessIcon />
@@ -333,22 +276,48 @@ export const Mission = () => {
                     <Paragraph>{checkpoint.instruction}</Paragraph>
                   )}
 
-                  {/* Checkpoint 6 — radio options */}
-                  {status === "active" && index === 5 && (
+                  {/* Hint system */}
+                  {status === "active" && hintAvailable && !hintRevealed && (
+                    <Flex>
+                      <Button
+                        variant="default"
+                        onClick={() => handleRequestHint(checkpoint.id)}
+                      >
+                        [ REQUEST INTEL ]
+                      </Button>
+                    </Flex>
+                  )}
+
+                  {hintRevealed && (
+                    <Surface>
+                      <Flex flexDirection="column" padding={12} gap={4}>
+                        <Chip color="warning" variant="emphasized">
+                          INTEL
+                        </Chip>
+                        <Text>{checkpoint.hint}</Text>
+                        <Text textStyle="small">
+                          Intel requested: -{HINT_PENALTY} pts per hint
+                        </Text>
+                      </Flex>
+                    </Surface>
+                  )}
+
+                  {/* Multiple choice options */}
+                  {status === "active" && isMultipleChoice && checkpoint.choices && (
                     <Flex flexDirection="column" gap={8}>
                       <RadioGroup
                         value={selectedAnswer}
                         onChange={(value: string) => setSelectedAnswer(value)}
                       >
-                        {ROOT_CAUSE_OPTIONS.map((option) => (
+                        {checkpoint.choices.map((option) => (
                           <Radio key={option} value={option}>
                             {option}
                           </Radio>
                         ))}
                       </RadioGroup>
-                      {checkpoint6Error && (
+                      {answerError && (
                         <Chip color="critical" variant="emphasized">
-                          {checkpoint6Error}
+                          {answerError}
                         </Chip>
                       )}
                     </Flex>
@@ -360,11 +329,16 @@ export const Mission = () => {
                       <Button
                         variant="accent"
                         disabled={
-                          isValidating || (index === 5 && !selectedAnswer)
+                          isValidating ||
+                          (isMultipleChoice && !selectedAnswer)
                         }
                         onClick={() => handleValidate(index)}
                       >
-                        {isValidating ? "Validating..." : "Validate"}
+                        {isValidating
+                          ? "CONFIRMING..."
+                          : isMultipleChoice
+                            ? "SUBMIT ANSWER"
+                            : "CONFIRM CHECKPOINT"}
                       </Button>
                     </Flex>
                   )}
