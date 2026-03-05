@@ -115,19 +115,24 @@ export function useUserState(): UseUserStateResult {
         disciplines: updatedDisciplines,
       };
 
- const doc = await documentsClient.getDocument({ id: documentId });
+      const list = await documentsClient.listDocuments({
+        filter: `type == '${DOCUMENT_TYPE}' and name == '${getDocumentName(currentUser.id)}'`,
+        pageSize: 1,
+      });
 
-await documentsClient.updateDocument({
-  id: documentId,
-  optimisticLockingVersion: doc.optimisticLockingVersion,
-  body: {
-    content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
-  },
-});
+      const version = list.documents[0]?.optimisticLockingVersion ?? "0";
+
+      await documentsClient.updateDocument({
+        id: documentId,
+        optimisticLockingVersion: version,
+        body: {
+          content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
+        },
+      });
 
       setUserState(updatedState);
     },
-    [userState, documentId]
+    [userState, documentId, currentUser.id]
   );
 
   return { userState, loading, error, saveUserState, awardXP };
