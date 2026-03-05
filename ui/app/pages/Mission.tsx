@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { documentsClient } from "@dynatrace-sdk/client-document";
+import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
 import {
@@ -87,6 +89,10 @@ export const Mission = () => {
   const [baseScore, setBaseScore] = useState(0);
   const [checkpoint6Wrong, setCheckpoint6Wrong] = useState(false);
   const [checkpoint6Error, setCheckpoint6Error] = useState("");
+  const [saveStatus, setSaveStatus] = useState<
+    "idle" | "saving" | "saved" | "failed"
+  >("idle");
+  const scoreSaved = useRef(false);
 
   // Timer
   useEffect(() => {
@@ -105,6 +111,47 @@ export const Mission = () => {
 
     return () => clearInterval(interval);
   }, [missionComplete, timerSeconds]);
+
+  // Save score to Document Service on mission complete
+  useEffect(() => {
+    if (!missionComplete) return;
+    if (scoreSaved.current) return;
+    scoreSaved.current = true;
+
+    const computedTimeBonus = timerSeconds * TIME_BONUS_PER_SECOND;
+    const computedTotal = baseScore + computedTimeBonus;
+
+    setSaveStatus("saving");
+    const user = getCurrentUserDetails();
+    const scoreContent = JSON.stringify({
+      userName:
+        (user.name && !user.name.includes("dt.missing") && user.name) ||
+        (user.email && !user.email.includes("dt.missing") && user.email) ||
+        user.id,
+      userId: user.id,
+      mission: "operation-3am-database-spike",
+      role: "incident-commander",
+      difficulty: "rookie",
+      baseScore,
+      timeBonus: computedTimeBonus,
+      totalScore: computedTotal,
+      completedAt: new Date().toISOString(),
+    });
+
+    documentsClient
+      .createDocument({
+        body: {
+          name: `score-${Date.now()}`,
+          type: "intelops-score",
+          content: new Blob([scoreContent], { type: "application/json" }),
+        },
+      })
+      .then(() => setSaveStatus("saved"))
+      .catch((error: unknown) => {
+        console.error("Failed to save score:", error);
+        setSaveStatus("failed");
+      });
+  }, [missionComplete, baseScore, timerSeconds]);
 
   const getCheckpointStatus = useCallback(
     (index: number): CheckpointStatus => {
@@ -192,6 +239,19 @@ export const Mission = () => {
               </Text>
               <Heading level={2}>Total Score: {totalScore}</Heading>
             </Flex>
+            {saveStatus === "saving" && (
+              <Chip color="neutral">Saving score...</Chip>
+            )}
+            {saveStatus === "saved" && (
+              <Chip color="success" variant="emphasized">
+                Score saved!
+              </Chip>
+            )}
+            {saveStatus === "failed" && (
+              <Chip color="critical" variant="emphasized">
+                Score save failed — check console
+              </Chip>
+            )}
             <Button variant="emphasized" onClick={() => navigate("/")}>
               Return to Mission Board
             </Button>
