@@ -341,25 +341,29 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                         );
                       })}
                     </div>
-                    {mission.topics && mission.topics.length > 0 && (
+                    {mission.topics.length > 0 && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {mission.topics.map((topicId) => (
-                          <span
-                            key={topicId}
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              fontSize: "10px",
-                              padding: "1px 6px",
-                              borderRadius: "4px",
-                              border: "1px solid rgba(255,255,255,0.2)",
-                              color: "rgba(255,255,255,0.7)",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {TOPIC_META[topicId].label}
-                          </span>
-                        ))}
+                        {mission.topics.map((topicId) => {
+                          const topicMeta = TOPIC_META[topicId];
+                          if (!topicMeta) return null;
+                          return (
+                            <span
+                              key={topicId}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                fontSize: "10px",
+                                padding: "1px 6px",
+                                borderRadius: "4px",
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                color: "rgba(255,255,255,0.7)",
+                                fontWeight: 500,
+                              }}
+                            >
+                              {topicMeta.label}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
                     <Flex justifyContent="space-between" alignItems="center">
@@ -457,25 +461,29 @@ export const Home = ({ startingDiscipline }: HomeProps) => {
                     </div>
 
                     {/* Topic chips */}
-                    {mission.topics && mission.topics.length > 0 && (
+                    {mission.topics.length > 0 && (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {mission.topics.map((topicId) => (
-                          <span
-                            key={topicId}
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              fontSize: "10px",
-                              padding: "1px 6px",
-                              borderRadius: "4px",
-                              border: "1px solid rgba(255,255,255,0.2)",
-                              color: "rgba(255,255,255,0.7)",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {TOPIC_META[topicId].label}
-                          </span>
-                        ))}
+                        {mission.topics.map((topicId) => {
+                          const topicMeta = TOPIC_META[topicId];
+                          if (!topicMeta) return null;
+                          return (
+                            <span
+                              key={topicId}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                fontSize: "10px",
+                                padding: "1px 6px",
+                                borderRadius: "4px",
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                color: "rgba(255,255,255,0.7)",
+                                fontWeight: 500,
+                              }}
+                            >
+                              {topicMeta.label}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
 
