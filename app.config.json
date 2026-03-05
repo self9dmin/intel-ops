@@ -3,7 +3,7 @@
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
     "name": "Intel Ops",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "id": "my.intelops.training",
     "scopes": [
