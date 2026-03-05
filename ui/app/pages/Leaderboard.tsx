@@ -38,13 +38,13 @@ interface LeaderboardRow {
   date: string;
 }
 
-const leaderboardColumns: DataTableColumnDef[] = [
-  { accessor: "rank", header: "Rank" },
-  { accessor: "player", header: "Player" },
-  { accessor: "mission", header: "Mission" },
-  { accessor: "difficulty", header: "Difficulty" },
-  { accessor: "score", header: "Score" },
-  { accessor: "date", header: "Date" },
+const leaderboardColumns: DataTableColumnDef<LeaderboardRow>[] = [
+  { id: "rank", accessor: "rank", header: "Rank" },
+  { id: "player", accessor: "player", header: "Player" },
+  { id: "mission", accessor: "mission", header: "Mission" },
+  { id: "difficulty", accessor: "difficulty", header: "Difficulty" },
+  { id: "score", accessor: "score", header: "Score" },
+  { id: "date", accessor: "date", header: "Date" },
 ];
 
 function formatMissionName(key: string): string {
