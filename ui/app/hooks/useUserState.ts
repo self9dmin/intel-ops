@@ -102,6 +102,7 @@ export function useUserState(): UseUserStateResult {
         userEmail: currentUser.email ?? "",
         startingDiscipline,
         disciplines: createDefaultDisciplines(),
+        topicXP: {},
         onboardingComplete: true,
         createdAt: new Date().toISOString(),
         completedMissions: [],

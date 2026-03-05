@@ -19,6 +19,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 75 },
       { track: "incident-commander", xp: 75 },
     ],
+    topics: ["dql", "davis", "logs"],
     checkpoints: [
       {
         id: "cp1",
@@ -100,6 +101,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 100 },
       { track: "developer", xp: 50 },
     ],
+    topics: ["traces", "metrics"],
     checkpoints: [
       {
         id: "cp1",
@@ -172,6 +174,7 @@ export const MISSIONS: Mission[] = [
       { track: "developer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
+    topics: ["traces", "dql"],
     checkpoints: [
       {
         id: "cp1",
@@ -244,6 +247,7 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 50 },
     ],
+    topics: ["synthetics", "davis"],
     checkpoints: [
       {
         id: "cp1",
@@ -317,6 +321,7 @@ export const MISSIONS: Mission[] = [
       { track: "platform-engineer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
+    topics: ["kubernetes", "metrics"],
     checkpoints: [
       {
         id: "cp1",

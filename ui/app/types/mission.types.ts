@@ -9,7 +9,7 @@ export interface Checkpoint {
   points: number;
 }
 
-import type { Discipline } from "./UserState";
+import type { Discipline, TopicId } from "./UserState";
 
 export interface MissionDisciplineXP {
   track: Discipline;
