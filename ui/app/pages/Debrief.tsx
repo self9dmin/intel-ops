@@ -16,7 +16,7 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint } from "../types/mission.types";
 import { getMissionById } from "../data/missions";
-import { useUserState } from "../hooks/useUserState";
+import { useUserStateContext } from "../context/UserStateContext";
 
 interface DebriefState {
   baseScore: number;
@@ -39,7 +39,7 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
-  const { awardXP } = useUserState();
+  const { awardXP } = useUserStateContext();
 
   const state = location.state as DebriefState | undefined;
   const mission = id ? getMissionById(id) : undefined;
