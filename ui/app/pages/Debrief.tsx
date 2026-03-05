@@ -16,6 +16,7 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint } from "../types/mission.types";
 import { getMissionById } from "../data/missions";
+import { useUserState } from "../hooks/useUserState";
 
 interface DebriefState {
   baseScore: number;
@@ -38,6 +39,7 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
+  const { awardXP } = useUserState();
 
   const state = location.state as DebriefState | undefined;
   const mission = id ? getMissionById(id) : undefined;
@@ -76,12 +78,15 @@ export const Debrief = () => {
           content: new Blob([scoreContent], { type: "application/json" }),
         },
       })
-      .then(() => setSaveStatus("saved"))
+      .then(() => {
+        setSaveStatus("saved");
+        return awardXP(id);
+      })
       .catch((error: unknown) => {
         console.error("Failed to save score:", error);
         setSaveStatus("failed");
       });
-  }, [state, id]);
+  }, [state, id, awardXP]);
 
   if (!state || !id) {
     return (

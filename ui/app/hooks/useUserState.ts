@@ -11,6 +11,7 @@ interface UseUserStateResult {
   error: string;
   saveUserState: (startingDiscipline: Discipline) => Promise<void>;
   awardXP: (missionId: string) => Promise<void>;
+  resetUserState: () => Promise<void>;
 }
 
 const DOCUMENT_TYPE = "intelops-user-state";
@@ -138,5 +139,16 @@ export function useUserState(): UseUserStateResult {
     [userState, documentId, documentVersion, currentUser.id]
   );
 
-  return { userState, loading, error, saveUserState, awardXP };
+  const resetUserState = useCallback(async () => {
+    if (!documentId) return;
+
+    await documentsClient.deleteDocument({
+      id: documentId,
+      optimisticLockingVersion: documentVersion,
+    });
+
+    window.location.reload();
+  }, [documentId, documentVersion]);
+
+  return { userState, loading, error, saveUserState, awardXP, resetUserState };
 }
