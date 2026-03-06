@@ -71,28 +71,61 @@ export function useUserState(): UseUserStateResult {
     void loadUserState();
   }, [loadUserState]);
 
+  const refreshDocument = useCallback(async (): Promise<{ id: string; version: string; state: UserState }> => {
+    const list = await documentsClient.listDocuments({
+      filter: `type == '${DOCUMENT_TYPE}' and name == '${getDocumentName(currentUser.id)}'`,
+      pageSize: 1,
+    });
+
+    if (!list.documents || list.documents.length === 0) {
+      throw new Error("User state document not found during refresh");
+    }
+
+    const doc = list.documents[0];
+    const content = await documentsClient.downloadDocumentContent({ id: doc.id! });
+    const text: string = await content.get("text");
+    const parsed = JSON.parse(text) as Record<string, unknown>;
+    const migrated = migrateUserState(parsed);
+
+    return { id: doc.id!, version: String(doc.version ?? "0"), state: migrated };
+  }, [currentUser.id]);
+
   const writeUserState = useCallback(
     async (updatedState: UserState): Promise<void> => {
       if (!documentId) return;
 
-      await documentsClient.deleteDocument({
-        id: documentId,
-        optimisticLockingVersion: documentVersion,
-      });
+      let currentDocId = documentId;
+      let currentVersion = documentVersion;
 
-      const result = await documentsClient.createDocument({
-        body: {
-          name: getDocumentName(currentUser.id),
-          type: DOCUMENT_TYPE,
-          content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
-        },
-      });
+      const doUpdate = async (docId: string, version: string, state: UserState): Promise<void> => {
+        const result = await documentsClient.updateDocument({
+          id: docId,
+          optimisticLockingVersion: version,
+          body: {
+            content: new Blob([JSON.stringify(state)], { type: "application/json" }),
+          },
+        });
 
-      setDocumentId(result.id ?? null);
-      setDocumentVersion(String(result.version ?? "0"));
-      setUserState(updatedState);
+        setDocumentId(docId);
+        setDocumentVersion(String((parseInt(documentVersion) + 1)));
+        setUserState(state);
+      };
+
+      try {
+        await doUpdate(currentDocId, currentVersion, updatedState);
+      } catch (err: unknown) {
+        const isConflict =
+          err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
+        if (!isConflict) throw err;
+
+        // Re-fetch to get the latest version and retry once
+        const fresh = await refreshDocument();
+        currentDocId = fresh.id;
+        currentVersion = fresh.version;
+        await doUpdate(currentDocId, currentVersion, updatedState);
+      }
     },
-    [documentId, documentVersion, currentUser.id]
+    [documentId, documentVersion, refreshDocument]
   );
 
   const saveUserState = useCallback(
@@ -109,7 +142,6 @@ export function useUserState(): UseUserStateResult {
         streakDays: 0,
         lastActiveDate: "",
         badges: [],
-        topicXP: {},
       };
 
       const result = await documentsClient.createDocument({
@@ -172,9 +204,59 @@ export function useUserState(): UseUserStateResult {
         badges: newBadges,
       };
 
-      await writeUserState(updatedState);
+      try {
+        await writeUserState(updatedState);
+      } catch (err: unknown) {
+        const isConflict =
+          err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
+        if (!isConflict) throw err;
+
+        // Re-fetch fresh state and re-apply XP grants on top of it
+        const fresh = await refreshDocument();
+        const retryDisciplines = { ...fresh.state.disciplines };
+        const retryTopicXP = { ...fresh.state.topicXP };
+
+        for (const grant of xpGrants) {
+          if (grant.discipline) {
+            const disc = grant.discipline;
+            const current = retryDisciplines[disc];
+            const newXP = current.xp + grant.amount;
+            const { level, levelName } = calculateLevel(newXP);
+            retryDisciplines[disc] = { xp: newXP, level, levelName };
+          }
+          if (grant.topic) {
+            retryTopicXP[grant.topic] = (retryTopicXP[grant.topic] ?? 0) + grant.amount;
+          }
+        }
+
+        const retryBadges = [...fresh.state.badges];
+        for (const badgeDef of ALL_BADGES) {
+          if (!retryBadges.includes(badgeDef.id)) {
+            if (
+              badgeDef.predicate({
+                completedMissions: fresh.state.completedMissions,
+                streakDays: fresh.state.streakDays,
+                disciplines: retryDisciplines,
+                topicXP: retryTopicXP,
+                totalXP: computeTotalXP(retryDisciplines),
+              })
+            ) {
+              retryBadges.push(badgeDef.id);
+            }
+          }
+        }
+
+        const retryState: UserState = {
+          ...fresh.state,
+          disciplines: retryDisciplines,
+          topicXP: retryTopicXP,
+          badges: retryBadges,
+        };
+
+        await writeUserState(retryState);
+      }
     },
-    [userState, documentId, writeUserState]
+    [userState, documentId, writeUserState, refreshDocument]
   );
 
   const completeMission = useCallback(
@@ -182,36 +264,52 @@ export function useUserState(): UseUserStateResult {
       if (!userState) return;
       if (userState.completedMissions.includes(missionId)) return;
 
-      const newCompleted = [...userState.completedMissions, missionId];
+      const buildCompletionState = (base: UserState): UserState => {
+        if (base.completedMissions.includes(missionId)) return base;
 
-      // Evaluate badges with new completed missions
-      const newBadges = [...userState.badges];
-      for (const badgeDef of ALL_BADGES) {
-        if (!newBadges.includes(badgeDef.id)) {
-          if (
-            badgeDef.predicate({
-              completedMissions: newCompleted,
-              streakDays: userState.streakDays,
-              disciplines: userState.disciplines,
-              topicXP: userState.topicXP,
-              totalXP: computeTotalXP(userState.disciplines),
-            })
-          ) {
-            newBadges.push(badgeDef.id);
+        const newCompleted = [...base.completedMissions, missionId];
+
+        const newBadges = [...base.badges];
+        for (const badgeDef of ALL_BADGES) {
+          if (!newBadges.includes(badgeDef.id)) {
+            if (
+              badgeDef.predicate({
+                completedMissions: newCompleted,
+                streakDays: base.streakDays,
+                disciplines: base.disciplines,
+                topicXP: base.topicXP,
+                totalXP: computeTotalXP(base.disciplines),
+              })
+            ) {
+              newBadges.push(badgeDef.id);
+            }
           }
         }
-      }
 
-      const updatedState: UserState = {
-        ...userState,
-        completedMissions: newCompleted,
-        badges: newBadges,
+        return { ...base, completedMissions: newCompleted, badges: newBadges };
       };
 
+      const updatedState = buildCompletionState(userState);
       setUserState(updatedState);
-      void writeUserState(updatedState);
+
+      void (async () => {
+        try {
+          await writeUserState(updatedState);
+        } catch (err: unknown) {
+          const isConflict =
+            err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
+          if (!isConflict) {
+            console.error("Failed to save mission completion:", err);
+            return;
+          }
+
+          const fresh = await refreshDocument();
+          const retryState = buildCompletionState(fresh.state);
+          await writeUserState(retryState);
+        }
+      })();
     },
-    [userState, writeUserState]
+    [userState, writeUserState, refreshDocument]
   );
 
   const updateStreak = useCallback(() => {

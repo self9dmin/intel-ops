@@ -14,7 +14,6 @@ export const MISSIONS: Mission[] = [
     timerSeconds: 900,
     status: "available",
     prerequisites: [],
-    topics: ["databases", "logs", "metrics"],
     disciplines: [
       { track: "sre", xp: 75 },
       { track: "incident-commander", xp: 75 },
@@ -96,7 +95,6 @@ export const MISSIONS: Mission[] = [
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
-    topics: ["slos", "metrics", "tracing"],
     disciplines: [
       { track: "sre", xp: 100 },
       { track: "developer", xp: 50 },
@@ -169,7 +167,6 @@ export const MISSIONS: Mission[] = [
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
-    topics: ["tracing", "databases", "alerting"],
     disciplines: [
       { track: "developer", xp: 100 },
       { track: "sre", xp: 50 },
@@ -242,7 +239,6 @@ export const MISSIONS: Mission[] = [
     timerSeconds: 480,
     status: "available",
     prerequisites: ["operation-3am-database-spike", "operation-silent-rollout"],
-    topics: ["alerting", "metrics", "dashboards"],
     disciplines: [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 50 },
@@ -316,7 +312,6 @@ export const MISSIONS: Mission[] = [
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
-    topics: ["kubernetes", "logs", "metrics"],
     disciplines: [
       { track: "platform-engineer", xp: 100 },
       { track: "sre", xp: 50 },

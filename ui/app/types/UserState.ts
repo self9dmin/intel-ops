@@ -54,6 +54,13 @@ export function getTopicLevel(xp: number): { level: number; levelName: TopicLeve
   return { level: 1, levelName: "Novice" };
 }
 
+export const DISCIPLINE_META: Record<Discipline, { label: string; color: string }> = {
+  sre: { label: "SRE", color: "#4b9cf5" },
+  developer: { label: "Developer", color: "#7c5cbf" },
+  "incident-commander": { label: "Incident Commander", color: "#e8734a" },
+  "platform-engineer": { label: "Platform Engineer", color: "#3dba7e" },
+};
+
 export type DisciplineLevelName = "Recruit" | "Analyst" | "Specialist" | "Expert" | "Elite";
 
 export interface DisciplineProgress {
@@ -74,7 +81,6 @@ export interface UserState {
   streakDays: number;
   lastActiveDate: string;
   badges: string[];
-  topicXP: Record<string, number>;
 }
 
 export function migrateUserState(loaded: Record<string, unknown>): UserState {
