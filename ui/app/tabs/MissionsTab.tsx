@@ -13,11 +13,25 @@ import { useRecommendedMissions } from "../hooks/useRecommendedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
 import { computeTotalXP } from "../types/UserState";
+import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
 import type { Mission } from "../types/mission.types";
 
+function getBadgeEmoji(icon: string): string {
+  const map: Record<string, string> = {
+    rocket: "\u{1F680}",
+    flame: "\u{1F525}",
+    lightning: "\u26A1",
+    graduation: "\u{1F393}",
+    star: "\u2B50",
+    shield: "\u{1F6E1}\uFE0F",
+  };
+  return map[icon] ?? "\u{1F3C6}";
+}
+
 interface MissionsTabProps {
   filters: SidebarFilters;
+  onSwitchTab?: (tab: "progress") => void;
 }
 
 function applyFilters(
@@ -91,7 +105,7 @@ function applyFilters(
   return result;
 }
 
-export const MissionsTab = ({ filters }: MissionsTabProps) => {
+export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { userState } = useUserStateContext();
@@ -115,6 +129,7 @@ export const MissionsTab = ({ filters }: MissionsTabProps) => {
 
   const completedMissions = userState?.completedMissions ?? [];
   const completedSet = useMemo(() => new Set(completedMissions), [completedMissions]);
+  const earnedBadges = useMemo(() => new Set(userState?.badges ?? []), [userState?.badges]);
   const unlockedSet = useUnlockedMissions(completedMissions);
   const recommendations = useRecommendedMissions(
     unlockedSet,
@@ -187,6 +202,50 @@ export const MissionsTab = ({ filters }: MissionsTabProps) => {
             Continue Next Mission →
           </Button>
         )}
+      </div>
+
+      {/* Achievements Strip */}
+      <div
+        onClick={() => onSwitchTab?.("progress")}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "8px 0",
+          marginBottom: "16px",
+          cursor: "pointer",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <span
+          style={{
+            fontSize: "10px",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
+            color: "rgba(255,255,255,0.4)",
+            marginRight: "4px",
+          }}
+        >
+          ACHIEVEMENTS
+        </span>
+        {ALL_BADGES.map((badge) => {
+          const isEarned = earnedBadges.has(badge.id);
+          return (
+            <span
+              key={badge.id}
+              title={badge.name}
+              style={{
+                fontSize: "18px",
+                opacity: isEarned ? 1 : 0.3,
+                filter: isEarned ? "none" : "grayscale(1)",
+                transition: "opacity 0.2s",
+              }}
+            >
+              {getBadgeEmoji(badge.icon)}
+            </span>
+          );
+        })}
       </div>
 
       {/* Recommended Missions */}

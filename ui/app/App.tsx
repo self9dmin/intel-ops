@@ -4,8 +4,7 @@ import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Paragraph } from "@dynatrace/strato-components/typography";
-import { TitleBar } from "@dynatrace/strato-components-preview/layouts";
-import { Tabs, Tab } from "@dynatrace/strato-components-preview/navigation";
+import dynatraceLogo from "../assets/Dynatrace_Logo.svg";
 import { Mission } from "./pages/Mission";
 import { Debrief } from "./pages/Debrief";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
@@ -31,8 +30,6 @@ const ShellLayout = () => {
     time: null,
     category: null,
   });
-
-  const tabIndex = TAB_ORDER.indexOf(activeTab);
 
   const handleTabChange = useCallback(
     (index: number) => {
@@ -68,23 +65,72 @@ const ShellLayout = () => {
         onSwitchToMissions={() => handleSwitchToMissions()}
       />
       <main style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
-        {activeTab === "missions" && <MissionsTab filters={filters} />}
+        {activeTab === "missions" && (
+          <MissionsTab
+            filters={filters}
+            onSwitchTab={() => handleTabChange(TAB_ORDER.indexOf("progress"))}
+          />
+        )}
         {activeTab === "progress" && <ProgressTab onSwitchTab={handleSwitchToMissions} />}
         {activeTab === "leaderboard" && <LeaderboardTab />}
       </main>
     </div>
   );
 
+  const TAB_LABELS: Record<TopTab, string> = {
+    missions: "Missions",
+    progress: "Progress",
+    leaderboard: "Leaderboard",
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <TitleBar>
-        <TitleBar.Title>Intel Ops</TitleBar.Title>
-      </TitleBar>
-      <Tabs selectedIndex={tabIndex} onChange={handleTabChange}>
-        <Tab title="Missions">{activeTab === "missions" ? contentPanel : null}</Tab>
-        <Tab title="Progress">{activeTab === "progress" ? contentPanel : null}</Tab>
-        <Tab title="Leaderboard">{activeTab === "leaderboard" ? contentPanel : null}</Tab>
-      </Tabs>
+      {/* Inline header bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          padding: "0 16px",
+          height: "48px",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          flexShrink: 0,
+        }}
+      >
+        <img src={dynatraceLogo} alt="" style={{ height: "20px", width: "auto" }} />
+        <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
+          Intel Ops
+        </span>
+        <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
+          {TAB_ORDER.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => handleTabChange(TAB_ORDER.indexOf(tab))}
+              style={{
+                padding: "6px 14px",
+                border: "none",
+                background: activeTab === tab ? "rgba(255,255,255,0.1)" : "transparent",
+                color:
+                  activeTab === tab
+                    ? "var(--dt-colors-text-primary-default, #fff)"
+                    : "rgba(255,255,255,0.6)",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: activeTab === tab ? 600 : 400,
+                fontFamily: "inherit",
+                borderRadius: "4px",
+                borderBottom:
+                  activeTab === tab
+                    ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                    : "2px solid transparent",
+              }}
+            >
+              {TAB_LABELS[tab]}
+            </button>
+          ))}
+        </div>
+      </div>
+      {contentPanel}
     </div>
   );
 };

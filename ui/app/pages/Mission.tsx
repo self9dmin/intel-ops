@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
@@ -16,6 +16,7 @@ import {
 } from "@dynatrace/strato-components-preview/forms";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import { getMissionById } from "../data/missions";
+import { MatrixBackground } from "../components/MatrixBackground";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
@@ -46,6 +47,7 @@ export const Mission = () => {
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
+  const [showAbortConfirm, setShowAbortConfirm] = useState(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -166,6 +168,18 @@ export const Mission = () => {
     [hintsUsed, hintsRevealed]
   );
 
+  const colorTier = useMemo(() => {
+    if (!mission) return "green" as const;
+    const pct = timerSeconds / mission.timerSeconds;
+    if (pct < 0.2) return "red" as const;
+    if (pct < 0.5) return "amber" as const;
+    return "green" as const;
+  }, [timerSeconds, mission]);
+
+  const handleAbort = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
   // Mission not found
   if (!mission) {
     return (
@@ -188,7 +202,9 @@ export const Mission = () => {
   const timerIsLow = timerSeconds < 60;
 
   return (
-    <Flex gap={24} padding={24} style={{ alignItems: "flex-start" }}>
+    <div style={{ position: "relative", minHeight: "100vh" }}>
+      <MatrixBackground colorTier={colorTier} />
+    <Flex gap={24} padding={24} style={{ alignItems: "flex-start", position: "relative", zIndex: 1 }}>
       {/* Left column — Briefing panel */}
       <Flex
         flexDirection="column"
@@ -246,6 +262,34 @@ export const Mission = () => {
             <Text textStyle="small" style={{ opacity: 0.6 }}>
               Intel requested: -{HINT_PENALTY} pts per hint used
             </Text>
+
+            {/* Abort mission */}
+            {!showAbortConfirm ? (
+              <Button
+                variant="default"
+                onClick={() => setShowAbortConfirm(true)}
+              >
+                Abort Mission
+              </Button>
+            ) : (
+              <Flex gap={8} alignItems="center">
+                <Text textStyle="small" style={{ color: "var(--dt-colors-text-critical-default, #e74c3c)" }}>
+                  Abort this mission? Progress will be lost.
+                </Text>
+                <Button
+                  variant="default"
+                  onClick={handleAbort}
+                >
+                  Confirm Abort
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={() => setShowAbortConfirm(false)}
+                >
+                  Cancel
+                </Button>
+              </Flex>
+            )}
           </Flex>
         </Surface>
       </Flex>
@@ -401,5 +445,6 @@ export const Mission = () => {
         })}
       </Flex>
     </Flex>
+    </div>
   );
 };
