@@ -47,7 +47,8 @@ export const Mission = () => {
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
-  const [showEscalate, setShowEscalate] = useState(false);
+  const [escalateStep, setEscalateStep] = useState<0 | 1 | 2>(0);
+  const [timerPaused, setTimerPaused] = useState(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -60,6 +61,7 @@ export const Mission = () => {
   useEffect(() => {
     if (!mission) return;
     if (timerSeconds <= 0) return;
+    if (timerPaused) return;
 
     const interval = setInterval(() => {
       setTimerSeconds((prev) => {
@@ -72,7 +74,7 @@ export const Mission = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mission, timerSeconds]);
+  }, [mission, timerSeconds, timerPaused]);
 
   const getCheckpointStatus = useCallback(
     (index: number): CheckpointStatus => {
@@ -176,8 +178,21 @@ export const Mission = () => {
     return "green" as const;
   }, [timerSeconds, mission]);
 
-  const handleEscalate = useCallback(() => {
-    setShowEscalate(true);
+  const handleEscalateClick = useCallback(() => {
+    setTimerPaused(true);
+    setEscalateStep(1);
+  }, []);
+
+  const handleEscalateConfirm = useCallback(() => {
+    setEscalateStep(2);
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  }, [navigate]);
+
+  const handleKeepFighting = useCallback(() => {
+    setTimerPaused(false);
+    setEscalateStep(0);
   }, []);
 
   // Mission not found
@@ -269,23 +284,70 @@ export const Mission = () => {
 
         {/* Escalate to War Room */}
         <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
-          {!showEscalate ? (
+          {escalateStep === 0 && (
             <button
-              onClick={handleEscalate}
+              onClick={handleEscalateClick}
               style={{
                 background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.4)",
-                padding: "8px 20px",
-                borderRadius: "4px",
+                border: "none",
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "20px",
+                fontWeight: "600",
                 cursor: "pointer",
-                fontSize: "12px",
-                letterSpacing: "0.5px",
+                letterSpacing: "0.3px",
+                padding: "0",
               }}
             >
               Escalate to War Room
             </button>
-          ) : (
+          )}
+          {escalateStep === 1 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+                color: "rgba(255,255,255,0.4)",
+                fontSize: "13px",
+              }}
+            >
+              <span>Are you sure? This will end your mission.</span>
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  onClick={handleEscalateConfirm}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255,255,255,0.9)",
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    letterSpacing: "0.3px",
+                    padding: "0",
+                  }}
+                >
+                  Yes, Escalate
+                </button>
+                <button
+                  onClick={handleKeepFighting}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255,255,255,0.9)",
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    letterSpacing: "0.3px",
+                    padding: "0",
+                  }}
+                >
+                  Keep Fighting
+                </button>
+              </div>
+            </div>
+          )}
+          {escalateStep === 2 && (
             <div
               style={{
                 display: "flex",
@@ -293,25 +355,10 @@ export const Mission = () => {
                 alignItems: "center",
                 gap: "8px",
                 color: "rgba(255,255,255,0.4)",
-                fontSize: "12px",
+                fontSize: "13px",
               }}
             >
-              <span>&#x26A0; Escalating to War Room... Your team has been paged. Mission failed.</span>
-              <button
-                onClick={() => navigate("/")}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  color: "rgba(255,255,255,0.4)",
-                  padding: "8px 20px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                Return to Missions
-              </button>
+              <span>{"\u26A0"} Escalating to War Room... Your team has been paged. Mission failed.</span>
             </div>
           )}
         </div>
