@@ -208,9 +208,32 @@ export const Mission = () => {
       {/* Left column — Briefing panel */}
       <Flex
         flexDirection="column"
-        gap={16}
+        gap={8}
         style={{ flex: "0 0 40%", minWidth: 300 }}
       >
+        <Flex justifyContent="space-between" alignItems="center">
+          <Heading level={3}>Mission</Heading>
+          {!showAbortConfirm ? (
+            <Button
+              variant="default"
+              onClick={() => setShowAbortConfirm(true)}
+            >
+              Abort
+            </Button>
+          ) : (
+            <Flex gap={8} alignItems="center">
+              <Text textStyle="small" style={{ color: "var(--dt-colors-text-critical-default, #e74c3c)" }}>
+                Abort? Progress will be lost.
+              </Text>
+              <Button variant="default" onClick={handleAbort}>
+                Confirm
+              </Button>
+              <Button variant="default" onClick={() => setShowAbortConfirm(false)}>
+                Cancel
+              </Button>
+            </Flex>
+          )}
+        </Flex>
         <Surface>
           <Flex flexDirection="column" padding={20} gap={12}>
             {/* Title + codename */}
@@ -263,33 +286,6 @@ export const Mission = () => {
               Intel requested: -{HINT_PENALTY} pts per hint used
             </Text>
 
-            {/* Abort mission */}
-            {!showAbortConfirm ? (
-              <Button
-                variant="default"
-                onClick={() => setShowAbortConfirm(true)}
-              >
-                Abort Mission
-              </Button>
-            ) : (
-              <Flex gap={8} alignItems="center">
-                <Text textStyle="small" style={{ color: "var(--dt-colors-text-critical-default, #e74c3c)" }}>
-                  Abort this mission? Progress will be lost.
-                </Text>
-                <Button
-                  variant="default"
-                  onClick={handleAbort}
-                >
-                  Confirm Abort
-                </Button>
-                <Button
-                  variant="default"
-                  onClick={() => setShowAbortConfirm(false)}
-                >
-                  Cancel
-                </Button>
-              </Flex>
-            )}
           </Flex>
         </Surface>
       </Flex>

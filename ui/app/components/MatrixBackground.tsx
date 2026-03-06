@@ -27,7 +27,8 @@ export const MatrixBackground = memo(({ colorTier }: MatrixBackgroundProps) => {
 
     let animationId: number;
     let lastFrameTime = 0;
-    const FRAME_INTERVAL = 120; // ~8fps for a slower, cinematic fall
+    const TIER_INTERVALS: Record<string, number> = { green: 120, amber: 80, red: 40 };
+    const FRAME_INTERVAL = TIER_INTERVALS[colorTier] ?? 120;
     const fontSize = 14;
     let columns = 0;
     let drops: number[] = [];
