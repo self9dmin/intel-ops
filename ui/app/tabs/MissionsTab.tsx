@@ -180,72 +180,79 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
+          flexDirection: "column",
           padding: "16px 0",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
           marginBottom: "32px",
         }}
       >
-        <PlayerStatusStrip
-          playerName={displayName}
-          totalXP={totalXP}
-          globalRank={globalRank}
-          missionsCompleted={completedMissions.length}
-          streakDays={userState?.streakDays ?? 0}
-        />
-        {nextMission && (
-          <Button
-            variant="emphasized"
-            onClick={() => navigate(`/missions/${nextMission.id}`)}
-          >
-            Continue Next Mission →
-          </Button>
-        )}
-      </div>
-
-      {/* Achievements Strip */}
-      <div
-        onClick={() => onSwitchTab?.("progress")}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          padding: "8px 0",
-          marginBottom: "16px",
-          cursor: "pointer",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <span
+        <div
           style={{
-            fontSize: "10px",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            color: "rgba(255,255,255,0.4)",
-            marginRight: "4px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
           }}
         >
-          ACHIEVEMENTS
-        </span>
-        {ALL_BADGES.map((badge) => {
-          const isEarned = earnedBadges.has(badge.id);
-          return (
-            <span
-              key={badge.id}
-              title={badge.name}
-              style={{
-                fontSize: "18px",
-                opacity: isEarned ? 1 : 0.3,
-                filter: isEarned ? "none" : "grayscale(1)",
-                transition: "opacity 0.2s",
-              }}
+          <PlayerStatusStrip
+            playerName={displayName}
+            totalXP={totalXP}
+            globalRank={globalRank}
+            missionsCompleted={completedMissions.length}
+            streakDays={userState?.streakDays ?? 0}
+          />
+          {nextMission && (
+            <Button
+              variant="emphasized"
+              onClick={() => navigate(`/missions/${nextMission.id}`)}
             >
-              {getBadgeEmoji(badge.icon)}
-            </span>
-          );
-        })}
+              Continue Next Mission →
+            </Button>
+          )}
+        </div>
+
+        {/* Achievements Strip */}
+        <div
+          onClick={() => onSwitchTab?.("progress")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "8px 0 0 0",
+            marginTop: "8px",
+            cursor: "pointer",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "10px",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              color: "rgba(255,255,255,0.4)",
+              marginRight: "4px",
+            }}
+          >
+            ACHIEVEMENTS
+          </span>
+          {ALL_BADGES.map((badge) => {
+            const isEarned = earnedBadges.has(badge.id);
+            return (
+              <span
+                key={badge.id}
+                title={badge.name}
+                style={{
+                  fontSize: "18px",
+                  opacity: isEarned ? 1 : 0.3,
+                  filter: isEarned ? "none" : "grayscale(1)",
+                  transition: "opacity 0.2s",
+                }}
+              >
+                {getBadgeEmoji(badge.icon)}
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       {/* Recommended Missions */}

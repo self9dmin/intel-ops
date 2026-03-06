@@ -26,9 +26,17 @@ export const MatrixBackground = memo(({ colorTier }: MatrixBackgroundProps) => {
     if (!ctx) return;
 
     let animationId: number;
+    let lastFrameTime = 0;
+    const FRAME_INTERVAL = 120; // ~8fps for a slower, cinematic fall
     const fontSize = 14;
     let columns = 0;
     let drops: number[] = [];
+
+    // Opacity ramp: start at 0.35, reach 0.5 over 2 minutes
+    const startTime = Date.now();
+    const RAMP_DURATION = 2 * 60 * 1000; // 2 minutes in ms
+    const OPACITY_START = 0.35;
+    const OPACITY_END = 0.5;
 
     function resize() {
       if (!canvas) return;
@@ -52,13 +60,23 @@ export const MatrixBackground = memo(({ colorTier }: MatrixBackgroundProps) => {
 
     const rgb = TIER_COLORS[colorTier] ?? TIER_COLORS.green;
 
-    function draw() {
+    function draw(timestamp: number) {
       if (!ctx || !canvas) return;
+
+      animationId = requestAnimationFrame(draw);
+
+      if (timestamp - lastFrameTime < FRAME_INTERVAL) return;
+      lastFrameTime = timestamp;
+
+      // Update canvas opacity based on elapsed time
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / RAMP_DURATION, 1);
+      canvas.style.opacity = String(OPACITY_START + (OPACITY_END - OPACITY_START) * t);
 
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = `rgba(${rgb}, 0.8)`;
+      ctx.fillStyle = `rgba(${rgb}, 0.95)`;
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < columns; i++) {
@@ -76,8 +94,6 @@ export const MatrixBackground = memo(({ colorTier }: MatrixBackgroundProps) => {
 
         drops[i] += 1;
       }
-
-      animationId = requestAnimationFrame(draw);
     }
 
     animationId = requestAnimationFrame(draw);
@@ -98,7 +114,7 @@ export const MatrixBackground = memo(({ colorTier }: MatrixBackgroundProps) => {
         width: "100%",
         height: "100%",
         zIndex: 0,
-        opacity: 0.1,
+        opacity: 0.35,
         pointerEvents: "none",
       }}
     />
