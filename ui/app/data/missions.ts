@@ -847,6 +847,77 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-golden-signal",
+    title: "Operation: Golden Signal",
+    codename: "GOLDEN SIGNAL",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "Before you can declare a customer-facing incident for EasyTrade, you need to catalogue its SLOs.",
+    briefing:
+      "The EasyTrade trading platform has three SLOs defined. Before you can declare a customer-facing incident, you need to catalogue them — find each SLO target, warning threshold, and signal type. Then locate the hipstershop CartService SLO for comparison. This intelligence is required before any incident declaration.",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "incident-commander", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["slos", "applications", "services"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the EasyTrade Availability SLO Target",
+        instruction:
+          "Navigate to the SLOs section in Dynatrace. Filter for SLOs with 'EasyTrade' in the name. What is the target percentage for the SLO named 'EasyTrade - Application - Availability'?",
+        hint: "This SLO covers synthetic test results — its target is notably lower than typical 99.x% targets. The value is not a whole number.",
+        type: "multiple-choice",
+        choices: ["95%", "99.9%", "87.5%", "60%"],
+        correctChoice: "87.5%",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Find the EasyTrade Success Rate SLO",
+        instruction:
+          "For the SLO named 'EasyTrade - Application - Success Rate', what is the target percentage and what service name pattern does the entity filter apply to (look for the SLO_SVC tag value)?",
+        hint: "The entity filter in this SLO uses a tag with a wildcard pattern. Look at the full filter expression — the SLO_SVC tag contains the service name with a -* suffix.",
+        type: "multiple-choice",
+        choices: [
+          "95% / frontendreverseproxy-*",
+          "99% / easytradeloginservice-*",
+          "95% / easytrade-frontend",
+          "99.9% / frontentreverseproxy",
+        ],
+        correctChoice: "95% / frontendreverseproxy-*",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Find the EasyTrade User Experience SLO Warning",
+        instruction:
+          "For the SLO 'EasyTrade - Application - User Experience', what is the warning threshold? This SLO is measured against the EasyTrade APPLICATION entity.",
+        hint: "Warning sits just above the target. Both are relatively low — this SLO measures Apdex/user satisfaction, not availability. The target is 60%.",
+        type: "multiple-choice",
+        choices: ["60%", "64%", "70%", "80%"],
+        correctChoice: "64%",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Find the Hipstershop CartService SLO Target",
+        instruction:
+          "Locate the SLO for hipstershop's CartService (name contains 'hipstershop.CartService'). What is its target percentage?",
+        hint: "CartService is a core commerce service — expect a high-availability target. Note: the SLO name has a typo ('avaliability' not 'availability') — use that to find it.",
+        type: "multiple-choice",
+        choices: ["98%", "99%", "99.9%", "99.98%"],
+        correctChoice: "99.98%",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
