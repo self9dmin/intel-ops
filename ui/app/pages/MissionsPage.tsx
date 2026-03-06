@@ -147,24 +147,27 @@ export const MissionsPage = () => {
     filters.discipline || filters.topic || filters.difficulty || filters.maxTime || selectedPath;
 
   return (
-    <Flex flexDirection="column" gap={24} padding={24}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "24px" }}>
       {/* Player Status Strip */}
-      <PlayerStatusStrip
-        playerName={displayName}
-        totalXP={totalXP}
-        globalRank={globalRank}
-        missionsCompleted={completedMissions.length}
-        streakDays={userState?.streakDays ?? 0}
-      />
+      <div style={{ marginBottom: "32px" }}>
+        <PlayerStatusStrip
+          playerName={displayName}
+          totalXP={totalXP}
+          globalRank={globalRank}
+          missionsCompleted={completedMissions.length}
+          streakDays={userState?.streakDays ?? 0}
+        />
+      </div>
 
       {/* Recommended Missions */}
       {recommendations.length > 0 && (
+        <div style={{ marginBottom: "24px" }}>
         <Flex flexDirection="column" gap={12}>
           <Heading level={4}>Recommended for you</Heading>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: `repeat(${Math.min(recommendations.length, 2)}, 1fr)`,
+              gridTemplateColumns: "repeat(2, 1fr)",
               gap: "16px",
             }}
           >
@@ -179,14 +182,18 @@ export const MissionsPage = () => {
             ))}
           </div>
         </Flex>
+        </div>
       )}
       {completedMissions.length === 0 && recommendations.length === 0 && (
-        <Text textStyle="small" style={{ opacity: 0.6 }}>
-          Complete a mission to unlock recommendations
-        </Text>
+        <div style={{ marginBottom: "24px" }}>
+          <Text textStyle="small" style={{ opacity: 0.6 }}>
+            Complete a mission to unlock recommendations
+          </Text>
+        </div>
       )}
 
       {/* Learning Paths Row */}
+      <div style={{ marginBottom: "16px" }}>
       <Flex flexDirection="column" gap={8}>
         <Heading level={4}>Learning Paths</Heading>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -211,84 +218,97 @@ export const MissionsPage = () => {
           ))}
         </div>
       </Flex>
+      </div>
 
       {/* Mission Filters Row */}
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div style={{ minWidth: "160px" }}>
-          <Select
-            name="discipline-filter"
-            value={filters.discipline ?? ""}
-            onChange={(value: string | null) =>
-              updateFilter("discipline", value || null)
-            }
-          >
-            <SelectOption value="" id="disc-none">All Disciplines</SelectOption>
-            {ALL_DISCIPLINES.map((d) => (
-              <SelectOption key={d.value} value={d.value} id={`disc-${d.value}`}>
-                {d.label}
-              </SelectOption>
-            ))}
-          </Select>
+      <div style={{ marginBottom: "12px" }}>
+      <Flex flexDirection="column" gap={8}>
+        <Text textStyle="small" style={{ fontWeight: 600, opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.5px", fontSize: "11px" }}>
+          Filters
+        </Text>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div style={{ minWidth: "160px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Discipline</div>
+            <Select
+              name="discipline-filter"
+              value={filters.discipline ?? ""}
+              onChange={(value: string | null) =>
+                updateFilter("discipline", value || null)
+              }
+            >
+              <SelectOption value="" id="disc-none">All Disciplines</SelectOption>
+              {ALL_DISCIPLINES.map((d) => (
+                <SelectOption key={d.value} value={d.value} id={`disc-${d.value}`}>
+                  {d.label}
+                </SelectOption>
+              ))}
+            </Select>
+          </div>
+          <div style={{ minWidth: "140px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Topic</div>
+            <Select
+              name="topic-filter"
+              value={filters.topic ?? ""}
+              onChange={(value: string | null) =>
+                updateFilter("topic", value || null)
+              }
+            >
+              <SelectOption value="" id="topic-none">All Topics</SelectOption>
+              {ALL_TOPICS.map((t) => (
+                <SelectOption key={t.value} value={t.value} id={`topic-${t.value}`}>
+                  {t.label}
+                </SelectOption>
+              ))}
+            </Select>
+          </div>
+          <div style={{ minWidth: "140px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Difficulty</div>
+            <Select
+              name="difficulty-filter"
+              value={filters.difficulty ?? ""}
+              onChange={(value: string | null) =>
+                updateFilter("difficulty", value || null)
+              }
+            >
+              <SelectOption value="" id="diff-none">All Difficulties</SelectOption>
+              {ALL_DIFFICULTIES.map((d) => (
+                <SelectOption key={d.value} value={d.value} id={`diff-${d.value}`}>
+                  {d.label}
+                </SelectOption>
+              ))}
+            </Select>
+          </div>
+          <div style={{ minWidth: "120px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Max Time</div>
+            <Select
+              name="maxtime-filter"
+              value={filters.maxTime ? String(filters.maxTime) : ""}
+              onChange={(value: string | null) =>
+                updateFilter("maxTime", value || null)
+              }
+            >
+              <SelectOption value="" id="time-none">Any Time</SelectOption>
+              {MAX_TIME_OPTIONS.map((t) => (
+                <SelectOption key={t.value} value={t.value} id={`time-${t.value}`}>
+                  {t.label}
+                </SelectOption>
+              ))}
+            </Select>
+          </div>
+          <Switch value={showLocked} onChange={setShowLocked}>
+            Show Locked
+          </Switch>
+          {hasActiveFilters && (
+            <Button variant="default" onClick={clearAllFilters}>
+              Clear Filters
+            </Button>
+          )}
         </div>
-        <div style={{ minWidth: "140px" }}>
-          <Select
-            name="topic-filter"
-            value={filters.topic ?? ""}
-            onChange={(value: string | null) =>
-              updateFilter("topic", value || null)
-            }
-          >
-            <SelectOption value="" id="topic-none">All Topics</SelectOption>
-            {ALL_TOPICS.map((t) => (
-              <SelectOption key={t.value} value={t.value} id={`topic-${t.value}`}>
-                {t.label}
-              </SelectOption>
-            ))}
-          </Select>
-        </div>
-        <div style={{ minWidth: "140px" }}>
-          <Select
-            name="difficulty-filter"
-            value={filters.difficulty ?? ""}
-            onChange={(value: string | null) =>
-              updateFilter("difficulty", value || null)
-            }
-          >
-            <SelectOption value="" id="diff-none">All Difficulties</SelectOption>
-            {ALL_DIFFICULTIES.map((d) => (
-              <SelectOption key={d.value} value={d.value} id={`diff-${d.value}`}>
-                {d.label}
-              </SelectOption>
-            ))}
-          </Select>
-        </div>
-        <div style={{ minWidth: "120px" }}>
-          <Select
-            name="maxtime-filter"
-            value={filters.maxTime ? String(filters.maxTime) : ""}
-            onChange={(value: string | null) =>
-              updateFilter("maxTime", value || null)
-            }
-          >
-            <SelectOption value="" id="time-none">Any Time</SelectOption>
-            {MAX_TIME_OPTIONS.map((t) => (
-              <SelectOption key={t.value} value={t.value} id={`time-${t.value}`}>
-                {t.label}
-              </SelectOption>
-            ))}
-          </Select>
-        </div>
-        <Switch value={showLocked} onChange={setShowLocked}>
-          Show Locked
-        </Switch>
-        {hasActiveFilters && (
-          <Button variant="default" onClick={clearAllFilters}>
-            Clear Filters
-          </Button>
-        )}
+      </Flex>
       </div>
 
       {/* Mission Grid */}
+      <div style={{ marginTop: "8px" }}>
       <Flex flexDirection="column" gap={12}>
         <Heading level={4}>
           All Missions{" "}
@@ -323,6 +343,7 @@ export const MissionsPage = () => {
           </div>
         )}
       </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };

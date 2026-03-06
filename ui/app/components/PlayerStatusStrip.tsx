@@ -43,7 +43,7 @@ export const PlayerStatusStrip = ({
         borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "12px" }}>
+      <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>
         {playerName}
       </div>
       <div
