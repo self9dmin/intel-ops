@@ -98,7 +98,7 @@ const ShellLayout = () => {
         }}
       >
         <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
-          Intel Ops
+          Practice in Silence. Respond in Chaos.
         </span>
         <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
           {TAB_ORDER.map((tab) => (
