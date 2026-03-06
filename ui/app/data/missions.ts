@@ -765,6 +765,88 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-silent-query",
+    title: "Operation: Silent Query",
+    codename: "SILENT QUERY",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Investigate, identify, classify.",
+    briefing:
+      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Nobody escalated it. Your job is to find the problem, identify the full database endpoint, confirm the alert classification, and extract the entity ID — this all goes in the incident report.",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "incident-commander", xp: 75 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["problems", "databases"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the MySQL Availability Problem",
+        instruction:
+          "In the Problems app set timeframe to Last 7 days. Find the open AVAILABILITY problem titled 'MySQL availability'. What is the full entity name shown in the problem header?",
+        hint: "Filter by AVAILABILITY severity or sort by duration. The entity name in the header is the full RDS connection string, not just a hostname.",
+        type: "multiple-choice",
+        choices: [
+          "MySQL @ mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com:3306/ecommerce_db",
+          "MySQL @ unguard-mariadb:3306/memberships",
+          "MySQL @ astroshop-playground-productcatalog-db:5432/postgres",
+          "MySQL @ ip-10-0-0-53:3306/ecommerce_db",
+        ],
+        correctChoice:
+          "MySQL @ mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com:3306/ecommerce_db",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Extract the Database Name",
+        instruction:
+          "From the entity name visible in the MySQL availability problem, what is the database name at the end of the connection string (after the port number)?",
+        hint: "The entity name follows the pattern: MySQL @ hostname:port/dbname. The database name is the last segment after the slash.",
+        type: "multiple-choice",
+        choices: ["mysql_prod", "ecommerce_db", "playground_db", "easytrade"],
+        correctChoice: "ecommerce_db",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Confirm the Alert Type Classification",
+        instruction:
+          "On the MySQL availability problem detail page, expand the 'Show details' link beneath the MySQL availability event. What is the value of the event.db_ready_made_alert_type field?",
+        hint: "After clicking Show details, a table of event properties appears. Look for the row labeled event.db_ready_made_alert_type.",
+        type: "multiple-choice",
+        choices: [
+          "DB_CONNECTION_FAILED",
+          "DB_AVAILABILITY_EVENT",
+          "DB_SLOW_QUERY_DETECTED",
+          "CUSTOM_ALERT",
+        ],
+        correctChoice: "DB_AVAILABILITY_EVENT",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Find the Entity ID",
+        instruction:
+          "Still in the Show details panel, what is the value of the dt.source_entity field? This is the Dynatrace entity ID for the MySQL instance.",
+        hint: "Look for the dt.source_entity field in the Show details panel. It starts with CUSTOM_DEVICE- because RDS instances monitored via extension appear as custom devices, not HOST entities.",
+        type: "multiple-choice",
+        choices: [
+          "HOST-07DAB01EB3E1AD56",
+          "CUSTOM_DEVICE-BBDC2098409B0274",
+          "SERVICE-5F8F858524885FDD",
+          "PROCESS_GROUP-3672868CCC50B397",
+        ],
+        correctChoice: "CUSTOM_DEVICE-BBDC2098409B0274",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
