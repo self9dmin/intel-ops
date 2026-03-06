@@ -3,7 +3,7 @@
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
     "name": "War Room",
-    "version": "0.1.29",
+    "version": "0.1.30",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "id": "my.intelops.training",
     "scopes": [
