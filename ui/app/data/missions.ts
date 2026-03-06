@@ -377,6 +377,245 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-what-are-you",
+    title: "Operation: What Are You",
+    codename: "WHAT ARE YOU",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "Three alerts fire. Three different entity types. Before you can triage anything, you need to know what kind of thing you're looking at.",
+    briefing:
+      "Entity types are the foundation of everything in Dynatrace. HOST, PROCESS_GROUP, CUSTOM_DEVICE — they behave differently, live in different apps, and fail in different ways. Get your bearings now, before something breaks at 3am.",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "sre", xp: 75 }],
+    topics: ["entities", "infrastructure", "databases"],
+    category: "root-cause-analysis",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find a Host Entity",
+        instruction:
+          "Open the Hosts app (Infrastructure → Hosts). Find the host named 'frontend-high-cpu'. What entity type prefix does Dynatrace use for hosts?",
+        hint: "The entity ID appears in the URL when you open any host. Check the URL bar after clicking the host — it starts with the entity type prefix.",
+        type: "multiple-choice",
+        choices: ["HOST-", "SERVICE-", "PROCESS_GROUP-", "CUSTOM_DEVICE-"],
+        correctChoice: "HOST-",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Find a Process Group Entity",
+        instruction:
+          "Open Technologies & Processes. Find the 'webserver' process group running on 'frontend-high-cpu'. What is the entity type prefix for process groups?",
+        hint: "Processes in Dynatrace are grouped by their executable path — all instances of the same binary roll up into one PROCESS_GROUP. Check the URL when you open it.",
+        type: "multiple-choice",
+        choices: ["HOST-", "PROCESS_GROUP-", "PROCESS-", "SERVICE-"],
+        correctChoice: "PROCESS_GROUP-",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Find a Custom Device Entity",
+        instruction:
+          "Navigate to the Problems app and find the open MySQL availability problem. Click into it and then click the affected entity link. What entity type prefix does the MySQL RDS instance use — and why is it different from a HOST?",
+        hint: "Open the Problems app, set timeframe to Last 7 days, and find the problem titled 'MySQL availability'. Click the problem, then click the affected entity name under '1 impacted infrastructure component'. The entity ID prefix is visible in the URL or Properties panel.",
+        type: "multiple-choice",
+        choices: [
+          "HOST- — because databases are always monitored as hosts",
+          "SERVICE- — because databases are accessed via service calls",
+          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
+          "PROCESS_GROUP- — because MySQL is a process running on a server",
+        ],
+        correctChoice:
+          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Match Entity Types to Monitoring Methods",
+        instruction:
+          "Based on what you've seen — 'frontend-high-cpu' (HOST), 'webserver' (PROCESS_GROUP), and the MySQL RDS instance (CUSTOM_DEVICE) — which statement correctly explains the difference?",
+        hint: "Think about what each entity type represents in terms of HOW Dynatrace sees it. A HOST has an Agent on it. A PROCESS_GROUP is discovered by that Agent. A CUSTOM_DEVICE is something the Agent can't run on.",
+        type: "multiple-choice",
+        choices: [
+          "HOST = OneAgent installed; PROCESS_GROUP = processes discovered by that OneAgent; CUSTOM_DEVICE = monitored via extension without OneAgent",
+          "HOST = physical servers only; PROCESS_GROUP = virtual machines; CUSTOM_DEVICE = cloud services",
+          "HOST = AWS resources; PROCESS_GROUP = Kubernetes pods; CUSTOM_DEVICE = on-premise hardware",
+          "HOST = monitored with full stack; PROCESS_GROUP = monitored with APM only; CUSTOM_DEVICE = not monitored",
+        ],
+        correctChoice:
+          "HOST = OneAgent installed; PROCESS_GROUP = processes discovered by that OneAgent; CUSTOM_DEVICE = monitored via extension without OneAgent",
+        points: 200,
+      },
+    ],
+  },
+  {
+    id: "mission-grid-search",
+    title: "Operation: Grid Search",
+    codename: "GRID SEARCH",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Map the EKS cluster before something breaks at 3am. Nodes, namespaces, workloads — know the terrain.",
+    briefing:
+      "The EKS cluster is running production workloads across multiple namespaces. You need to map it — node count, workload distribution, namespace health — before you can do anything useful when something breaks. Navigation under pressure starts with navigation when things are calm.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["kubernetes", "infrastructure"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open the Kubernetes App and Count the Clusters",
+        instruction:
+          "Open the Kubernetes app in Dynatrace. How many Kubernetes clusters are visible in the cluster list?",
+        hint: "The playground runs workloads on two different cloud providers. Look for both AWS and Azure clusters in the list.",
+        type: "multiple-choice",
+        choices: ["1", "2", "3", "4"],
+        correctChoice: "2",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Identify the EKS Cluster Node Count",
+        instruction:
+          "Select the EKS cluster (aws-eks-3). How many worker nodes does it have?",
+        hint: "The cluster summary panel shows total node count near the top. Worker nodes are the ones running your workloads.",
+        type: "multiple-choice",
+        choices: ["3", "4", "5", "6"],
+        correctChoice: "5",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Navigate to the hipstershop Namespace",
+        instruction:
+          "In the aws-eks-3 cluster, navigate to the Namespaces tab and open the 'prod' namespace. How many workloads are running in this namespace?",
+        hint: "The namespace detail view shows a Resources analysis section near the top. The workload count is displayed prominently.",
+        type: "multiple-choice",
+        choices: ["8", "12", "15", "20"],
+        correctChoice: "15",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Count the Kubernetes Services in the Namespace",
+        instruction:
+          "Still in the 'prod' namespace on aws-eks-3, how many Kubernetes services are defined in this namespace?",
+        hint: "Kubernetes services are the networking layer inside the cluster — different from Dynatrace services. Scroll past the workloads section to find the Kubernetes services list.",
+        type: "multiple-choice",
+        choices: ["10", "14", "17", "22"],
+        correctChoice: "17",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "Identify the AKS Node Count",
+        instruction:
+          "Go back to the cluster list and open the AKS cluster (aks-playground). How many nodes does it have?",
+        hint: "The AKS cluster is smaller than the EKS cluster. Check the node count in the cluster summary panel.",
+        type: "multiple-choice",
+        choices: ["2", "3", "5", "7"],
+        correctChoice: "3",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-follow-the-wire",
+    title: "Operation: Follow the Wire",
+    codename: "FOLLOW THE WIRE",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "A slowdown is reported in easytrade. Map the service-to-database dependency chain before you can act.",
+    briefing:
+      "A slowdown is reported in the easytrade application. Before you can find the root cause, you need to understand how the services are wired together — which service calls which database, what technology stack is involved, and who owns what. Map the dependency chain first. Then you can act.",
+    timerSeconds: 540,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [
+      { track: "developer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["services", "databases", "entities"],
+    category: "root-cause-analysis",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the easytrade Application Owner",
+        instruction:
+          "Open the Applications app and find the EasyTrade application. What is the dt.owner tag value on this application?",
+        hint: "Owner tags use the format dt.owner:teamname. Check the Properties and tags tab on the application entity.",
+        type: "multiple-choice",
+        choices: ["Avengers", "KDTDemo", "Ninja", "easytrade-squad"],
+        correctChoice: "KDTDemo",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Count the easytrade Services",
+        instruction:
+          "Navigate to the Services app. Filter by Kubernetes namespace 'easytrade' on the EKS cluster. How many services are running in this namespace?",
+        hint: "Use the filter bar at the top of the Services app to filter by Kubernetes namespace. Type 'easytrade' in the namespace filter.",
+        type: "multiple-choice",
+        choices: ["8", "12", "17", "24"],
+        correctChoice: "17",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Identify the Database Service Type",
+        instruction:
+          "In the easytrade services list, find the service named 'TradeManagementSqlConnection'. What is the Dynatrace service type for this entity?",
+        hint: "Dynatrace automatically classifies services by their traffic pattern. A service that exists purely to represent database calls is typed differently from a web service.",
+        type: "multiple-choice",
+        choices: [
+          "WEB_REQUEST_SERVICE",
+          "WEB_SERVICE",
+          "DATABASE_SERVICE",
+          "CUSTOM_SERVICE",
+        ],
+        correctChoice: "DATABASE_SERVICE",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Find the Database Host",
+        instruction:
+          "Click into TradeManagementSqlConnection. What is the name of the actual database host this service connects to?",
+        hint: "The service detail page shows the connection properties for a DATABASE_SERVICE. Look for the hostname or database name — this is an in-cluster database, not the RDS instance.",
+        type: "multiple-choice",
+        choices: [
+          "mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com",
+          "easytrade-db",
+          "unguard-mariadb",
+          "astroshop-playground-productcatalog-db",
+        ],
+        correctChoice: "easytrade-db",
+        points: 200,
+      },
+      {
+        id: "cp5",
+        title: "Identify the Login Service Technology",
+        instruction:
+          "In the easytrade services list, find 'easyTradeLoginService'. What technology stack does it run on?",
+        hint: "The process group name for this service ends in .dll — a strong hint about the technology. Check the technology tags on the service or its backing process group.",
+        type: "multiple-choice",
+        choices: ["Java", "Go", "ASP.NET Core / .NET", "Node.js"],
+        correctChoice: "ASP.NET Core / .NET",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
