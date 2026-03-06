@@ -2,8 +2,8 @@
   "$schema": "./.dt-app/app.config.schema.json",
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
-    "name": "Intel Ops",
-    "version": "0.1.23",
+    "name": "War Room",
+    "version": "0.1.27",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "id": "my.intelops.training",
     "scopes": [
