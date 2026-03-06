@@ -308,18 +308,19 @@ export const Mission = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "10px",
-                color: "rgba(255,255,255,0.4)",
+                color: "rgba(255,255,255,0.9)",
                 fontSize: "13px",
+                marginTop: "32px",
               }}
             >
               <span>Are you sure? This will end your mission.</span>
-              <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ display: "flex", gap: "24px" }}>
                 <button
                   onClick={handleEscalateConfirm}
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "rgba(255,255,255,0.9)",
+                    color: "rgba(255,80,80,0.9)",
                     fontSize: "20px",
                     fontWeight: "600",
                     cursor: "pointer",
