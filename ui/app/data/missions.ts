@@ -377,6 +377,81 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-what-are-you",
+    title: "Operation: What Are You",
+    codename: "WHAT ARE YOU",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "Three alerts fire. Three different entity types. Before you can triage anything, you need to know what kind of thing you're looking at.",
+    briefing:
+      "Entity types are the foundation of everything in Dynatrace. HOST, PROCESS_GROUP, CUSTOM_DEVICE — they behave differently, live in different apps, and fail in different ways. Get your bearings now, before something breaks at 3am.",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "sre", xp: 75 }],
+    topics: ["entities", "infrastructure", "databases"],
+    category: "root-cause-analysis",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find a Host Entity",
+        instruction:
+          "Open the Hosts app (Infrastructure → Hosts). Find the host named 'frontend-high-cpu'. What entity type prefix does Dynatrace use for hosts?",
+        hint: "The entity ID appears in the URL when you open any host. Check the URL bar after clicking the host — it starts with the entity type prefix.",
+        type: "multiple-choice",
+        choices: ["HOST-", "SERVICE-", "PROCESS_GROUP-", "CUSTOM_DEVICE-"],
+        correctChoice: "HOST-",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Find a Process Group Entity",
+        instruction:
+          "Open Technologies & Processes. Find the 'webserver' process group running on 'frontend-high-cpu'. What is the entity type prefix for process groups?",
+        hint: "Processes in Dynatrace are grouped by their executable path — all instances of the same binary roll up into one PROCESS_GROUP. Check the URL when you open it.",
+        type: "multiple-choice",
+        choices: ["HOST-", "PROCESS_GROUP-", "PROCESS-", "SERVICE-"],
+        correctChoice: "PROCESS_GROUP-",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Find a Custom Device Entity",
+        instruction:
+          "Use the entity search and look for the MySQL RDS instance named 'MySQL @ mysql-8-4-dynatrace-demo…'. What entity type prefix does it use — and why is it different from a HOST?",
+        hint: "When Dynatrace can't install a OneAgent on something like an AWS RDS managed database, it monitors it via an extension. Check what prefix the entity ID has.",
+        type: "multiple-choice",
+        choices: [
+          "HOST- — because databases are always monitored as hosts",
+          "SERVICE- — because databases are accessed via service calls",
+          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
+          "PROCESS_GROUP- — because MySQL is a process running on a server",
+        ],
+        correctChoice:
+          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Match Entity Types to Monitoring Methods",
+        instruction:
+          "Based on what you've seen — 'frontend-high-cpu' (HOST), 'webserver' (PROCESS_GROUP), and the MySQL RDS instance (CUSTOM_DEVICE) — which statement correctly explains the difference?",
+        hint: "Think about what each entity type represents in terms of HOW Dynatrace sees it. A HOST has an Agent on it. A PROCESS_GROUP is discovered by that Agent. A CUSTOM_DEVICE is something the Agent can't run on.",
+        type: "multiple-choice",
+        choices: [
+          "HOST = OneAgent installed; PROCESS_GROUP = processes discovered by that OneAgent; CUSTOM_DEVICE = monitored via extension without OneAgent",
+          "HOST = physical servers only; PROCESS_GROUP = virtual machines; CUSTOM_DEVICE = cloud services",
+          "HOST = AWS resources; PROCESS_GROUP = Kubernetes pods; CUSTOM_DEVICE = on-premise hardware",
+          "HOST = monitored with full stack; PROCESS_GROUP = monitored with APM only; CUSTOM_DEVICE = not monitored",
+        ],
+        correctChoice:
+          "HOST = OneAgent installed; PROCESS_GROUP = processes discovered by that OneAgent; CUSTOM_DEVICE = monitored via extension without OneAgent",
+        points: 200,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
