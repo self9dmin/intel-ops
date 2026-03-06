@@ -9,12 +9,19 @@ export interface Checkpoint {
   points: number;
 }
 
-import type { Discipline, TopicId } from "./UserState";
+import type { Discipline } from "./UserState";
 
 export interface MissionDisciplineXP {
   track: Discipline;
   xp: number;
 }
+
+export type MissionCategory =
+  | "incident-response"
+  | "performance"
+  | "root-cause-analysis"
+  | "configuration"
+  | "cost-optimization";
 
 export interface Mission {
   id: string;
@@ -30,6 +37,7 @@ export interface Mission {
   disciplines: MissionDisciplineXP[];
   prerequisites: string[];
   topics: string[];
+  category: MissionCategory;
 }
 
 export interface XPGrant {

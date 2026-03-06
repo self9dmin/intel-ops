@@ -19,6 +19,7 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 75 },
     ],
     topics: ["dql", "davis", "logs"],
+    category: "incident-response",
     checkpoints: [
       {
         id: "cp1",
@@ -100,6 +101,7 @@ export const MISSIONS: Mission[] = [
       { track: "developer", xp: 50 },
     ],
     topics: ["traces", "metrics"],
+    category: "performance",
     checkpoints: [
       {
         id: "cp1",
@@ -172,6 +174,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 50 },
     ],
     topics: ["traces", "dql"],
+    category: "root-cause-analysis",
     checkpoints: [
       {
         id: "cp1",
@@ -244,6 +247,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 50 },
     ],
     topics: ["synthetics", "davis"],
+    category: "incident-response",
     checkpoints: [
       {
         id: "cp1",
@@ -317,6 +321,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 50 },
     ],
     topics: ["kubernetes", "metrics"],
+    category: "configuration",
     checkpoints: [
       {
         id: "cp1",

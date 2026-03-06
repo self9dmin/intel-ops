@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
@@ -16,6 +16,7 @@ import {
 } from "@dynatrace/strato-components-preview/forms";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import { getMissionById } from "../data/missions";
+import { MatrixBackground } from "../components/MatrixBackground";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
@@ -46,6 +47,8 @@ export const Mission = () => {
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
+  const [escalateStep, setEscalateStep] = useState<0 | 1 | 2>(0);
+  const [timerPaused, setTimerPaused] = useState(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -58,6 +61,7 @@ export const Mission = () => {
   useEffect(() => {
     if (!mission) return;
     if (timerSeconds <= 0) return;
+    if (timerPaused) return;
 
     const interval = setInterval(() => {
       setTimerSeconds((prev) => {
@@ -70,7 +74,7 @@ export const Mission = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mission, timerSeconds]);
+  }, [mission, timerSeconds, timerPaused]);
 
   const getCheckpointStatus = useCallback(
     (index: number): CheckpointStatus => {
@@ -166,6 +170,31 @@ export const Mission = () => {
     [hintsUsed, hintsRevealed]
   );
 
+  const colorTier = useMemo(() => {
+    if (!mission) return "green" as const;
+    const pct = timerSeconds / mission.timerSeconds;
+    if (pct < 0.2) return "red" as const;
+    if (pct < 0.5) return "amber" as const;
+    return "green" as const;
+  }, [timerSeconds, mission]);
+
+  const handleEscalateClick = useCallback(() => {
+    setTimerPaused(true);
+    setEscalateStep(1);
+  }, []);
+
+  const handleEscalateConfirm = useCallback(() => {
+    setEscalateStep(2);
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  }, [navigate]);
+
+  const handleKeepFighting = useCallback(() => {
+    setTimerPaused(false);
+    setEscalateStep(0);
+  }, []);
+
   // Mission not found
   if (!mission) {
     return (
@@ -188,13 +217,16 @@ export const Mission = () => {
   const timerIsLow = timerSeconds < 60;
 
   return (
-    <Flex gap={24} padding={24} style={{ alignItems: "flex-start" }}>
+    <div style={{ position: "relative", minHeight: "100vh" }}>
+      <MatrixBackground colorTier={colorTier} />
+    <Flex gap={24} padding={24} style={{ alignItems: "flex-start", position: "relative", zIndex: 1 }}>
       {/* Left column — Briefing panel */}
       <Flex
         flexDirection="column"
-        gap={16}
+        gap={8}
         style={{ flex: "0 0 40%", minWidth: 300 }}
       >
+        <Heading level={3}>Mission</Heading>
         <Surface>
           <Flex flexDirection="column" padding={20} gap={12}>
             {/* Title + codename */}
@@ -246,8 +278,91 @@ export const Mission = () => {
             <Text textStyle="small" style={{ opacity: 0.6 }}>
               Intel requested: -{HINT_PENALTY} pts per hint used
             </Text>
+
           </Flex>
         </Surface>
+
+        {/* Escalate to War Room */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
+          {escalateStep === 0 && (
+            <button
+              onClick={handleEscalateClick}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "20px",
+                fontWeight: "600",
+                cursor: "pointer",
+                letterSpacing: "0.3px",
+                padding: "0",
+              }}
+            >
+              Escalate to War Room
+            </button>
+          )}
+          {escalateStep === 1 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "13px",
+                marginTop: "32px",
+              }}
+            >
+              <span>Are you sure? This will end your mission.</span>
+              <div style={{ display: "flex", gap: "24px" }}>
+                <button
+                  onClick={handleEscalateConfirm}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255,80,80,0.9)",
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    letterSpacing: "0.3px",
+                    padding: "0",
+                  }}
+                >
+                  Yes, Escalate
+                </button>
+                <button
+                  onClick={handleKeepFighting}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255,255,255,0.9)",
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    letterSpacing: "0.3px",
+                    padding: "0",
+                  }}
+                >
+                  Keep Fighting
+                </button>
+              </div>
+            </div>
+          )}
+          {escalateStep === 2 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px",
+                color: "rgba(255,255,255,0.4)",
+                fontSize: "13px",
+              }}
+            >
+              <span>{"\u26A0"} Escalating to War Room... Your team has been paged. Mission failed.</span>
+            </div>
+          )}
+        </div>
       </Flex>
 
       {/* Right column — Checkpoints */}
@@ -401,5 +516,6 @@ export const Mission = () => {
         })}
       </Flex>
     </Flex>
+    </div>
   );
 };

@@ -1,8 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
-import { Surface } from "@dynatrace/strato-components/layouts";
-import { Heading, Text } from "@dynatrace/strato-components/typography";
+import { Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import type { Mission } from "../types/mission.types";
@@ -41,83 +40,76 @@ export const MissionCard = ({
   recommendReason,
 }: MissionCardProps) => {
   const navigate = useNavigate();
-  const isLocked = !isUnlocked;
+  const hasUnmetPrereqs = !isUnlocked && prerequisiteNames && prerequisiteNames.length > 0;
 
   return (
-    <Surface>
-      <Flex
-        flexDirection="column"
-        padding={12}
-        gap={8}
-        style={{ opacity: isLocked ? 0.5 : 1 }}
-      >
-        {recommendReason && (
-          <Text textStyle="small" style={{ opacity: 0.7, fontStyle: "italic" }}>
-            {recommendReason}
-          </Text>
-        )}
-        <Flex justifyContent="space-between" alignItems="center">
-          <Text textStyle="small">
-            <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
-              {mission.codename}
-            </span>
-          </Text>
-          <Chip
-            color={getDifficultyColor(mission.difficulty)}
-            variant="emphasized"
-          >
-            {mission.difficulty.toUpperCase()}
-          </Chip>
-        </Flex>
-        <Heading level={5}>{mission.title}</Heading>
-        <Flex gap={4} style={{ flexWrap: "wrap" }}>
-          <Chip color="neutral">{mission.role}</Chip>
-        </Flex>
-        <Text textStyle="small" style={{ opacity: 0.7 }}>
-          {mission.description}
+    <div
+      style={{
+        padding: "12px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        opacity: hasUnmetPrereqs ? 0.85 : 1,
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+      }}
+    >
+      {recommendReason && (
+        <Text textStyle="small" style={{ opacity: 0.7, fontStyle: "italic" }}>
+          {recommendReason}
         </Text>
-        <Flex justifyContent="space-between" alignItems="center">
-          {isLocked ? (
-            <div
-              title={
-                prerequisiteNames && prerequisiteNames.length > 0
-                  ? `Requires: ${prerequisiteNames.join(", ")}`
-                  : "Locked"
-              }
-            >
-              <Button variant="default" disabled>
-                Locked
-              </Button>
-            </div>
-          ) : isCompleted ? (
-            <Flex gap={8} alignItems="center">
-              <Chip color="success" variant="emphasized">
-                Completed
-              </Chip>
-              <Button
-                variant="default"
-                onClick={() => navigate(`/missions/${mission.id}`)}
-              >
-                Replay
-              </Button>
-            </Flex>
-          ) : (
+      )}
+      <Flex justifyContent="space-between" alignItems="center">
+        <Text textStyle="small">
+          <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
+            {mission.codename}
+          </span>
+        </Text>
+        <Chip
+          color={getDifficultyColor(mission.difficulty)}
+          variant="emphasized"
+        >
+          {mission.difficulty.toUpperCase()}
+        </Chip>
+      </Flex>
+      <Text textStyle="small" style={{ fontWeight: 600 }}>{mission.title}</Text>
+      <Flex gap={4} style={{ flexWrap: "wrap" }}>
+        <Chip color="neutral">{mission.role}</Chip>
+      </Flex>
+      <Text textStyle="small" style={{ opacity: 0.7 }}>
+        {mission.description}
+      </Text>
+      {hasUnmetPrereqs && (
+        <Text textStyle="small" style={{ opacity: 0.5, fontSize: "11px" }}>
+          ℹ Suggested: complete {prerequisiteNames.join(", ")} first
+        </Text>
+      )}
+      <Flex justifyContent="space-between" alignItems="center">
+        {isCompleted ? (
+          <Flex gap={8} alignItems="center">
+            <Chip color="success" variant="emphasized">
+              Completed
+            </Chip>
             <Button
-              variant="emphasized"
+              variant="default"
               onClick={() => navigate(`/missions/${mission.id}`)}
             >
-              Start Mission
+              Replay
             </Button>
-          )}
-          <Text textStyle="small" style={{ opacity: 0.6 }}>
-            {isLocked
-              ? prerequisiteNames && prerequisiteNames.length > 0
-                ? `Requires: ${prerequisiteNames.join(", ")}`
-                : "Locked"
-              : formatMinutes(mission.timerSeconds)}
-          </Text>
-        </Flex>
+          </Flex>
+        ) : (
+          <Button
+            variant="emphasized"
+            onClick={() => navigate(`/missions/${mission.id}`)}
+          >
+            Start Mission
+          </Button>
+        )}
+        <Text textStyle="small" style={{ opacity: 0.6 }}>
+          {formatMinutes(mission.timerSeconds)}
+        </Text>
       </Flex>
-    </Surface>
+    </div>
   );
 };
