@@ -616,6 +616,308 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-iron-floor",
+    title: "Operation: Iron Floor",
+    codename: "IRON FLOOR",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "A host has been silently running out of disk space for nearly a month. Find it, read it, understand it.",
+    briefing:
+      "A low-disk alert has been open on a production host for almost 30 days. Nobody acted on it. Your job is to find the problem, identify the affected disk, confirm the threshold, and understand the full scope of what's at risk on that host.",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "sre", xp: 75 }],
+    topics: ["problems", "infrastructure", "metrics"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Chronic Disk Problem",
+        instruction:
+          "Open the Problems app. Set the timeframe to Last 30 days. Find the oldest open problem on the list — it affects a host named 'frontend-high-cpu'. What is the name of the host shown in the problem title?",
+        hint: "Sort the problem list by Start date ascending — oldest problems appear at the bottom. Look for a RESOURCE_CONTENTION problem on a host named 'frontend-high-cpu' that started in early February.",
+        type: "multiple-choice",
+        choices: [
+          "frontend-high-cpu",
+          "frontend-slow-disk",
+          "ip-10-0-0-53",
+          "webserver",
+        ],
+        correctChoice: "frontend-high-cpu",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Identify the Affected Mount Point",
+        instruction:
+          "Open the disk problem on frontend-high-cpu. Read the subtitle beneath the 'Disk available %' chart. Which disk mount point is at issue?",
+        hint: "The subtitle under the chart header states the exact mount path that breached the threshold.",
+        type: "multiple-choice",
+        choices: ["/", "/boot", "/data", "/var"],
+        correctChoice: "/data",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Confirm the Alert Threshold",
+        instruction:
+          "Still on the disk problem detail page, what is the alert threshold percentage shown on the dashed line in the Disk available % chart?",
+        hint: "The dashed red line on the chart is labeled with the threshold value. It is also stated verbatim in the problem subtitle.",
+        type: "multiple-choice",
+        choices: ["1%", "3%", "5%", "10%"],
+        correctChoice: "3%",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Count the Disks on the Host",
+        instruction:
+          "From the problem detail page, click the 'frontend-high-cpu' entity link to open the host. Scroll to the Disk analysis section. How many disks does this host have?",
+        hint: "The Disk analysis section header states 'Contains N Disks.' Count all mount points shown in the table.",
+        type: "multiple-choice",
+        choices: ["2", "3", "4", "6"],
+        correctChoice: "4",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-stone-wall",
+    title: "Operation: Stone Wall",
+    codename: "STONE WALL",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Go beyond the alert. Extract entity IDs, read Grail DQL, and confirm the host OS — the data needed to build automated remediation.",
+    briefing:
+      "The /data disk on frontend-high-cpu is critically full. The platform team needs more than the alert — they need the exact entity IDs, the Grail DQL metric driving the newer alert, and the host OS version to build an automated remediation workflow. Your job is to extract that data.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-iron-floor"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["problems", "infrastructure", "grail"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Host Entity ID",
+        instruction:
+          "Navigate to the Hosts app and open 'frontend-high-cpu'. What is the Dynatrace entity ID for this host? Check the browser URL or Properties and tags tab.",
+        hint: "The entity ID appears in the URL bar when you open any host. It starts with HOST- followed by a hex string.",
+        type: "multiple-choice",
+        choices: [
+          "HOST-07DAB01EB3E1AD56",
+          "HOST-6C058190F4B22DD1",
+          "HOST-BBDC2098409B0274",
+          "HOST-3672868CCC50B397",
+        ],
+        correctChoice: "HOST-07DAB01EB3E1AD56",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "Count the Open Problems on This Host",
+        instruction:
+          "On the frontend-high-cpu host detail page, how many open problems are shown in the red badge in the tab strip?",
+        hint: "The red badge next to 'Properties and tags' in the host detail tab strip shows the count of active problems for this entity.",
+        type: "multiple-choice",
+        choices: ["1", "2", "3", "4"],
+        correctChoice: "3",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Identify the Grail Metric in the Newer Disk Alert",
+        instruction:
+          "Open the disk alert that opened on March 4 (distinct from the February one). A Grail DQL query is shown on the problem detail page. What is the metric function used in the first line of the DQL?",
+        hint: "In the Problems app set timeframe to Last 7 days and find the disk problem that opened on March 4. The Grail query block shows a DQL statement — read the timeseries keyword on line 1.",
+        type: "multiple-choice",
+        choices: [
+          "timeseries disk_free=min(dt.host.disk.free)",
+          "timeseries disk_used=max(dt.host.disk.used)",
+          "timeseries disk_available=avg(dt.host.disk.avail.percent)",
+          "fetch dt.host.disk.free",
+        ],
+        correctChoice: "timeseries disk_free=min(dt.host.disk.free)",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Confirm the Host OS Version",
+        instruction:
+          "On the frontend-high-cpu Properties and tags page, what Ubuntu version is this host running?",
+        hint: "The OS version is listed in Properties and tags. Look for the OS type or OS version row. The kernel string includes -aws.",
+        type: "multiple-choice",
+        choices: [
+          "Ubuntu 22.04.1 LTS",
+          "Ubuntu 22.04.3 LTS",
+          "Ubuntu 24.04.3 LTS",
+          "Amazon Linux 2023",
+        ],
+        correctChoice: "Ubuntu 24.04.3 LTS",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-silent-query",
+    title: "Operation: Silent Query",
+    codename: "SILENT QUERY",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Investigate, identify, classify.",
+    briefing:
+      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Nobody escalated it. Your job is to find the problem, identify the full database endpoint, confirm the alert classification, and extract the entity ID — this all goes in the incident report.",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "incident-commander", xp: 75 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["problems", "databases"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the MySQL Availability Problem",
+        instruction:
+          "In the Problems app set timeframe to Last 7 days. Find the open AVAILABILITY problem titled 'MySQL availability'. What is the full entity name shown in the problem header?",
+        hint: "Filter by AVAILABILITY severity or sort by duration. The entity name in the header is the full RDS connection string, not just a hostname.",
+        type: "multiple-choice",
+        choices: [
+          "MySQL @ mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com:3306/ecommerce_db",
+          "MySQL @ unguard-mariadb:3306/memberships",
+          "MySQL @ astroshop-playground-productcatalog-db:5432/postgres",
+          "MySQL @ ip-10-0-0-53:3306/ecommerce_db",
+        ],
+        correctChoice:
+          "MySQL @ mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com:3306/ecommerce_db",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Extract the Database Name",
+        instruction:
+          "From the entity name visible in the MySQL availability problem, what is the database name at the end of the connection string (after the port number)?",
+        hint: "The entity name follows the pattern: MySQL @ hostname:port/dbname. The database name is the last segment after the slash.",
+        type: "multiple-choice",
+        choices: ["mysql_prod", "ecommerce_db", "playground_db", "easytrade"],
+        correctChoice: "ecommerce_db",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Confirm the Alert Type Classification",
+        instruction:
+          "On the MySQL availability problem detail page, expand the 'Show details' link beneath the MySQL availability event. What is the value of the event.db_ready_made_alert_type field?",
+        hint: "After clicking Show details, a table of event properties appears. Look for the row labeled event.db_ready_made_alert_type.",
+        type: "multiple-choice",
+        choices: [
+          "DB_CONNECTION_FAILED",
+          "DB_AVAILABILITY_EVENT",
+          "DB_SLOW_QUERY_DETECTED",
+          "CUSTOM_ALERT",
+        ],
+        correctChoice: "DB_AVAILABILITY_EVENT",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Find the Entity ID",
+        instruction:
+          "Still in the Show details panel, what is the value of the dt.source_entity field? This is the Dynatrace entity ID for the MySQL instance.",
+        hint: "Look for the dt.source_entity field in the Show details panel. It starts with CUSTOM_DEVICE- because RDS instances monitored via extension appear as custom devices, not HOST entities.",
+        type: "multiple-choice",
+        choices: [
+          "HOST-07DAB01EB3E1AD56",
+          "CUSTOM_DEVICE-BBDC2098409B0274",
+          "SERVICE-5F8F858524885FDD",
+          "PROCESS_GROUP-3672868CCC50B397",
+        ],
+        correctChoice: "CUSTOM_DEVICE-BBDC2098409B0274",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-golden-signal",
+    title: "Operation: Golden Signal",
+    codename: "GOLDEN SIGNAL",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "Before you can declare a customer-facing incident for EasyTrade, you need to catalogue its SLOs.",
+    briefing:
+      "The EasyTrade trading platform has three SLOs defined. Before you can declare a customer-facing incident, you need to catalogue them — find each SLO target, warning threshold, and signal type. Then locate the hipstershop CartService SLO for comparison. This intelligence is required before any incident declaration.",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "incident-commander", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["slos", "applications", "services"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the EasyTrade Availability SLO Target",
+        instruction:
+          "Navigate to the SLOs section in Dynatrace. Filter for SLOs with 'EasyTrade' in the name. What is the target percentage for the SLO named 'EasyTrade - Application - Availability'?",
+        hint: "This SLO covers synthetic test results — its target is notably lower than typical 99.x% targets. The value is not a whole number.",
+        type: "multiple-choice",
+        choices: ["95%", "99.9%", "87.5%", "60%"],
+        correctChoice: "87.5%",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Find the EasyTrade Success Rate SLO",
+        instruction:
+          "For the SLO named 'EasyTrade - Application - Success Rate', what is the target percentage and what service name pattern does the entity filter apply to (look for the SLO_SVC tag value)?",
+        hint: "The entity filter in this SLO uses a tag with a wildcard pattern. Look at the full filter expression — the SLO_SVC tag contains the service name with a -* suffix.",
+        type: "multiple-choice",
+        choices: [
+          "95% / frontendreverseproxy-*",
+          "99% / easytradeloginservice-*",
+          "95% / easytrade-frontend",
+          "99.9% / frontentreverseproxy",
+        ],
+        correctChoice: "95% / frontendreverseproxy-*",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Find the EasyTrade User Experience SLO Warning",
+        instruction:
+          "For the SLO 'EasyTrade - Application - User Experience', what is the warning threshold? This SLO is measured against the EasyTrade APPLICATION entity.",
+        hint: "Warning sits just above the target. Both are relatively low — this SLO measures Apdex/user satisfaction, not availability. The target is 60%.",
+        type: "multiple-choice",
+        choices: ["60%", "64%", "70%", "80%"],
+        correctChoice: "64%",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Find the Hipstershop CartService SLO Target",
+        instruction:
+          "Locate the SLO for hipstershop's CartService (name contains 'hipstershop.CartService'). What is its target percentage?",
+        hint: "CartService is a core commerce service — expect a high-availability target. Note: the SLO name has a typo ('avaliability' not 'availability') — use that to find it.",
+        type: "multiple-choice",
+        choices: ["98%", "99%", "99.9%", "99.98%"],
+        correctChoice: "99.98%",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
