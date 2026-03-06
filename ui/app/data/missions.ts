@@ -684,6 +684,87 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-stone-wall",
+    title: "Operation: Stone Wall",
+    codename: "STONE WALL",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Go beyond the alert. Extract entity IDs, read Grail DQL, and confirm the host OS — the data needed to build automated remediation.",
+    briefing:
+      "The /data disk on frontend-high-cpu is critically full. The platform team needs more than the alert — they need the exact entity IDs, the Grail DQL metric driving the newer alert, and the host OS version to build an automated remediation workflow. Your job is to extract that data.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-iron-floor"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["problems", "infrastructure", "grail"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Host Entity ID",
+        instruction:
+          "Navigate to the Hosts app and open 'frontend-high-cpu'. What is the Dynatrace entity ID for this host? Check the browser URL or Properties and tags tab.",
+        hint: "The entity ID appears in the URL bar when you open any host. It starts with HOST- followed by a hex string.",
+        type: "multiple-choice",
+        choices: [
+          "HOST-07DAB01EB3E1AD56",
+          "HOST-6C058190F4B22DD1",
+          "HOST-BBDC2098409B0274",
+          "HOST-3672868CCC50B397",
+        ],
+        correctChoice: "HOST-07DAB01EB3E1AD56",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "Count the Open Problems on This Host",
+        instruction:
+          "On the frontend-high-cpu host detail page, how many open problems are shown in the red badge in the tab strip?",
+        hint: "The red badge next to 'Properties and tags' in the host detail tab strip shows the count of active problems for this entity.",
+        type: "multiple-choice",
+        choices: ["1", "2", "3", "4"],
+        correctChoice: "3",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Identify the Grail Metric in the Newer Disk Alert",
+        instruction:
+          "Open the disk alert that opened on March 4 (distinct from the February one). A Grail DQL query is shown on the problem detail page. What is the metric function used in the first line of the DQL?",
+        hint: "In the Problems app set timeframe to Last 7 days and find the disk problem that opened on March 4. The Grail query block shows a DQL statement — read the timeseries keyword on line 1.",
+        type: "multiple-choice",
+        choices: [
+          "timeseries disk_free=min(dt.host.disk.free)",
+          "timeseries disk_used=max(dt.host.disk.used)",
+          "timeseries disk_available=avg(dt.host.disk.avail.percent)",
+          "fetch dt.host.disk.free",
+        ],
+        correctChoice: "timeseries disk_free=min(dt.host.disk.free)",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Confirm the Host OS Version",
+        instruction:
+          "On the frontend-high-cpu Properties and tags page, what Ubuntu version is this host running?",
+        hint: "The OS version is listed in Properties and tags. Look for the OS type or OS version row. The kernel string includes -aws.",
+        type: "multiple-choice",
+        choices: [
+          "Ubuntu 22.04.1 LTS",
+          "Ubuntu 22.04.3 LTS",
+          "Ubuntu 24.04.3 LTS",
+          "Amazon Linux 2023",
+        ],
+        correctChoice: "Ubuntu 24.04.3 LTS",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
