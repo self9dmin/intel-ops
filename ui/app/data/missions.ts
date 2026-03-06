@@ -616,6 +616,74 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-iron-floor",
+    title: "Operation: Iron Floor",
+    codename: "IRON FLOOR",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "A host has been silently running out of disk space for nearly a month. Find it, read it, understand it.",
+    briefing:
+      "A low-disk alert has been open on a production host for almost 30 days. Nobody acted on it. Your job is to find the problem, identify the affected disk, confirm the threshold, and understand the full scope of what's at risk on that host.",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "sre", xp: 75 }],
+    topics: ["problems", "infrastructure", "metrics"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Chronic Disk Problem",
+        instruction:
+          "Open the Problems app. Set the timeframe to Last 30 days. Find the oldest open problem on the list — it affects a host named 'frontend-high-cpu'. What is the name of the host shown in the problem title?",
+        hint: "Sort the problem list by Start date ascending — oldest problems appear at the bottom. Look for a RESOURCE_CONTENTION problem on a host named 'frontend-high-cpu' that started in early February.",
+        type: "multiple-choice",
+        choices: [
+          "frontend-high-cpu",
+          "frontend-slow-disk",
+          "ip-10-0-0-53",
+          "webserver",
+        ],
+        correctChoice: "frontend-high-cpu",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Identify the Affected Mount Point",
+        instruction:
+          "Open the disk problem on frontend-high-cpu. Read the subtitle beneath the 'Disk available %' chart. Which disk mount point is at issue?",
+        hint: "The subtitle under the chart header states the exact mount path that breached the threshold.",
+        type: "multiple-choice",
+        choices: ["/", "/boot", "/data", "/var"],
+        correctChoice: "/data",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Confirm the Alert Threshold",
+        instruction:
+          "Still on the disk problem detail page, what is the alert threshold percentage shown on the dashed line in the Disk available % chart?",
+        hint: "The dashed red line on the chart is labeled with the threshold value. It is also stated verbatim in the problem subtitle.",
+        type: "multiple-choice",
+        choices: ["1%", "3%", "5%", "10%"],
+        correctChoice: "3%",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Count the Disks on the Host",
+        instruction:
+          "From the problem detail page, click the 'frontend-high-cpu' entity link to open the host. Scroll to the Disk analysis section. How many disks does this host have?",
+        hint: "The Disk analysis section header states 'Contains N Disks.' Count all mount points shown in the table.",
+        type: "multiple-choice",
+        choices: ["2", "3", "4", "6"],
+        correctChoice: "4",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
