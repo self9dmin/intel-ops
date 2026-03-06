@@ -47,7 +47,7 @@ export const Mission = () => {
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
-  const [showAbortConfirm, setShowAbortConfirm] = useState(false);
+  const [showEscalate, setShowEscalate] = useState(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -176,9 +176,9 @@ export const Mission = () => {
     return "green" as const;
   }, [timerSeconds, mission]);
 
-  const handleAbort = useCallback(() => {
-    navigate("/");
-  }, [navigate]);
+  const handleEscalate = useCallback(() => {
+    setShowEscalate(true);
+  }, []);
 
   // Mission not found
   if (!mission) {
@@ -211,29 +211,7 @@ export const Mission = () => {
         gap={8}
         style={{ flex: "0 0 40%", minWidth: 300 }}
       >
-        <Flex justifyContent="space-between" alignItems="center">
-          <Heading level={3}>Mission</Heading>
-          {!showAbortConfirm ? (
-            <Button
-              variant="default"
-              onClick={() => setShowAbortConfirm(true)}
-            >
-              Abort
-            </Button>
-          ) : (
-            <Flex gap={8} alignItems="center">
-              <Text textStyle="small" style={{ color: "var(--dt-colors-text-critical-default, #e74c3c)" }}>
-                Abort? Progress will be lost.
-              </Text>
-              <Button variant="default" onClick={handleAbort}>
-                Confirm
-              </Button>
-              <Button variant="default" onClick={() => setShowAbortConfirm(false)}>
-                Cancel
-              </Button>
-            </Flex>
-          )}
-        </Flex>
+        <Heading level={3}>Mission</Heading>
         <Surface>
           <Flex flexDirection="column" padding={20} gap={12}>
             {/* Title + codename */}
@@ -288,6 +266,55 @@ export const Mission = () => {
 
           </Flex>
         </Surface>
+
+        {/* Escalate to War Room */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
+          {!showEscalate ? (
+            <button
+              onClick={handleEscalate}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.4)",
+                padding: "8px 20px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "12px",
+                letterSpacing: "0.5px",
+              }}
+            >
+              Escalate to War Room
+            </button>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px",
+                color: "rgba(255,255,255,0.4)",
+                fontSize: "12px",
+              }}
+            >
+              <span>&#x26A0; Escalating to War Room... Your team has been paged. Mission failed.</span>
+              <button
+                onClick={() => navigate("/")}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.4)",
+                  padding: "8px 20px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                Return to Missions
+              </button>
+            </div>
+          )}
+        </div>
       </Flex>
 
       {/* Right column — Checkpoints */}
