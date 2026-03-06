@@ -420,8 +420,8 @@ export const MISSIONS: Mission[] = [
         id: "cp3",
         title: "Find a Custom Device Entity",
         instruction:
-          "Use the entity search and look for the MySQL RDS instance named 'MySQL @ mysql-8-4-dynatrace-demo…'. What entity type prefix does it use — and why is it different from a HOST?",
-        hint: "When Dynatrace can't install a OneAgent on something like an AWS RDS managed database, it monitors it via an extension. Check what prefix the entity ID has.",
+          "Navigate to the Problems app and find the open MySQL availability problem. Click into it and then click the affected entity link. What entity type prefix does the MySQL RDS instance use — and why is it different from a HOST?",
+        hint: "Open the Problems app, set timeframe to Last 7 days, and find the problem titled 'MySQL availability'. Click the problem, then click the affected entity name under '1 impacted infrastructure component'. The entity ID prefix is visible in the URL or Properties panel.",
         type: "multiple-choice",
         choices: [
           "HOST- — because databases are always monitored as hosts",

@@ -96,33 +96,32 @@ export function useUserState(): UseUserStateResult {
 
       let currentDocId = documentId;
       let currentVersion = documentVersion;
+      const maxRetries = 3;
 
-      const doUpdate = async (docId: string, version: string, state: UserState): Promise<void> => {
-        const result = await documentsClient.updateDocument({
-          id: docId,
-          optimisticLockingVersion: version,
-          body: {
-            content: new Blob([JSON.stringify(state)], { type: "application/json" }),
-          },
-        });
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          await documentsClient.updateDocument({
+            id: currentDocId,
+            optimisticLockingVersion: currentVersion,
+            body: {
+              content: new Blob([JSON.stringify(updatedState)], { type: "application/json" }),
+            },
+          });
 
-        setDocumentId(docId);
-        setDocumentVersion(String((parseInt(documentVersion) + 1)));
-        setUserState(state);
-      };
+          const nextVersion = String(parseInt(currentVersion) + 1);
+          setDocumentId(currentDocId);
+          setDocumentVersion(nextVersion);
+          setUserState(updatedState);
+          return;
+        } catch (err: unknown) {
+          const isConflict =
+            err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
+          if (!isConflict || attempt === maxRetries) throw err;
 
-      try {
-        await doUpdate(currentDocId, currentVersion, updatedState);
-      } catch (err: unknown) {
-        const isConflict =
-          err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
-        if (!isConflict) throw err;
-
-        // Re-fetch to get the latest version and retry once
-        const fresh = await refreshDocument();
-        currentDocId = fresh.id;
-        currentVersion = fresh.version;
-        await doUpdate(currentDocId, currentVersion, updatedState);
+          const fresh = await refreshDocument();
+          currentDocId = fresh.id;
+          currentVersion = fresh.version;
+        }
       }
     },
     [documentId, documentVersion, refreshDocument]
