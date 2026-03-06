@@ -4,7 +4,7 @@ import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Paragraph } from "@dynatrace/strato-components/typography";
-import dynatraceLogo from "../assets/Dynatrace_Logo.svg";
+
 import { Mission } from "./pages/Mission";
 import { Debrief } from "./pages/Debrief";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
@@ -97,7 +97,6 @@ const ShellLayout = () => {
           flexShrink: 0,
         }}
       >
-        <img src={dynatraceLogo} alt="" style={{ height: "20px", width: "auto" }} />
         <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
           Intel Ops
         </span>
