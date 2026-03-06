@@ -452,6 +452,83 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-grid-search",
+    title: "Operation: Grid Search",
+    codename: "GRID SEARCH",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Map the EKS cluster before something breaks at 3am. Nodes, namespaces, workloads — know the terrain.",
+    briefing:
+      "The EKS cluster is running production workloads across multiple namespaces. You need to map it — node count, workload distribution, namespace health — before you can do anything useful when something breaks. Navigation under pressure starts with navigation when things are calm.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["kubernetes", "infrastructure"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open the Kubernetes App and Count the Clusters",
+        instruction:
+          "Open the Kubernetes app in Dynatrace. How many Kubernetes clusters are visible in the cluster list?",
+        hint: "The playground runs workloads on two different cloud providers. Look for both AWS and Azure clusters in the list.",
+        type: "multiple-choice",
+        choices: ["1", "2", "3", "4"],
+        correctChoice: "2",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Identify the EKS Cluster Node Count",
+        instruction:
+          "Select the EKS cluster (aws-eks-3). How many worker nodes does it have?",
+        hint: "The cluster summary panel shows total node count near the top. Worker nodes are the ones running your workloads.",
+        type: "multiple-choice",
+        choices: ["3", "4", "5", "6"],
+        correctChoice: "5",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Navigate to the hipstershop Namespace",
+        instruction:
+          "In the aws-eks-3 cluster, navigate to the Namespaces tab and open the 'prod' namespace. How many workloads are running in this namespace?",
+        hint: "The namespace detail view shows a Resources analysis section near the top. The workload count is displayed prominently.",
+        type: "multiple-choice",
+        choices: ["8", "12", "15", "20"],
+        correctChoice: "15",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Count the Kubernetes Services in the Namespace",
+        instruction:
+          "Still in the 'prod' namespace on aws-eks-3, how many Kubernetes services are defined in this namespace?",
+        hint: "Kubernetes services are the networking layer inside the cluster — different from Dynatrace services. Scroll past the workloads section to find the Kubernetes services list.",
+        type: "multiple-choice",
+        choices: ["10", "14", "17", "22"],
+        correctChoice: "17",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "Identify the AKS Node Count",
+        instruction:
+          "Go back to the cluster list and open the AKS cluster (aks-playground). How many nodes does it have?",
+        hint: "The AKS cluster is smaller than the EKS cluster. Check the node count in the cluster summary panel.",
+        type: "multiple-choice",
+        choices: ["2", "3", "5", "7"],
+        correctChoice: "3",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
