@@ -71,37 +71,27 @@ function SkillRow({
   return (
     <div
       style={{
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "200px 1fr 160px",
         alignItems: "center",
-        gap: "12px",
         padding: "8px 0",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <div
-        style={{
-          width: "4px",
-          height: "28px",
-          borderRadius: "2px",
-          background: color,
-          flexShrink: 0,
-        }}
-      />
-      <div style={{ width: "160px", flexShrink: 0 }}>
-        <div style={{ fontSize: "13px", fontWeight: 600 }}>{label}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div
+          style={{
+            width: "4px",
+            height: "28px",
+            borderRadius: "2px",
+            background: color,
+            flexShrink: 0,
+          }}
+        />
+        <span style={{ fontSize: "13px", fontWeight: 600 }}>{label}</span>
+        <span style={{ fontSize: "12px", color, fontWeight: 500 }}>{levelName}</span>
       </div>
-      <div
-        style={{
-          width: "80px",
-          flexShrink: 0,
-          fontSize: "12px",
-          color,
-          fontWeight: 500,
-        }}
-      >
-        {levelName}
-      </div>
-      <div style={{ flex: 1, minWidth: "100px" }}>
+      <div style={{ padding: "0 16px" }}>
         <div
           style={{
             background: "rgba(255,255,255,0.1)",
@@ -121,24 +111,10 @@ function SkillRow({
           />
         </div>
       </div>
-      <div
-        style={{
-          width: "100px",
-          flexShrink: 0,
-          fontSize: "12px",
-          color: "rgba(255,255,255,0.6)",
-          textAlign: "right",
-        }}
-      >
-        {xp} / {isMax ? "MAX" : `${next.xp} XP`}
-      </div>
-      <div
-        style={{
-          width: "90px",
-          flexShrink: 0,
-          textAlign: "right",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "12px" }}>
+        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>
+          {xp} / {isMax ? "MAX" : `${next.xp} XP`}
+        </span>
         <span
           style={{
             fontSize: "12px",
@@ -351,7 +327,7 @@ function LeaderboardTab() {
               setDifficultyFilter(value || null)
             }
           >
-            <SelectOption value="" id="lb-diff-all">All Difficulties</SelectOption>
+            <SelectOption value="" id="lb-diff-all">All</SelectOption>
             <SelectOption value="rookie" id="lb-diff-rookie">Rookie</SelectOption>
             <SelectOption value="operator" id="lb-diff-operator">Operator</SelectOption>
             <SelectOption value="elite" id="lb-diff-elite">Elite</SelectOption>
@@ -360,7 +336,7 @@ function LeaderboardTab() {
         </div>
       </div>
       <Text textStyle="small" style={{ opacity: 0.5 }}>
-        Scores may not reflect real-time data
+        Showing best score per player
       </Text>
       {loading ? (
         <SkeletonRows rows={5} />
@@ -490,7 +466,7 @@ function AchievementsTab() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
         gap: "8px",
       }}
     >
