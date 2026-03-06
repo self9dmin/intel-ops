@@ -21,6 +21,25 @@ interface UseUserStateResult {
 
 const DOCUMENT_TYPE = "intelops-user-state";
 
+function isConflictError(err: unknown): boolean {
+  if (err instanceof Error) {
+    const msg = err.message;
+    if (msg.includes("409") || msg.includes("Conflict") || msg.includes("optimistic") || msg.includes("Expected to find document with version")) {
+      return true;
+    }
+  }
+  if (typeof err === "object" && err !== null) {
+    const record = err as Record<string, unknown>;
+    if (record.status === 409 || record.statusCode === 409 || record.code === 409 || record.errorCode === 409) {
+      return true;
+    }
+    if (typeof record.body === "string" && (record.body.includes("409") || record.body.includes("Conflict"))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function getDocumentName(userId: string): string {
   return `user-state-${userId}`;
 }
@@ -114,10 +133,14 @@ export function useUserState(): UseUserStateResult {
           setUserState(updatedState);
           return;
         } catch (err: unknown) {
-          const isConflict =
-            err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
-          if (!isConflict || attempt === maxRetries) throw err;
+          if (!isConflictError(err)) throw err;
 
+          if (attempt === maxRetries) {
+            console.error("writeUserState: conflict persisted after max retries, giving up silently", err);
+            return;
+          }
+
+          console.warn(`writeUserState: 409 conflict on attempt ${attempt + 1}/${maxRetries}, retrying...`);
           const fresh = await refreshDocument();
           currentDocId = fresh.id;
           currentVersion = fresh.version;
@@ -206,56 +229,10 @@ export function useUserState(): UseUserStateResult {
       try {
         await writeUserState(updatedState);
       } catch (err: unknown) {
-        const isConflict =
-          err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
-        if (!isConflict) throw err;
-
-        // Re-fetch fresh state and re-apply XP grants on top of it
-        const fresh = await refreshDocument();
-        const retryDisciplines = { ...fresh.state.disciplines };
-        const retryTopicXP = { ...fresh.state.topicXP };
-
-        for (const grant of xpGrants) {
-          if (grant.discipline) {
-            const disc = grant.discipline;
-            const current = retryDisciplines[disc];
-            const newXP = current.xp + grant.amount;
-            const { level, levelName } = calculateLevel(newXP);
-            retryDisciplines[disc] = { xp: newXP, level, levelName };
-          }
-          if (grant.topic) {
-            retryTopicXP[grant.topic] = (retryTopicXP[grant.topic] ?? 0) + grant.amount;
-          }
-        }
-
-        const retryBadges = [...fresh.state.badges];
-        for (const badgeDef of ALL_BADGES) {
-          if (!retryBadges.includes(badgeDef.id)) {
-            if (
-              badgeDef.predicate({
-                completedMissions: fresh.state.completedMissions,
-                streakDays: fresh.state.streakDays,
-                disciplines: retryDisciplines,
-                topicXP: retryTopicXP,
-                totalXP: computeTotalXP(retryDisciplines),
-              })
-            ) {
-              retryBadges.push(badgeDef.id);
-            }
-          }
-        }
-
-        const retryState: UserState = {
-          ...fresh.state,
-          disciplines: retryDisciplines,
-          topicXP: retryTopicXP,
-          badges: retryBadges,
-        };
-
-        await writeUserState(retryState);
+        console.error("Failed to save XP award:", err);
       }
     },
-    [userState, documentId, writeUserState, refreshDocument]
+    [userState, documentId, writeUserState]
   );
 
   const completeMission = useCallback(
@@ -295,20 +272,11 @@ export function useUserState(): UseUserStateResult {
         try {
           await writeUserState(updatedState);
         } catch (err: unknown) {
-          const isConflict =
-            err instanceof Error && (err.message.includes("409") || err.message.includes("Conflict"));
-          if (!isConflict) {
-            console.error("Failed to save mission completion:", err);
-            return;
-          }
-
-          const fresh = await refreshDocument();
-          const retryState = buildCompletionState(fresh.state);
-          await writeUserState(retryState);
+          console.error("Failed to save mission completion:", err);
         }
       })();
     },
-    [userState, writeUserState, refreshDocument]
+    [userState, writeUserState]
   );
 
   const updateStreak = useCallback(() => {
