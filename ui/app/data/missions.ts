@@ -529,6 +529,93 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-follow-the-wire",
+    title: "Operation: Follow the Wire",
+    codename: "FOLLOW THE WIRE",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "A slowdown is reported in easytrade. Map the service-to-database dependency chain before you can act.",
+    briefing:
+      "A slowdown is reported in the easytrade application. Before you can find the root cause, you need to understand how the services are wired together — which service calls which database, what technology stack is involved, and who owns what. Map the dependency chain first. Then you can act.",
+    timerSeconds: 540,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [
+      { track: "developer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["services", "databases", "entities"],
+    category: "root-cause-analysis",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the easytrade Application Owner",
+        instruction:
+          "Open the Applications app and find the EasyTrade application. What is the dt.owner tag value on this application?",
+        hint: "Owner tags use the format dt.owner:teamname. Check the Properties and tags tab on the application entity.",
+        type: "multiple-choice",
+        choices: ["Avengers", "KDTDemo", "Ninja", "easytrade-squad"],
+        correctChoice: "KDTDemo",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Count the easytrade Services",
+        instruction:
+          "Navigate to the Services app. Filter by Kubernetes namespace 'easytrade' on the EKS cluster. How many services are running in this namespace?",
+        hint: "Use the filter bar at the top of the Services app to filter by Kubernetes namespace. Type 'easytrade' in the namespace filter.",
+        type: "multiple-choice",
+        choices: ["8", "12", "17", "24"],
+        correctChoice: "17",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Identify the Database Service Type",
+        instruction:
+          "In the easytrade services list, find the service named 'TradeManagementSqlConnection'. What is the Dynatrace service type for this entity?",
+        hint: "Dynatrace automatically classifies services by their traffic pattern. A service that exists purely to represent database calls is typed differently from a web service.",
+        type: "multiple-choice",
+        choices: [
+          "WEB_REQUEST_SERVICE",
+          "WEB_SERVICE",
+          "DATABASE_SERVICE",
+          "CUSTOM_SERVICE",
+        ],
+        correctChoice: "DATABASE_SERVICE",
+        points: 200,
+      },
+      {
+        id: "cp4",
+        title: "Find the Database Host",
+        instruction:
+          "Click into TradeManagementSqlConnection. What is the name of the actual database host this service connects to?",
+        hint: "The service detail page shows the connection properties for a DATABASE_SERVICE. Look for the hostname or database name — this is an in-cluster database, not the RDS instance.",
+        type: "multiple-choice",
+        choices: [
+          "mysql-8-4-dynatrace-demo.ckhuiwsqmnv8.us-east-1.rds.amazonaws.com",
+          "easytrade-db",
+          "unguard-mariadb",
+          "astroshop-playground-productcatalog-db",
+        ],
+        correctChoice: "easytrade-db",
+        points: 200,
+      },
+      {
+        id: "cp5",
+        title: "Identify the Login Service Technology",
+        instruction:
+          "In the easytrade services list, find 'easyTradeLoginService'. What technology stack does it run on?",
+        hint: "The process group name for this service ends in .dll — a strong hint about the technology. Check the technology tags on the service or its backing process group.",
+        type: "multiple-choice",
+        choices: ["Java", "Go", "ASP.NET Core / .NET", "Node.js"],
+        correctChoice: "ASP.NET Core / .NET",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
