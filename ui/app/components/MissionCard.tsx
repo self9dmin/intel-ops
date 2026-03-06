@@ -40,7 +40,7 @@ export const MissionCard = ({
   recommendReason,
 }: MissionCardProps) => {
   const navigate = useNavigate();
-  const isLocked = !isUnlocked;
+  const hasUnmetPrereqs = !isUnlocked && prerequisiteNames && prerequisiteNames.length > 0;
 
   return (
     <div
@@ -49,7 +49,7 @@ export const MissionCard = ({
         borderRadius: "8px",
         background: "rgba(255,255,255,0.04)",
         border: "1px solid rgba(255,255,255,0.08)",
-        opacity: isLocked ? 0.5 : 1,
+        opacity: hasUnmetPrereqs ? 0.85 : 1,
         display: "flex",
         flexDirection: "column",
         gap: "8px",
@@ -80,20 +80,13 @@ export const MissionCard = ({
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>
+      {hasUnmetPrereqs && (
+        <Text textStyle="small" style={{ opacity: 0.5, fontSize: "11px" }}>
+          ℹ Suggested: complete {prerequisiteNames.join(", ")} first
+        </Text>
+      )}
       <Flex justifyContent="space-between" alignItems="center">
-        {isLocked ? (
-          <div
-            title={
-              prerequisiteNames && prerequisiteNames.length > 0
-                ? `Requires: ${prerequisiteNames.join(", ")}`
-                : "Locked"
-            }
-          >
-            <Button variant="default" disabled>
-              Locked
-            </Button>
-          </div>
-        ) : isCompleted ? (
+        {isCompleted ? (
           <Flex gap={8} alignItems="center">
             <Chip color="success" variant="emphasized">
               Completed
@@ -114,11 +107,7 @@ export const MissionCard = ({
           </Button>
         )}
         <Text textStyle="small" style={{ opacity: 0.6 }}>
-          {isLocked
-            ? prerequisiteNames && prerequisiteNames.length > 0
-              ? `Requires: ${prerequisiteNames.join(", ")}`
-              : "Locked"
-            : formatMinutes(mission.timerSeconds)}
+          {formatMinutes(mission.timerSeconds)}
         </Text>
       </Flex>
     </div>

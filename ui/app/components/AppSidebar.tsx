@@ -18,8 +18,8 @@ const ROLE_OPTIONS: FilterOption[] = [
   { value: null, label: "All" },
   { value: "sre", label: "SRE" },
   { value: "developer", label: "Developer" },
-  { value: "incident-commander", label: "Incident Commander" },
-  { value: "platform-engineer", label: "Platform Engineer" },
+  { value: "incident-commander", label: "Incident Cmdr" },
+  { value: "platform-engineer", label: "Platform Eng" },
 ];
 
 const DIFFICULTY_OPTIONS: FilterOption[] = [
@@ -33,7 +33,7 @@ const DIFFICULTY_OPTIONS: FilterOption[] = [
 const TIME_OPTIONS: FilterOption[] = [
   { value: null, label: "All" },
   { value: "quick", label: "Quick (<15min)" },
-  { value: "standard", label: "Standard (15-30)" },
+  { value: "standard", label: "Std (15-30)" },
   { value: "deep", label: "Deep (>30min)" },
 ];
 
@@ -41,7 +41,7 @@ const CATEGORY_OPTIONS: { value: MissionCategory | null; label: string }[] = [
   { value: null, label: "All" },
   { value: "incident-response", label: "Incident Response" },
   { value: "performance", label: "Performance" },
-  { value: "root-cause-analysis", label: "Root Cause Analysis" },
+  { value: "root-cause-analysis", label: "Root Cause" },
   { value: "configuration", label: "Configuration" },
   { value: "cost-optimization", label: "Cost Optimization" },
 ];
@@ -49,6 +49,7 @@ const CATEGORY_OPTIONS: { value: MissionCategory | null; label: string }[] = [
 interface AppSidebarProps {
   activeTab: "missions" | "progress" | "leaderboard";
   onFilterChange: (filters: SidebarFilters) => void;
+  onSwitchToMissions: () => void;
 }
 
 function FilterSection({
@@ -56,21 +57,19 @@ function FilterSection({
   options,
   selected,
   onSelect,
-  disabled,
   categoryMissionCounts,
 }: {
   label: string;
   options: FilterOption[];
   selected: string | null;
   onSelect: (value: string | null) => void;
-  disabled: boolean;
   categoryMissionCounts?: Map<string | null, number>;
 }) {
   return (
     <div style={{ marginBottom: "16px" }}>
       <div
         style={{
-          fontSize: "11px",
+          fontSize: "12px",
           fontWeight: 600,
           textTransform: "uppercase",
           letterSpacing: "0.5px",
@@ -87,11 +86,11 @@ function FilterSection({
         return (
           <div
             key={opt.value ?? "__all__"}
-            onClick={disabled ? undefined : () => onSelect(opt.value)}
+            onClick={() => onSelect(opt.value)}
             style={{
               padding: "4px 8px",
               fontSize: "12px",
-              cursor: disabled ? "default" : "pointer",
+              cursor: "pointer",
               borderRadius: "4px",
               background: isActive
                 ? "rgba(255,255,255,0.1)"
@@ -102,9 +101,12 @@ function FilterSection({
               fontWeight: isActive ? 600 : 400,
               opacity: dimmed && !isActive ? 0.4 : 1,
               transition: "background 0.15s",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
             onMouseEnter={(e) => {
-              if (!disabled && !isActive) {
+              if (!isActive) {
                 e.currentTarget.style.background = "rgba(255,255,255,0.05)";
               }
             }}
@@ -122,7 +124,7 @@ function FilterSection({
   );
 }
 
-export const AppSidebar = ({ activeTab, onFilterChange }: AppSidebarProps) => {
+export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: AppSidebarProps) => {
   const [filters, setFilters] = useState<SidebarFilters>({
     role: null,
     difficulty: null,
@@ -130,7 +132,7 @@ export const AppSidebar = ({ activeTab, onFilterChange }: AppSidebarProps) => {
     category: null,
   });
 
-  const disabled = activeTab !== "missions";
+  const isMissions = activeTab === "missions";
 
   const categoryMissionCounts = useMemo(() => {
     const counts = new Map<string | null, number>();
@@ -151,45 +153,62 @@ export const AppSidebar = ({ activeTab, onFilterChange }: AppSidebarProps) => {
     <div
       style={{
         width: "180px",
+        minWidth: "180px",
+        maxWidth: "180px",
         flexShrink: 0,
-        borderRight: "1px solid rgba(255,255,255,0.08)",
+        borderRight: "1px solid rgba(255,255,255,0.1)",
         padding: "16px 12px",
         overflowY: "auto",
-        opacity: disabled ? 1 : 1,
-        pointerEvents: disabled ? "none" : "auto",
+        overflow: "hidden",
+        fontSize: "12px",
       }}
     >
-      <div style={{ opacity: disabled ? 0.3 : 1, pointerEvents: disabled ? "none" : "auto" }}>
-        <FilterSection
-          label="Role"
-          options={ROLE_OPTIONS}
-          selected={filters.role}
-          onSelect={(v) => update("role", v)}
-          disabled={disabled}
-        />
-        <FilterSection
-          label="Difficulty"
-          options={DIFFICULTY_OPTIONS}
-          selected={filters.difficulty}
-          onSelect={(v) => update("difficulty", v)}
-          disabled={disabled}
-        />
-        <FilterSection
-          label="Time"
-          options={TIME_OPTIONS}
-          selected={filters.time}
-          onSelect={(v) => update("time", v as SidebarFilters["time"])}
-          disabled={disabled}
-        />
-        <FilterSection
-          label="Category"
-          options={CATEGORY_OPTIONS}
-          selected={filters.category}
-          onSelect={(v) => update("category", v)}
-          disabled={disabled}
-          categoryMissionCounts={categoryMissionCounts}
-        />
-      </div>
+      {isMissions ? (
+        <>
+          <FilterSection
+            label="Role"
+            options={ROLE_OPTIONS}
+            selected={filters.role}
+            onSelect={(v) => update("role", v)}
+          />
+          <FilterSection
+            label="Difficulty"
+            options={DIFFICULTY_OPTIONS}
+            selected={filters.difficulty}
+            onSelect={(v) => update("difficulty", v)}
+          />
+          <FilterSection
+            label="Time"
+            options={TIME_OPTIONS}
+            selected={filters.time}
+            onSelect={(v) => update("time", v as SidebarFilters["time"])}
+          />
+          <FilterSection
+            label="Category"
+            options={CATEGORY_OPTIONS}
+            selected={filters.category}
+            onSelect={(v) => update("category", v)}
+            categoryMissionCounts={categoryMissionCounts}
+          />
+        </>
+      ) : (
+        <button
+          onClick={onSwitchToMissions}
+          style={{
+            margin: "16px 0",
+            padding: "8px 12px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "4px",
+            color: "white",
+            cursor: "pointer",
+            fontSize: "12px",
+            width: "100%",
+          }}
+        >
+          ← Back to Missions
+        </button>
+      )}
     </div>
   );
 };

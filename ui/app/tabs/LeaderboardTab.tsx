@@ -1,10 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
+import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
-import { Select, SelectOption } from "@dynatrace/strato-components-preview/forms";
-import {
-  DataTable,
-  type DataTableColumnDef,
-} from "@dynatrace/strato-components-preview/tables";
 import { MISSIONS } from "../data/missions";
 import { useLeaderboardContext, type StoredScore } from "../context/LeaderboardContext";
 import { SkeletonRows } from "../components/SkeletonRows";
@@ -14,21 +10,12 @@ import { EmptyState } from "../components/EmptyState";
 interface LeaderboardRow {
   rank: number;
   player: string;
-  mission: string;
-  difficulty: string;
+  bestMission: string;
   score: number;
   date: string;
   userId: string;
+  isCurrentUser: boolean;
 }
-
-const leaderboardColumns: DataTableColumnDef<LeaderboardRow>[] = [
-  { id: "rank", accessor: "rank", header: "Rank" },
-  { id: "player", accessor: "player", header: "Player" },
-  { id: "mission", accessor: "mission", header: "Mission" },
-  { id: "difficulty", accessor: "difficulty", header: "Difficulty" },
-  { id: "score", accessor: "score", header: "Score" },
-  { id: "date", accessor: "date", header: "Date" },
-];
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -45,56 +32,44 @@ function formatMissionName(key: string): string {
   return key;
 }
 
-function formatPlayerName(s: StoredScore): string {
-  if (!s.userName || s.userName === "Unknown") return "Anonymous";
-  if (s.userName.includes("dt.missing")) return `${s.userId.slice(0, 8)}...`;
-  return s.userName;
+function resolveDisplayName(s: StoredScore): string {
+  const name = s.userName;
+  if (name && name !== "Unknown" && !name.includes("dt.missing")) return name;
+  return `${s.userId.slice(0, 8)}...`;
 }
 
-function aggregateLeaderboard(
+function aggregateBestPerPlayer(
   scores: StoredScore[],
-  missionFilter: string | null,
-  difficultyFilter: string | null
+  currentUserId: string
 ): LeaderboardRow[] {
-  let filtered = scores;
-  if (missionFilter) {
-    filtered = filtered.filter(
-      (s) => (s.missionId ?? s.mission) === missionFilter
-    );
-  }
-  if (difficultyFilter) {
-    filtered = filtered.filter((s) => s.difficulty === difficultyFilter);
-  }
-
-  const bestMap = new Map<string, StoredScore>();
-  for (const score of filtered) {
-    const key = `${score.userId}-${score.missionId ?? score.mission}`;
-    const existing = bestMap.get(key);
+  // For each player, find their single highest score across all missions
+  const bestByPlayer = new Map<string, StoredScore>();
+  for (const score of scores) {
+    const existing = bestByPlayer.get(score.userId);
     if (!existing || score.totalScore > existing.totalScore) {
-      bestMap.set(key, score);
+      bestByPlayer.set(score.userId, score);
     }
   }
 
-  const sorted = [...bestMap.values()].sort(
+  const sorted = [...bestByPlayer.values()].sort(
     (a, b) => b.totalScore - a.totalScore
   );
 
   return sorted.map((s, i) => ({
     rank: i + 1,
-    player: formatPlayerName(s),
-    mission: formatMissionName(s.missionId ?? s.mission),
-    difficulty: s.difficulty,
+    player: resolveDisplayName(s),
+    bestMission: formatMissionName(s.missionId ?? s.mission),
     score: Math.round(s.totalScore),
     date: formatDate(s.completedAt),
     userId: s.userId,
+    isCurrentUser: s.userId === currentUserId,
   }));
 }
 
 export const LeaderboardTab = () => {
   const { scores, loading, error, stale, fetchScores, retry } =
     useLeaderboardContext();
-  const [missionFilter, setMissionFilter] = useState<string | null>(null);
-  const [difficultyFilter, setDifficultyFilter] = useState<string | null>(null);
+  const currentUser = getCurrentUserDetails();
 
   useEffect(() => {
     if (stale || scores.length === 0) {
@@ -103,46 +78,13 @@ export const LeaderboardTab = () => {
   }, []);
 
   const rows = useMemo(
-    () => aggregateLeaderboard(scores, missionFilter, difficultyFilter),
-    [scores, missionFilter, difficultyFilter]
+    () => aggregateBestPerPlayer(scores, currentUser.id),
+    [scores, currentUser.id]
   );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <Heading level={4}>Leaderboard</Heading>
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-        <div style={{ minWidth: "200px" }}>
-          <Select
-            name="lb-mission-filter"
-            value={missionFilter ?? ""}
-            onChange={(value: string | null) =>
-              setMissionFilter(value || null)
-            }
-          >
-            <SelectOption value="" id="lb-mission-all">All Missions</SelectOption>
-            {MISSIONS.map((m) => (
-              <SelectOption key={m.id} value={m.id} id={`lb-mission-${m.id}`}>
-                {m.title}
-              </SelectOption>
-            ))}
-          </Select>
-        </div>
-        <div style={{ minWidth: "140px" }}>
-          <Select
-            name="lb-difficulty-filter"
-            value={difficultyFilter ?? ""}
-            onChange={(value: string | null) =>
-              setDifficultyFilter(value || null)
-            }
-          >
-            <SelectOption value="" id="lb-diff-all">All</SelectOption>
-            <SelectOption value="rookie" id="lb-diff-rookie">Rookie</SelectOption>
-            <SelectOption value="operator" id="lb-diff-operator">Operator</SelectOption>
-            <SelectOption value="elite" id="lb-diff-elite">Elite</SelectOption>
-            <SelectOption value="legend" id="lb-diff-legend">Legend</SelectOption>
-          </Select>
-        </div>
-      </div>
       <Text textStyle="small" style={{ opacity: 0.5 }}>
         Showing best score per player
       </Text>
@@ -153,7 +95,56 @@ export const LeaderboardTab = () => {
       ) : rows.length === 0 ? (
         <EmptyState message="No scores yet" />
       ) : (
-        <DataTable columns={leaderboardColumns} data={rows} />
+        <div>
+          {/* Header row */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "60px 1fr 1fr 100px 120px",
+              padding: "8px 12px",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.5)",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              borderBottom: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            <span>Rank</span>
+            <span>Player</span>
+            <span>Best Mission</span>
+            <span>Score</span>
+            <span>Date</span>
+          </div>
+          {rows.map((row) => (
+            <div
+              key={row.userId}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "60px 1fr 1fr 100px 120px",
+                padding: "8px 12px",
+                fontSize: "13px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                background: row.isCurrentUser
+                  ? "rgba(114,203,255,0.08)"
+                  : "transparent",
+              }}
+            >
+              <span style={{ fontWeight: 600 }}>#{row.rank}</span>
+              <span style={{ fontWeight: row.isCurrentUser ? 600 : 400 }}>
+                {row.player}
+                {row.isCurrentUser && (
+                  <span style={{ opacity: 0.5, marginLeft: "6px", fontSize: "11px" }}>
+                    (you)
+                  </span>
+                )}
+              </span>
+              <span style={{ opacity: 0.8 }}>{row.bestMission}</span>
+              <span style={{ fontWeight: 600 }}>{row.score}</span>
+              <span style={{ opacity: 0.6 }}>{row.date}</span>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
