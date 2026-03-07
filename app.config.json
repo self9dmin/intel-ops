@@ -3,26 +3,10 @@
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
     "name": "War Room",
-    "version": "0.1.32",
+    "version": "0.1.33",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "id": "my.intelops.training",
     "scopes": [
-      {
-        "name": "storage:logs:read",
-        "comment": "Read logs for scenario validation"
-      },
-      {
-        "name": "storage:buckets:read",
-        "comment": "Read Grail buckets"
-      },
-      {
-        "name": "storage:events:read",
-        "comment": "Read DT Intelligence events"
-      },
-      {
-        "name": "storage:metrics:read",
-        "comment": "Read metrics for checkpoints"
-      },
       {
         "name": "document:documents:read",
         "comment": "Read user progress and leaderboard"
