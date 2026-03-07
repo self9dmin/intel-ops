@@ -25,7 +25,7 @@ const ShellLayout = () => {
     TAB_ORDER.includes(initTab) ? initTab : "missions"
   );
   const [filters, setFilters] = useState<SidebarFilters>({
-    role: null,
+    status: null,
     difficulty: null,
     time: null,
     category: null,
