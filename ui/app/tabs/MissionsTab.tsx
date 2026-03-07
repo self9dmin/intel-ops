@@ -49,19 +49,10 @@ function applyFilters(
     result = result.filter((m) => pathMissionIds.includes(m.id));
   }
 
-  if (sidebarFilters.role) {
-    const roleMap: Record<string, string> = {
-      sre: "SRE",
-      developer: "Developer",
-      "incident-commander": "Incident Commander",
-      "platform-engineer": "Platform Engineer",
-    };
-    const roleLabel = roleMap[sidebarFilters.role] ?? sidebarFilters.role;
-    result = result.filter(
-      (m) =>
-        m.role === roleLabel ||
-        m.disciplines.some((d) => d.track === sidebarFilters.role)
-    );
+  if (sidebarFilters.status === "not_started") {
+    result = result.filter((m) => !completedSet.has(m.id));
+  } else if (sidebarFilters.status === "completed") {
+    result = result.filter((m) => completedSet.has(m.id));
   }
 
   if (sidebarFilters.difficulty) {

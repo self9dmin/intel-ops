@@ -3,7 +3,7 @@ import { MISSIONS } from "../data/missions";
 import type { MissionCategory } from "../types/mission.types";
 
 export interface SidebarFilters {
-  role: string | null;
+  status: "not_started" | "completed" | null;
   difficulty: string | null;
   time: "quick" | "standard" | "deep" | null;
   category: string | null;
@@ -14,12 +14,10 @@ interface FilterOption {
   label: string;
 }
 
-const ROLE_OPTIONS: FilterOption[] = [
+const STATUS_OPTIONS: FilterOption[] = [
   { value: null, label: "All" },
-  { value: "sre", label: "SRE" },
-  { value: "developer", label: "Developer" },
-  { value: "incident-commander", label: "Incident Cmdr" },
-  { value: "platform-engineer", label: "Platform Eng" },
+  { value: "not_started", label: "Not Started" },
+  { value: "completed", label: "Completed" },
 ];
 
 const DIFFICULTY_OPTIONS: FilterOption[] = [
@@ -126,7 +124,7 @@ function FilterSection({
 
 export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: AppSidebarProps) => {
   const [filters, setFilters] = useState<SidebarFilters>({
-    role: null,
+    status: null,
     difficulty: null,
     time: null,
     category: null,
@@ -166,10 +164,10 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
       {isMissions ? (
         <>
           <FilterSection
-            label="Role"
-            options={ROLE_OPTIONS}
-            selected={filters.role}
-            onSelect={(v) => update("role", v)}
+            label="Status"
+            options={STATUS_OPTIONS}
+            selected={filters.status}
+            onSelect={(v) => update("status", v)}
           />
           <FilterSection
             label="Difficulty"

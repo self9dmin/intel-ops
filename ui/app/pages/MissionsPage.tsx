@@ -17,13 +17,12 @@ import type { MissionFilters } from "../hooks/useFilteredMissions";
 import { useRecommendedMissions } from "../hooks/useRecommendedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
-import { computeTotalXP, TOPIC_META } from "../types/UserState";
+import { computeTotalXP, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "not_started", label: "Not Started" },
-  { value: "completed", label: "Completed" },
-];
+const ALL_DISCIPLINES: { value: Discipline; label: string }[] = (
+  Object.keys(DISCIPLINE_META) as Discipline[]
+).map((key) => ({ value: key, label: DISCIPLINE_META[key].label }));
 
 const ALL_TOPICS: { value: string; label: string }[] = Object.entries(TOPIC_META).map(
   ([key, meta]) => ({ value: key, label: meta.label })
@@ -59,14 +58,11 @@ export const MissionsPage = () => {
     searchParams.get("path")
   );
   const [filters, setFilters] = useState<MissionFilters>({
-    discipline: null,
+    discipline: (searchParams.get("discipline") as Discipline | null),
     topic: searchParams.get("topic"),
     difficulty: searchParams.get("difficulty") as MissionFilters["difficulty"],
     maxTime: searchParams.get("maxTime") ? Number(searchParams.get("maxTime")) : null,
   });
-  const [statusFilter, setStatusFilter] = useState<string>(
-    searchParams.get("status") ?? "all"
-  );
   const [showLocked, setShowLocked] = useState(false);
 
   // Fetch scores for rank on mount if not cached
@@ -82,7 +78,7 @@ export const MissionsPage = () => {
     [completedMissions]
   );
   const unlockedSet = useUnlockedMissions(completedMissions);
-  const baseFilteredMissions = useFilteredMissions(
+  const filteredMissions = useFilteredMissions(
     MISSIONS,
     unlockedSet,
     completedSet,
@@ -90,15 +86,6 @@ export const MissionsPage = () => {
     showLocked,
     selectedPath
   );
-  const filteredMissions = useMemo(() => {
-    if (statusFilter === "not_started") {
-      return baseFilteredMissions.filter((m) => !completedSet.has(m.id));
-    }
-    if (statusFilter === "completed") {
-      return baseFilteredMissions.filter((m) => completedSet.has(m.id));
-    }
-    return baseFilteredMissions;
-  }, [baseFilteredMissions, statusFilter, completedSet]);
   const recommendations = useRecommendedMissions(
     unlockedSet,
     completedSet,
@@ -149,28 +136,15 @@ export const MissionsPage = () => {
     setSearchParams(newParams, { replace: true });
   };
 
-  const handleStatusChange = (value: string | null) => {
-    const newStatus = value || "all";
-    setStatusFilter(newStatus);
-    const newParams = new URLSearchParams(searchParams);
-    if (newStatus !== "all") {
-      newParams.set("status", newStatus);
-    } else {
-      newParams.delete("status");
-    }
-    setSearchParams(newParams, { replace: true });
-  };
-
   const clearAllFilters = () => {
     setFilters({ discipline: null, topic: null, difficulty: null, maxTime: null });
-    setStatusFilter("all");
     setSelectedPath(null);
     setShowLocked(false);
     setSearchParams({}, { replace: true });
   };
 
   const hasActiveFilters =
-    statusFilter !== "all" || filters.topic || filters.difficulty || filters.maxTime || selectedPath;
+    filters.discipline || filters.topic || filters.difficulty || filters.maxTime || selectedPath;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", padding: "24px" }}>
@@ -253,16 +227,19 @@ export const MissionsPage = () => {
           Filters
         </Text>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div style={{ minWidth: "140px" }}>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Status</div>
+          <div style={{ minWidth: "160px" }}>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Discipline</div>
             <Select
-              name="status-filter"
-              value={statusFilter}
-              onChange={handleStatusChange}
+              name="discipline-filter"
+              value={filters.discipline ?? ""}
+              onChange={(value: string | null) =>
+                updateFilter("discipline", value || null)
+              }
             >
-              {STATUS_OPTIONS.map((s) => (
-                <SelectOption key={s.value} value={s.value} id={`status-${s.value}`}>
-                  {s.label}
+              <SelectOption value="" id="disc-none">All Disciplines</SelectOption>
+              {ALL_DISCIPLINES.map((d) => (
+                <SelectOption key={d.value} value={d.value} id={`disc-${d.value}`}>
+                  {d.label}
                 </SelectOption>
               ))}
             </Select>
