@@ -18,6 +18,8 @@ import {
   AutomationEngineIcon,
   ApplicationSecurityIcon,
   EventIcon,
+  UserSessionsIcon,
+  GroupIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
 import { TOPIC_META_ORDERED } from "../types/UserState";
@@ -42,6 +44,8 @@ const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
   automation: AutomationEngineIcon,
   security: ApplicationSecurityIcon,
   bizevents: EventIcon,
+  dem: UserSessionsIcon,
+  community: GroupIcon,
 };
 
 export interface SidebarFilters {
