@@ -939,11 +939,11 @@ export const MISSIONS: Mission[] = [
         id: "cp1",
         title: "Open Infrastructure & Operations",
         instruction:
-          "Open the Infrastructure & Operations app from the Apps menu. How many entity types are shown as tiles on the overview page? (e.g. Hosts, Services, Processes, etc.)",
-        hint: "Infrastructure & Operations is under the Infrastructure Observability category in the Apps menu. The overview page shows a grid of entity type tiles — count all of them.",
+          "Open the Infrastructure & Operations app (Apps menu → Infrastructure Observability). How many entity types are listed in the left sidebar of the app?",
+        hint: "Infrastructure & Operations opens to an explorer view. The left sidebar lists all entity types — Data centers, Hosts, Processes, Containers, and one more. Count them all.",
         type: "multiple-choice",
         choices: ["3", "4", "5", "6 or more"],
-        correctChoice: "6 or more",
+        correctChoice: "5",
         points: 100,
       },
       {
@@ -951,10 +951,10 @@ export const MISSIONS: Mission[] = [
         title: "Check Discovery & Coverage",
         instruction:
           "Open the Discovery & Coverage app (Apps menu → Manage). What is the first coverage category shown on the page?",
-        hint: "Discovery & Coverage is under the Manage category in the Apps menu. It shows what's being monitored across your environment.",
+        hint: "Discovery & Coverage shows your monitoring coverage across entity types. The first category shown has a coverage percentage next to it.",
         type: "multiple-choice",
-        choices: ["Hosts", "Services", "Applications", "Infrastructure"],
-        correctChoice: "Hosts",
+        choices: ["Host coverage", "Service coverage", "Application coverage", "Infrastructure coverage"],
+        correctChoice: "Host coverage",
         points: 100,
       },
       {
