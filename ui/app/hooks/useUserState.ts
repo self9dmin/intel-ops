@@ -170,6 +170,7 @@ export function useUserState(): UseUserStateResult {
         body: {
           name: getDocumentName(currentUser.id),
           type: DOCUMENT_TYPE,
+          isPrivate: true,
           content: new Blob([JSON.stringify(state)], { type: "application/json" }),
         },
       });
