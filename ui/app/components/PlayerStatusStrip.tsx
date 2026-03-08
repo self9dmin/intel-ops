@@ -6,6 +6,7 @@ interface PlayerStatusStripProps {
   globalRank: number | null;
   missionsCompleted: number;
   streakDays: number;
+  rightContent?: React.ReactNode;
 }
 
 function StatCell({ value, label }: { value: string; label: string }) {
@@ -35,31 +36,38 @@ export const PlayerStatusStrip = ({
   globalRank,
   missionsCompleted,
   streakDays,
+  rightContent,
 }: PlayerStatusStripProps) => {
   return (
-    <div
-      style={{
-        padding: "16px 0",
-        borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
-      }}
-    >
+    <div>
       <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>
         {playerName}
       </div>
       <div
         style={{
           display: "flex",
-          gap: "32px",
+          justifyContent: "space-between",
+          alignItems: "center",
           flexWrap: "wrap",
+          gap: "16px",
         }}
       >
-        <StatCell value={String(totalXP)} label="XP" />
-        <StatCell
-          value={globalRank !== null ? `#${globalRank}` : "\u2014"}
-          label="Rank"
-        />
-        <StatCell value={String(missionsCompleted)} label="Missions" />
-        <StatCell value={String(streakDays)} label="Streak" />
+        <div
+          style={{
+            display: "flex",
+            gap: "32px",
+            flexWrap: "wrap",
+          }}
+        >
+          <StatCell value={String(totalXP)} label="XP" />
+          <StatCell
+            value={globalRank !== null ? `#${globalRank}` : "\u2014"}
+            label="Rank"
+          />
+          <StatCell value={String(missionsCompleted)} label="Missions" />
+          <StatCell value={String(streakDays)} label="Streak" />
+        </div>
+        {rightContent}
       </div>
     </div>
   );
