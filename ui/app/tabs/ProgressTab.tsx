@@ -87,11 +87,11 @@ function SkillRow({
         gridTemplateColumns: "200px 1fr 160px",
         alignItems: "center",
         padding: "8px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
         cursor: "pointer",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+        e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = "transparent";
@@ -120,7 +120,7 @@ function SkillRow({
       <div style={{ padding: "0 16px" }}>
         <div
           style={{
-            background: "rgba(255,255,255,0.1)",
+            background: "var(--dt-colors-background-container-neutral-default)",
             borderRadius: "4px",
             height: "6px",
             overflow: "hidden",
@@ -138,7 +138,7 @@ function SkillRow({
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "12px" }}>
-        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>
+        <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
           {xp} / {isMax ? "MAX" : `${next.xp} XP`}
         </span>
         <span
@@ -302,7 +302,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                 key={topicId}
                 icon={TOPIC_ICON_MAP[topicId]}
                 label={meta.label}
-                color="#888"
+                color="var(--dt-colors-text-neutral-disabled)"
                 xp={topicXP[topicId] ?? 0}
                 thresholds={XP_THRESHOLDS}
                 missionCount={missionCountByTopic[topicId] ?? 0}
@@ -335,7 +335,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   gap: "8px",
                   padding: "8px 12px",
                   borderRadius: "6px",
-                  background: "rgba(255,255,255,0.04)",
+                  background: "var(--dt-colors-background-container-neutral-subdued)",
                   opacity: isEarned ? 1 : 0.35,
                 }}
               >

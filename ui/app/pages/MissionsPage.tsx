@@ -228,7 +228,7 @@ export const MissionsPage = () => {
         </Text>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
           <div style={{ minWidth: "160px" }}>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Discipline</div>
+            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Discipline</div>
             <Select
               name="discipline-filter"
               value={filters.discipline ?? ""}
@@ -245,7 +245,7 @@ export const MissionsPage = () => {
             </Select>
           </div>
           <div style={{ minWidth: "140px" }}>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Topic</div>
+            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Topic</div>
             <Select
               name="topic-filter"
               value={filters.topic ?? ""}
@@ -262,7 +262,7 @@ export const MissionsPage = () => {
             </Select>
           </div>
           <div style={{ minWidth: "140px" }}>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Difficulty</div>
+            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Difficulty</div>
             <Select
               name="difficulty-filter"
               value={filters.difficulty ?? ""}
@@ -279,7 +279,7 @@ export const MissionsPage = () => {
             </Select>
           </div>
           <div style={{ minWidth: "120px" }}>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>Max Time</div>
+            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Max Time</div>
             <Select
               name="maxtime-filter"
               value={filters.maxTime ? String(filters.maxTime) : ""}

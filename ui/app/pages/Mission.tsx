@@ -290,7 +290,7 @@ export const Mission = () => {
               style={{
                 background: "transparent",
                 border: "none",
-                color: "rgba(255,255,255,0.9)",
+                color: "var(--dt-colors-text-neutral-default)",
                 fontSize: "20px",
                 fontWeight: "600",
                 cursor: "pointer",
@@ -308,7 +308,7 @@ export const Mission = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "10px",
-                color: "rgba(255,255,255,0.9)",
+                color: "var(--dt-colors-text-neutral-default)",
                 fontSize: "13px",
                 marginTop: "32px",
               }}
@@ -320,7 +320,7 @@ export const Mission = () => {
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "rgba(255,80,80,0.9)",
+                    color: "var(--dt-colors-text-critical-default)",
                     fontSize: "20px",
                     fontWeight: "600",
                     cursor: "pointer",
@@ -335,7 +335,7 @@ export const Mission = () => {
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "rgba(255,255,255,0.9)",
+                    color: "var(--dt-colors-text-neutral-default)",
                     fontSize: "20px",
                     fontWeight: "600",
                     cursor: "pointer",
@@ -355,7 +355,7 @@ export const Mission = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "8px",
-                color: "rgba(255,255,255,0.4)",
+                color: "var(--dt-colors-text-neutral-disabled)",
                 fontSize: "13px",
               }}
             >

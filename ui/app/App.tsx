@@ -93,7 +93,7 @@ const ShellLayout = () => {
           gap: "16px",
           padding: "0 16px",
           height: "48px",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          borderBottom: "1px solid var(--dt-colors-border-neutral-default)",
           flexShrink: 0,
         }}
       >
@@ -108,11 +108,11 @@ const ShellLayout = () => {
               style={{
                 padding: "6px 14px",
                 border: "none",
-                background: activeTab === tab ? "rgba(255,255,255,0.1)" : "transparent",
+                background: activeTab === tab ? "var(--dt-colors-background-container-neutral-default)" : "transparent",
                 color:
                   activeTab === tab
                     ? "var(--dt-colors-text-primary-default, #fff)"
-                    : "rgba(255,255,255,0.6)",
+                    : "var(--dt-colors-text-neutral-subdued)",
                 cursor: "pointer",
                 fontSize: "13px",
                 fontWeight: activeTab === tab ? 600 : 400,

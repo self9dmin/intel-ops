@@ -173,7 +173,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           display: "flex",
           flexDirection: "column",
           padding: "16px 0",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
           marginBottom: "32px",
         }}
       >
@@ -211,7 +211,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             padding: "8px 0 0 0",
             marginTop: "8px",
             cursor: "pointer",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid var(--dt-colors-border-neutral-disabled)",
           }}
         >
           <span
@@ -220,7 +220,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
               fontWeight: 600,
               textTransform: "uppercase",
               letterSpacing: "0.5px",
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--dt-colors-text-neutral-disabled)",
               marginRight: "4px",
             }}
           >
