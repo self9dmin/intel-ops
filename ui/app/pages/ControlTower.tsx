@@ -90,7 +90,7 @@ export const ControlTower = () => {
   }, [completedSet, nextMission]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "20px" }}>
       {/* Section 1: Next Mission */}
       <div>
         <div style={sectionLabelStyle}>RECOMMENDED NEXT</div>
@@ -179,8 +179,8 @@ export const ControlTower = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "12px",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: "8px",
             }}
           >
             {quickMissions.map((mission) => (

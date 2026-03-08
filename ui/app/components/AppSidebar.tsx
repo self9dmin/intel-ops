@@ -19,6 +19,10 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
     topic: null,
   });
 
+  if (activeTab === "control-tower") {
+    return null;
+  }
+
   const isMissions = activeTab === "missions";
 
   const update = (key: keyof SidebarFilters, value: string | null) => {
