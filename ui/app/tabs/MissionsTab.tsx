@@ -5,7 +5,7 @@ import { Heading, Text } from "@dynatrace/strato-components/typography";
 
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { MISSIONS } from "../data/missions";
-import { LEARNING_PATHS } from "../data/learningPaths";
+import { CIRCUITS } from "../data/circuits";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -44,7 +44,7 @@ function applyFilters(
   let result = [...missions];
 
   if (selectedPath) {
-    const path = LEARNING_PATHS.find((p) => p.id === selectedPath);
+    const path = CIRCUITS.find((p) => p.id === selectedPath);
     const pathMissionIds = path?.missionIds ?? [];
     result = result.filter((m) => pathMissionIds.includes(m.id));
   }
@@ -200,9 +200,9 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
         </div>
       </div>
 
-      {/* Learning Paths */}
+      {/* Circuits */}
       <div style={{ marginBottom: "16px" }}>
-        <Heading level={5}>Learning Paths</Heading>
+        <Heading level={5}>Circuits</Heading>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
           <Chip
             color={selectedPath === null ? "primary" : "neutral"}
@@ -211,7 +211,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           >
             All
           </Chip>
-          {LEARNING_PATHS.map((path) => (
+          {CIRCUITS.map((path) => (
             <Chip
               key={path.id}
               color={selectedPath === path.id ? "primary" : "neutral"}

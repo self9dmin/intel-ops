@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { Mission } from "../types/mission.types";
 import type { UserState } from "../types/UserState";
 import { MISSIONS } from "../data/missions";
-import { LEARNING_PATHS } from "../data/learningPaths";
+import { CIRCUITS } from "../data/circuits";
 
 export interface Recommendation {
   mission: Mission;
@@ -54,7 +54,7 @@ export function useRecommendedMissions(
 
     // Priority 1: Next mission in selected learning path
     if (selectedPath) {
-      const path = LEARNING_PATHS.find((p) => p.id === selectedPath);
+      const path = CIRCUITS.find((p) => p.id === selectedPath);
       const pathIds = path?.missionIds ?? [];
       for (const id of pathIds) {
         if (unlockedSet.has(id) && !completedSet.has(id)) {

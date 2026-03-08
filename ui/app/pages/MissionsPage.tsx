@@ -7,7 +7,7 @@ import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 
 import { MISSIONS } from "../data/missions";
-import { LEARNING_PATHS } from "../data/learningPaths";
+import { CIRCUITS } from "../data/circuits";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -108,10 +108,10 @@ export const MissionsPage = () => {
         />
       </div>
 
-      {/* Learning Paths Row */}
+      {/* Circuits Row */}
       <div style={{ marginBottom: "16px" }}>
       <Flex flexDirection="column" gap={8}>
-        <Heading level={4}>Learning Paths</Heading>
+        <Heading level={4}>Circuits</Heading>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <Chip
             color={selectedPath === null ? "primary" : "neutral"}
@@ -120,7 +120,7 @@ export const MissionsPage = () => {
           >
             All
           </Chip>
-          {LEARNING_PATHS.map((path) => (
+          {CIRCUITS.map((path) => (
             <Chip
               key={path.id}
               color={selectedPath === path.id ? "primary" : "neutral"}
