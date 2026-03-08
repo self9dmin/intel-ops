@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Route, Routes, useSearchParams, useLocation, Link } from "react-router-dom";
+import { Route, Routes, Navigate, useSearchParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { Button } from "@dynatrace/strato-components/buttons";
@@ -16,15 +16,14 @@ import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
 
-type TopTab = "missions" | "progress" | "leaderboard";
-const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
+type TopTab = "control-tower" | "missions" | "progress" | "leaderboard";
+const TAB_ORDER: TopTab[] = ["control-tower", "missions", "progress", "leaderboard"];
 
 const ShellLayout = () => {
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initTab = (searchParams.get("tab") as TopTab) || "missions";
+  const initTab = (searchParams.get("tab") as TopTab) || "control-tower";
   const [activeTab, setActiveTab] = useState<TopTab>(
-    TAB_ORDER.includes(initTab) ? initTab : "missions"
+    TAB_ORDER.includes(initTab) ? initTab : "control-tower"
   );
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
@@ -65,6 +64,7 @@ const ShellLayout = () => {
         onSwitchToMissions={() => handleSwitchToMissions()}
       />
       <main style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
+        {activeTab === "control-tower" && <ControlTower />}
         {activeTab === "missions" && (
           <MissionsTab
             filters={filters}
@@ -78,6 +78,7 @@ const ShellLayout = () => {
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
+    "control-tower": "Control Tower",
     missions: "Missions",
     progress: "Pace",
     leaderboard: "Leaderboard",
@@ -101,28 +102,6 @@ const ShellLayout = () => {
           Train Here. Perform Everywhere.
         </span>
         <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
-          <Link
-            to="/"
-            style={{
-              padding: "6px 14px",
-              border: "none",
-              background: location.pathname === "/" ? "var(--dt-colors-background-container-neutral-default)" : "transparent",
-              color: location.pathname === "/"
-                ? "var(--dt-colors-text-primary-default, #fff)"
-                : "var(--dt-colors-text-neutral-subdued)",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: location.pathname === "/" ? 600 : 400,
-              fontFamily: "inherit",
-              borderRadius: "4px",
-              borderBottom: location.pathname === "/"
-                ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
-                : "2px solid transparent",
-              textDecoration: "none",
-            }}
-          >
-            Control Tower
-          </Link>
           {TAB_ORDER.map((tab) => (
             <button
               key={tab}
@@ -194,10 +173,11 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<ControlTower />} />
-      <Route path="/missions" element={<ShellLayout />} />
+      <Route path="/" element={<ShellLayout />} />
+      <Route path="/missions" element={<Navigate to="/?tab=missions" replace />} />
       <Route path="/missions/:id" element={<Mission />} />
       <Route path="/debrief/:id" element={<Debrief />} />
+      <Route path="/progress" element={<Navigate to="/?tab=progress" replace />} />
     </Routes>
   );
 };
