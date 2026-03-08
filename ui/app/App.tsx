@@ -76,7 +76,7 @@ const ShellLayout = () => {
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
-    missions: "Missions",
+    missions: "Control Tower",
     progress: "Pace",
     leaderboard: "Leaderboard",
   };
@@ -96,7 +96,7 @@ const ShellLayout = () => {
         }}
       >
         <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
-          Practice in Silence. Respond in Chaos.
+          Train Here. Perform Everywhere.
         </span>
         <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
           {TAB_ORDER.map((tab) => (

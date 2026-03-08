@@ -1,11 +1,12 @@
-export interface LearningPath {
+export interface Circuit {
   id: string;
   name: string;
   description: string;
   missionIds: string[];
+  codename?: string;
 }
 
-export const LEARNING_PATHS: LearningPath[] = [
+export const CIRCUITS: Circuit[] = [
   {
     id: "incident-response",
     name: "Incident Response",
@@ -32,6 +33,6 @@ export const LEARNING_PATHS: LearningPath[] = [
   },
 ];
 
-export function getLearningPathById(id: string): LearningPath | undefined {
-  return LEARNING_PATHS.find((p) => p.id === id);
+export function getCircuitById(id: string): Circuit | undefined {
+  return CIRCUITS.find((p) => p.id === id);
 }
