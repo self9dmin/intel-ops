@@ -91,17 +91,18 @@ export const Debrief = () => {
     });
 
     // Step 4: Save score document
-    documentsClient
-      .createDocument({
-        body: {
-          name: `score-${Date.now()}`,
-          type: "intelops-score",
-          content: new Blob([scoreContent], { type: "application/json" }),
-        },
-      })
-      .then(async (created) => {
+    const saveScore = async () => {
+      try {
+        const created = await documentsClient.createDocument({
+          body: {
+            name: `score-${Date.now()}`,
+            type: "intelops-score",
+            content: new Blob([scoreContent], { type: "application/json" }),
+          },
+        });
         setSaveStatus("saved");
         markStale();
+
         // Best-effort: make score public for leaderboard
         try {
           await documentsClient.updateDocument({
@@ -117,11 +118,12 @@ export const Debrief = () => {
         } catch (visibilityError: unknown) {
           console.warn("Could not make score public:", visibilityError);
         }
-      })
-      .catch((saveError: unknown) => {
+      } catch (saveError: unknown) {
         console.error("Failed to save score:", saveError);
         setSaveStatus("failed");
-      });
+      }
+    };
+    void saveScore();
   }, [state, id, mission, awardXP, completeMission, updateStreak, markStale]);
 
   if (!state || !id) {
