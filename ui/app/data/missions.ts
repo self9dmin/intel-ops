@@ -18,7 +18,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 75 },
       { track: "incident-commander", xp: 75 },
     ],
-    topics: ["dql", "davis", "logs"],
+    topics: ["dql", "dt-intelligence", "logs"],
     category: "incident-response",
     checkpoints: [
       {
@@ -246,7 +246,7 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["synthetics", "davis"],
+    topics: ["synthetics", "dt-intelligence"],
     category: "incident-response",
     checkpoints: [
       {

@@ -1,9 +1,15 @@
 export type Discipline = "sre" | "developer" | "incident-commander" | "platform-engineer";
 
 export type TopicId =
+  | "infrastructure"
+  | "problems"
+  | "dashboards"
+  | "services"
+  | "notebooks"
+  | "settings"
   | "dql"
   | "traces"
-  | "davis"
+  | "dt-intelligence"
   | "metrics"
   | "logs"
   | "smartscape"
@@ -20,22 +26,50 @@ export interface TopicMeta {
   id: TopicId;
   label: string;
   icon: string;
+  active: boolean;
 }
 
 export const TOPIC_META: Record<TopicId, TopicMeta> = {
-  dql: { id: "dql", label: "DQL", icon: "AnalyticsIcon" },
-  traces: { id: "traces", label: "Traces", icon: "TracesIcon" },
-  davis: { id: "davis", label: "Davis AI", icon: "DavisAIIcon" },
-  metrics: { id: "metrics", label: "Metrics", icon: "BarChartIcon" },
-  logs: { id: "logs", label: "Logs", icon: "LogsIcon" },
-  smartscape: { id: "smartscape", label: "Smartscape", icon: "SmartscapeIcon" },
-  kubernetes: { id: "kubernetes", label: "Kubernetes", icon: "ContainerIcon" },
-  synthetics: { id: "synthetics", label: "Synthetics", icon: "HttpIcon" },
-  slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon" },
-  automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon" },
-  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon" },
-  bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon" },
+  infrastructure: { id: "infrastructure", label: "Infrastructure", icon: "HostIcon", active: true },
+  problems: { id: "problems", label: "Problems", icon: "ProblemIcon", active: true },
+  "dt-intelligence": { id: "dt-intelligence", label: "Dynatrace Intelligence", icon: "AiIcon", active: true },
+  dql: { id: "dql", label: "DQL", icon: "AnalyticsIcon", active: true },
+  traces: { id: "traces", label: "Traces", icon: "TracesIcon", active: true },
+  metrics: { id: "metrics", label: "Metrics", icon: "BarChartIcon", active: true },
+  logs: { id: "logs", label: "Logs", icon: "LogsIcon", active: true },
+  kubernetes: { id: "kubernetes", label: "Kubernetes", icon: "ContainerIcon", active: true },
+  synthetics: { id: "synthetics", label: "Synthetics", icon: "HttpIcon", active: true },
+  dashboards: { id: "dashboards", label: "Dashboards", icon: "DashboardIcon", active: false },
+  services: { id: "services", label: "Services & APM", icon: "ServiceIcon", active: false },
+  smartscape: { id: "smartscape", label: "Smartscape", icon: "SmartscapeIcon", active: false },
+  notebooks: { id: "notebooks", label: "Notebooks", icon: "NotebookIcon", active: false },
+  slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon", active: false },
+  settings: { id: "settings", label: "Settings & Admin", icon: "SettingsIcon", active: false },
+  automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon", active: false },
+  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: false },
+  bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon", active: false },
 };
+
+export const TOPIC_META_ORDERED: TopicMeta[] = [
+  TOPIC_META["infrastructure"],
+  TOPIC_META["problems"],
+  TOPIC_META["dt-intelligence"],
+  TOPIC_META["metrics"],
+  TOPIC_META["logs"],
+  TOPIC_META["traces"],
+  TOPIC_META["dql"],
+  TOPIC_META["kubernetes"],
+  TOPIC_META["synthetics"],
+  TOPIC_META["dashboards"],
+  TOPIC_META["services"],
+  TOPIC_META["automation"],
+  TOPIC_META["smartscape"],
+  TOPIC_META["notebooks"],
+  TOPIC_META["slo"],
+  TOPIC_META["settings"],
+  TOPIC_META["security"],
+  TOPIC_META["bizevents"],
+];
 
 export const TOPIC_THRESHOLDS: { level: number; name: TopicLevelName; xp: number }[] = [
   { level: 1, name: "Novice", xp: 0 },
@@ -69,6 +103,45 @@ export interface DisciplineProgress {
   levelName: DisciplineLevelName;
 }
 
+export type ExperienceLevel = "new" | "learning" | "experienced";
+
+export interface ResponsibilityArea {
+  id: string;
+  label: string;
+  icon: string;
+  topics: TopicId[];
+}
+
+export const RESPONSIBILITY_AREAS: ResponsibilityArea[] = [
+  { id: "infra", label: "Servers & Infrastructure", icon: "🖥️", topics: ["infrastructure", "problems", "metrics"] },
+  { id: "kubernetes", label: "Kubernetes & Containers", icon: "☸️", topics: ["kubernetes", "infrastructure"] },
+  { id: "apm", label: "Application Performance (APM)", icon: "⚡", topics: ["services", "traces", "metrics"] },
+  { id: "logs", label: "Logs & Log Analytics", icon: "📋", topics: ["logs", "dql"] },
+  { id: "incidents", label: "Incident Response & Alerts", icon: "🚨", topics: ["problems", "dt-intelligence", "metrics"] },
+  { id: "dashboards", label: "Dashboards & Reporting", icon: "📊", topics: ["dashboards", "dql"] },
+  { id: "rum", label: "Real User Monitoring", icon: "👤", topics: ["synthetics", "services"] },
+  { id: "dql", label: "Data Querying (DQL)", icon: "🔍", topics: ["dql", "logs", "metrics"] },
+  { id: "automation", label: "Workflows & Automation", icon: "⚙️", topics: ["automation", "dql"] },
+  { id: "security", label: "Security & Vulnerability Mgmt", icon: "🔒", topics: ["security"] },
+  { id: "admin", label: "Platform Admin & Settings", icon: "🛠️", topics: ["settings", "infrastructure"] },
+  { id: "bizevents", label: "Business Events & Analytics", icon: "📈", topics: ["bizevents", "dql"] },
+];
+
+export function deriveTopicPriority(selectedAreaIds: string[]): TopicId[] {
+  const counts = new Map<TopicId, number>();
+  for (const areaId of selectedAreaIds) {
+    const area = RESPONSIBILITY_AREAS.find((a) => a.id === areaId);
+    if (area) {
+      for (const topic of area.topics) {
+        counts.set(topic, (counts.get(topic) ?? 0) + 1);
+      }
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([topic]) => topic);
+}
+
 export interface UserState {
   userId: string;
   userEmail: string;
@@ -81,16 +154,28 @@ export interface UserState {
   streakDays: number;
   lastActiveDate: string;
   badges: string[];
+  selectedAreas: string[];
+  topicTrackPriority: TopicId[];
+  experienceLevel: ExperienceLevel;
 }
 
 export function migrateUserState(loaded: Record<string, unknown>): UserState {
+  const topicXP = (loaded.topicXP as Record<string, number> | undefined) ?? {};
+  if ("davis" in topicXP) {
+    topicXP["dt-intelligence"] = topicXP["davis"];
+    delete topicXP["davis"];
+  }
+
   return {
     ...(loaded as unknown as UserState),
     completedMissions: (loaded.completedMissions as string[] | undefined) ?? [],
     streakDays: (loaded.streakDays as number | undefined) ?? 0,
     lastActiveDate: (loaded.lastActiveDate as string | undefined) ?? "",
     badges: (loaded.badges as string[] | undefined) ?? [],
-    topicXP: (loaded.topicXP as Record<string, number> | undefined) ?? {},
+    topicXP,
+    selectedAreas: (loaded.selectedAreas as string[] | undefined) ?? [],
+    topicTrackPriority: (loaded.topicTrackPriority as TopicId[] | undefined) ?? [],
+    experienceLevel: (loaded.experienceLevel as ExperienceLevel | undefined) ?? "new",
   };
 }
 
