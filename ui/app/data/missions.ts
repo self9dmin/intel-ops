@@ -10,7 +10,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Production database is spiking. Find the root cause before the business wakes up.",
     briefing:
-      "0300 hours. PagerDuty just fired. The primary production database is showing anomalous behavior — latency is climbing and error rates are spiking. Your job is to identify the root cause before the business wakes up and customers start calling.",
+      "0300 hours. PagerDuty just fired. The primary production database is showing anomalous behavior — latency is climbing and error rates are spiking. Your job is to identify the root cause before the business wakes up and customers start calling. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 900,
     status: "available",
     prerequisites: [],
@@ -92,7 +92,7 @@ export const MISSIONS: Mission[] = [
     description:
       "A deployment went out 20 minutes ago. No alerts fired. But something is wrong.",
     briefing:
-      "A backend service was deployed 20 minutes ago. Automated checks passed. No alerts fired. But a senior engineer has a gut feeling — response times are subtly degraded and one SLO is quietly burning down. Your job: confirm whether the deployment caused a regression before it becomes a customer-facing incident.",
+      "A backend service was deployed 20 minutes ago. Automated checks passed. No alerts fired. But a senior engineer has a gut feeling — response times are subtly degraded and one SLO is quietly burning down. Your job: confirm whether the deployment caused a regression before it becomes a customer-facing incident. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
@@ -165,7 +165,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Users are reporting slow checkouts. No errors. No alerts. Just latency.",
     briefing:
-      "The e-commerce checkout flow is slow. Not broken — just slow. P99 latency doubled in the last hour. No errors in the logs. No alerts from Davis. The problem is hiding somewhere in the distributed call chain. Your job: find the ghost.",
+      "The e-commerce checkout flow is slow. Not broken — just slow. P99 latency doubled in the last hour. No errors in the logs. No alerts from Davis. The problem is hiding somewhere in the distributed call chain. Your job: find the ghost. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
@@ -238,7 +238,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Three services down. Cascading failures. You have 8 minutes.",
     briefing:
-      "CRITICAL. Three production services have gone dark simultaneously. Cascading failures are spreading. Customer impact is confirmed. You have 8 minutes to identify the blast radius, find the origin, and call the remediation path. No hints. No hand-holding. Move.",
+      "CRITICAL. Three production services have gone dark simultaneously. Cascading failures are spreading. Customer impact is confirmed. You have 8 minutes to identify the blast radius, find the origin, and call the remediation path. No hints. No hand-holding. Move. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 480,
     status: "available",
     prerequisites: ["operation-3am-database-spike", "operation-silent-rollout"],
@@ -312,7 +312,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Pods are crashing in the production cluster. The on-call engineer is offline.",
     briefing:
-      "The production Kubernetes cluster is degrading. Pods in the payments namespace are crash-looping. The on-call platform engineer is unreachable. You're up. Find out what's killing the pods, whether it's spreading, and what needs to happen to stabilize the cluster.",
+      "The production Kubernetes cluster is degrading. Pods in the payments namespace are crash-looping. The on-call platform engineer is unreachable. You're up. Find out what's killing the pods, whether it's spreading, and what needs to happen to stabilize the cluster. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 720,
     status: "available",
     prerequisites: ["operation-3am-database-spike"],
@@ -386,7 +386,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Three alerts fire. Three different entity types. Before you can triage anything, you need to know what kind of thing you're looking at.",
     briefing:
-      "Entity types are the foundation of everything in Dynatrace. HOST, PROCESS_GROUP, CUSTOM_DEVICE — they behave differently, live in different apps, and fail in different ways. Get your bearings now, before something breaks at 3am.",
+      "Entity types are the foundation of everything in Dynatrace. HOST, PROCESS_GROUP, CUSTOM_DEVICE — they behave differently, live in different apps, and fail in different ways. Get your bearings now, before something breaks at 3am. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 360,
     status: "available",
     prerequisites: [],
@@ -461,7 +461,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Map the EKS cluster before something breaks at 3am. Nodes, namespaces, workloads — know the terrain.",
     briefing:
-      "The EKS cluster is running production workloads across multiple namespaces. You need to map it — node count, workload distribution, namespace health — before you can do anything useful when something breaks. Navigation under pressure starts with navigation when things are calm.",
+      "The EKS cluster is running production workloads across multiple namespaces. You need to map it — node count, workload distribution, namespace health — before you can do anything useful when something breaks. Navigation under pressure starts with navigation when things are calm. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 480,
     status: "available",
     prerequisites: ["mission-what-are-you"],
@@ -538,7 +538,7 @@ export const MISSIONS: Mission[] = [
     description:
       "A slowdown is reported in easytrade. Map the service-to-database dependency chain before you can act.",
     briefing:
-      "A slowdown is reported in the easytrade application. Before you can find the root cause, you need to understand how the services are wired together — which service calls which database, what technology stack is involved, and who owns what. Map the dependency chain first. Then you can act.",
+      "A slowdown is reported in the easytrade application. Before you can find the root cause, you need to understand how the services are wired together — which service calls which database, what technology stack is involved, and who owns what. Map the dependency chain first. Then you can act. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 540,
     status: "available",
     prerequisites: ["mission-what-are-you"],
@@ -625,7 +625,7 @@ export const MISSIONS: Mission[] = [
     description:
       "A host has been silently running out of disk space for nearly a month. Find it, read it, understand it.",
     briefing:
-      "A low-disk alert has been open on a production host for almost 30 days. Nobody acted on it. Your job is to find the problem, identify the affected disk, confirm the threshold, and understand the full scope of what's at risk on that host.",
+      "A low-disk alert has been open on a production host for almost 30 days. Nobody acted on it. Your job is to find the problem, identify the affected disk, confirm the threshold, and understand the full scope of what's at risk on that host. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 300,
     status: "available",
     prerequisites: [],
@@ -693,7 +693,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Go beyond the alert. Extract entity IDs, read Grail DQL, and confirm the host OS — the data needed to build automated remediation.",
     briefing:
-      "The /data disk on frontend-high-cpu is critically full. The platform team needs more than the alert — they need the exact entity IDs, the Grail DQL metric driving the newer alert, and the host OS version to build an automated remediation workflow. Your job is to extract that data.",
+      "The /data disk on frontend-high-cpu is critically full. The platform team needs more than the alert — they need the exact entity IDs, the Grail DQL metric driving the newer alert, and the host OS version to build an automated remediation workflow. Your job is to extract that data. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 480,
     status: "available",
     prerequisites: ["mission-iron-floor"],
@@ -774,7 +774,7 @@ export const MISSIONS: Mission[] = [
     description:
       "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Investigate, identify, classify.",
     briefing:
-      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Nobody escalated it. Your job is to find the problem, identify the full database endpoint, confirm the alert classification, and extract the entity ID — this all goes in the incident report.",
+      "A MySQL database critical to the ecommerce platform has been unavailable for over three days. Nobody escalated it. Your job is to find the problem, identify the full database endpoint, confirm the alert classification, and extract the entity ID — this all goes in the incident report. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 360,
     status: "available",
     prerequisites: [],
@@ -856,7 +856,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Before you can declare a customer-facing incident for EasyTrade, you need to catalogue its SLOs.",
     briefing:
-      "The EasyTrade trading platform has three SLOs defined. Before you can declare a customer-facing incident, you need to catalogue them — find each SLO target, warning threshold, and signal type. Then locate the hipstershop CartService SLO for comparison. This intelligence is required before any incident declaration.",
+      "The EasyTrade trading platform has three SLOs defined. Before you can declare a customer-facing incident, you need to catalogue them — find each SLO target, warning threshold, and signal type. Then locate the hipstershop CartService SLO for comparison. This intelligence is required before any incident declaration. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 300,
     status: "available",
     prerequisites: [],
@@ -914,6 +914,357 @@ export const MISSIONS: Mission[] = [
         type: "multiple-choice",
         choices: ["98%", "99%", "99.9%", "99.98%"],
         correctChoice: "99.98%",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-orient-platform",
+    title: "Orient the Platform",
+    codename: "GROUND ZERO",
+    role: "IT Ops / Admin",
+    difficulty: "rookie",
+    description:
+      "You have access to Dynatrace. Now what? Navigate the platform, find your bearings, and understand what's being monitored.",
+    briefing:
+      "Every operator needs to know the terrain before anything breaks. Open the Dynatrace Playground and spend 5 minutes mapping the landscape — what's monitored, how the environment is organized, and where to find the controls. Use the playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "platform-engineer", xp: 50 }],
+    topics: ["settings", "smartscape", "infrastructure"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open Smartscape",
+        instruction:
+          "Open the Smartscape app in the Dynatrace Playground. How many application tiers are visible in the default Smartscape view?",
+        hint: "Look for the tier labels at the top of the Smartscape map — Applications, Services, Process Groups, Hosts.",
+        type: "multiple-choice",
+        choices: ["2", "3", "4", "5"],
+        correctChoice: "4",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Count monitored hosts",
+        instruction:
+          "Navigate to Hosts in the left nav. How many hosts are currently monitored in this environment?",
+        hint: "The Hosts app shows a list or grid of all monitored hosts. The count is shown in the header.",
+        type: "multiple-choice",
+        choices: [
+          "Less than 5",
+          "Between 5 and 15",
+          "Between 15 and 30",
+          "More than 30",
+        ],
+        correctChoice: "Between 15 and 30",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "Find Settings",
+        instruction:
+          "Open Settings (gear icon in the left nav). What is the first main category listed in the Settings menu?",
+        hint: "Settings is accessible from the bottom of the left navigation bar. The first category appears at the top of the settings list.",
+        type: "multiple-choice",
+        choices: [
+          "Monitoring",
+          "General settings",
+          "Anomaly detection",
+          "Integration",
+        ],
+        correctChoice: "General settings",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Find Management Zones",
+        instruction:
+          "In Settings, search for Management Zones. How many management zones are configured in the playground environment?",
+        hint: "Use the Settings search bar and type 'management zones'. The list shows all configured zones.",
+        type: "multiple-choice",
+        choices: ["0", "1-3", "4-6", "More than 6"],
+        correctChoice: "4-6",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-read-dashboard",
+    title: "Read the Dashboard",
+    codename: "GLASS HOUSE",
+    role: "Business Analyst",
+    difficulty: "rookie",
+    description:
+      "Dashboards are your single pane of glass. Learn to navigate them, read what they're telling you, and find the signal in the noise.",
+    briefing:
+      "Before you can report on anything, you need to know where the data lives. Open the Dynatrace Playground and explore what's already built for you — without configuring anything. Use the playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "sre", xp: 50 }],
+    topics: ["dashboards", "metrics", "infrastructure"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open Dashboards",
+        instruction:
+          "Open the Dashboards app in the Dynatrace Playground. How many dashboards are available out of the box?",
+        hint: "The Dashboards app shows all available dashboards in a grid or list. Count the preset ones — there are several pre-built by Dynatrace.",
+        type: "multiple-choice",
+        choices: [
+          "None — you have to create them",
+          "1-5",
+          "6-15",
+          "More than 15",
+        ],
+        correctChoice: "More than 15",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Open a host dashboard",
+        instruction:
+          "Find and open a dashboard related to host or infrastructure monitoring. What type of metrics does it show in the first row of tiles?",
+        hint: "Look for a dashboard named something like 'Host Overview' or 'Infrastructure'. The first row of tiles typically shows the most critical metrics.",
+        type: "multiple-choice",
+        choices: [
+          "CPU, memory, and disk",
+          "Request rate and error rate",
+          "User sessions and conversions",
+          "Log volume and ingestion rate",
+        ],
+        correctChoice: "CPU, memory, and disk",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Change the timeframe",
+        instruction:
+          "In the dashboard, change the timeframe selector to 'Last 2 hours'. Does the data in the tiles update?",
+        hint: "The timeframe selector is in the top right of the dashboard. Select 'Last 2 hours' and observe whether the tile data refreshes.",
+        type: "multiple-choice",
+        choices: [
+          "Yes, all tiles update to reflect the new timeframe",
+          "No, dashboards use a fixed timeframe",
+          "Only some tiles update",
+          "The option doesn't exist",
+        ],
+        correctChoice: "Yes, all tiles update to reflect the new timeframe",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-find-the-log",
+    title: "Find the Log",
+    codename: "PAPER TRAIL",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "Alerts tell you something is wrong. Logs tell you why. Learn to find, filter, and read logs in Dynatrace before you need them under pressure.",
+    briefing:
+      "Log analysis is one of the most powerful tools in your arsenal — and one of the most underused. Open the Dynatrace Playground and navigate the Logs app for the first time. You'll need this in every investigation that follows. Use the playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "sre", xp: 75 },
+      { track: "incident-commander", xp: 25 },
+    ],
+    topics: ["logs", "problems", "infrastructure"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open the Logs app",
+        instruction:
+          "Open the Logs app in the Dynatrace Playground. What is the default timeframe shown when you first open it?",
+        hint: "The timeframe selector is in the top right. Look at what's selected by default when you first land on the Logs app.",
+        type: "multiple-choice",
+        choices: [
+          "Last 15 minutes",
+          "Last 2 hours",
+          "Last 6 hours",
+          "Last 24 hours",
+        ],
+        correctChoice: "Last 2 hours",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Filter by log level",
+        instruction:
+          "Filter the logs to show only ERROR level entries. Approximately how many ERROR log entries are visible in the last 2 hours?",
+        hint: "Use the 'Log level' filter or type 'status=error' in the search bar. The result count appears at the top of the log list.",
+        type: "multiple-choice",
+        choices: ["0 — no errors", "Fewer than 50", "50-500", "More than 500"],
+        correctChoice: "More than 500",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Read a log entry",
+        instruction:
+          "Click on any ERROR log entry to expand it. Which field tells you which host or service produced this log?",
+        hint: "Expand the log entry by clicking on it. Look at the structured fields shown — one of them identifies the source entity.",
+        type: "multiple-choice",
+        choices: [
+          "dt.entity.host or host.name",
+          "log.level",
+          "timestamp",
+          "message",
+        ],
+        correctChoice: "dt.entity.host or host.name",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Correlate with a problem",
+        instruction:
+          "In the Logs app, use the filter to search for logs related to 'easytrade'. How many log lines mention easytrade in the last 2 hours?",
+        hint: "Type 'easytrade' in the search/filter bar. The count updates in real time.",
+        type: "multiple-choice",
+        choices: ["0", "1-100", "100-1000", "More than 1000"],
+        correctChoice: "More than 1000",
+        points: 200,
+      },
+    ],
+  },
+  {
+    id: "mission-ask-the-ai",
+    title: "Ask the AI",
+    codename: "DAVIS CALL",
+    role: "All Roles",
+    difficulty: "rookie",
+    description:
+      "Davis CoPilot is your always-on AI analyst. Learn how to use it before you're in the middle of an incident.",
+    briefing:
+      "Every role in Mission Control eventually needs to ask Dynatrace a question. Davis CoPilot — the AI assistant built into the platform — is the fastest way to get answers. Open the playground and find it. Use the playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 240,
+    status: "available",
+    prerequisites: [],
+    disciplines: [
+      { track: "sre", xp: 25 },
+      { track: "incident-commander", xp: 25 },
+    ],
+    topics: ["dt-intelligence", "problems"],
+    category: "incident-response",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find Davis CoPilot",
+        instruction:
+          "Open the Dynatrace Playground and locate Davis CoPilot. Where is it accessed from?",
+        hint: "Look for a chat bubble or CoPilot icon — it's typically in the bottom left or top right of the interface.",
+        type: "multiple-choice",
+        choices: [
+          "Bottom left navigation bar",
+          "Top right of the interface",
+          "Inside the Problems app only",
+          "Settings menu",
+        ],
+        correctChoice: "Bottom left navigation bar",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Ask a real question",
+        instruction:
+          "Ask Davis CoPilot: 'What problems are currently open in my environment?' What does it return?",
+        hint: "Type the question directly into Davis CoPilot. It should respond with a summary of active problems or confirm there are none.",
+        type: "multiple-choice",
+        choices: [
+          "A list or summary of open problems",
+          "An error — it can't answer that",
+          "A link to the Problems app only",
+          "Nothing — it needs configuration first",
+        ],
+        correctChoice: "A list or summary of open problems",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Ask about a specific entity",
+        instruction:
+          "Ask Davis CoPilot: 'Show me the top hosts by CPU usage'. Does it respond with data?",
+        hint: "Davis CoPilot can query Grail and return real data inline. Ask it and see what comes back.",
+        type: "multiple-choice",
+        choices: [
+          "Yes — it returns host CPU data inline",
+          "No — it redirects you to Infrastructure Monitoring",
+          "It returns an error",
+          "It asks for clarification first",
+        ],
+        correctChoice: "Yes — it returns host CPU data inline",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-find-your-answers",
+    title: "Find Your Answers",
+    codename: "OPEN SOURCE",
+    role: "All Roles",
+    difficulty: "rookie",
+    description:
+      "When Davis can't help, the community can. Learn where Dynatrace users go for answers — before you're stuck at 2am with no one to ask.",
+    briefing:
+      "The Dynatrace Community, DTU, and documentation are your extended team. This mission teaches you where they live and how to use them effectively. You don't need the playground for this one — just a browser.",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: ["mission-ask-the-ai"],
+    disciplines: [
+      { track: "sre", xp: 25 },
+      { track: "platform-engineer", xp: 25 },
+    ],
+    topics: ["community", "dt-intelligence"],
+    category: "configuration",
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Dynatrace Community",
+        instruction:
+          "Navigate to community.dynatrace.com. What is the name of the section where users ask troubleshooting questions?",
+        hint: "The community has several sections. Look for a forum or Q&A area specifically for technical troubleshooting.",
+        type: "multiple-choice",
+        choices: [
+          "Troubleshooting",
+          "Open Q&A",
+          "Product Ideas",
+          "Start with Dynatrace",
+        ],
+        correctChoice: "Open Q&A",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Find Dynatrace University",
+        instruction:
+          "Navigate to university.dynatrace.com. What types of content does DTU offer?",
+        hint: "Look at the main navigation or landing page of DTU to see the content categories available.",
+        type: "multiple-choice",
+        choices: [
+          "Courses and certifications only",
+          "Courses, certifications, and hands-on labs",
+          "Video tutorials only",
+          "Live instructor-led training only",
+        ],
+        correctChoice: "Courses, certifications, and hands-on labs",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Find the documentation",
+        instruction:
+          "Navigate to docs.dynatrace.com. What is the search shortcut key shown on the documentation home page?",
+        hint: "The docs site shows a keyboard shortcut hint in the search bar. Look at the search field on the main page.",
+        type: "multiple-choice",
+        choices: ["Ctrl+F", "Ctrl+K", "Ctrl+D", "Ctrl+S"],
+        correctChoice: "Ctrl+K",
         points: 150,
       },
     ],

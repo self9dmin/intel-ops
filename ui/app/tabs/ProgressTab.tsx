@@ -20,6 +20,8 @@ import {
   ServicesIcon,
   DocumentIcon,
   SettingIcon,
+  RealUserMonitoringIcon,
+  GroupIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
 import { MISSIONS } from "../data/missions";
@@ -50,6 +52,8 @@ const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
   automation: AutomationEngineIcon,
   security: ApplicationSecurityIcon,
   bizevents: EventIcon,
+  dem: RealUserMonitoringIcon,
+  community: GroupIcon,
 };
 
 // --- Skill Row ---

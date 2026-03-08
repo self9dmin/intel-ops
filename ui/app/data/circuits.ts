@@ -1,5 +1,3 @@
-import type { Mission } from "../types/mission.types";
-
 export interface Circuit {
   id: string;
   name: string;
@@ -65,6 +63,36 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "mission-grid-search",
       "mission-follow-the-wire",
+    ],
+  },
+  {
+    id: "operator-readiness",
+    name: "Operator Readiness",
+    description: "The baseline every Dynatrace user needs. AI assistance, community resources, and platform orientation.",
+    missionIds: [
+      "mission-ask-the-ai",
+      "mission-find-your-answers",
+      "mission-orient-platform",
+    ],
+  },
+  {
+    id: "ground-zero",
+    name: "Ground Zero",
+    description: "Start here if you manage or configure Dynatrace. Map the environment, understand settings, and find your way around.",
+    missionIds: [
+      "mission-orient-platform",
+      "mission-what-are-you",
+      "mission-iron-floor",
+    ],
+  },
+  {
+    id: "insight",
+    name: "Insight",
+    description: "For analysts and product owners who need to turn observability data into business decisions.",
+    missionIds: [
+      "mission-read-dashboard",
+      "mission-find-the-log",
+      "mission-golden-signal",
     ],
   },
 ];
