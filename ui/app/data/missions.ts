@@ -231,7 +231,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-flatline",
-    title: "Flatline",
+    title: "Three Services Down",
     codename: "BLACKOUT",
     role: "Incident Commander",
     difficulty: "elite",
@@ -379,7 +379,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-what-are-you",
-    title: "What Are You",
+    title: "Identify the Signal",
     codename: "WHAT ARE YOU",
     role: "SRE",
     difficulty: "rookie",
@@ -454,7 +454,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-grid-search",
-    title: "Grid Search",
+    title: "Map the Kubernetes Cluster",
     codename: "GRID SEARCH",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -531,7 +531,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-follow-the-wire",
-    title: "Follow the Wire",
+    title: "Trace the Service Dependency Chain",
     codename: "FOLLOW THE WIRE",
     role: "Developer",
     difficulty: "operator",
@@ -618,7 +618,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-iron-floor",
-    title: "Iron Floor",
+    title: "Silent Disk Drain",
     codename: "IRON FLOOR",
     role: "SRE",
     difficulty: "rookie",
@@ -686,7 +686,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-stone-wall",
-    title: "Stone Wall",
+    title: "Extract the Host Evidence",
     codename: "STONE WALL",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -767,7 +767,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-silent-query",
-    title: "Silent Query",
+    title: "Investigate the Database Failure",
     codename: "SILENT QUERY",
     role: "Incident Commander",
     difficulty: "rookie",
@@ -849,7 +849,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-golden-signal",
-    title: "Golden Signal",
+    title: "Find the Failing SLO",
     codename: "GOLDEN SIGNAL",
     role: "Incident Commander",
     difficulty: "rookie",
