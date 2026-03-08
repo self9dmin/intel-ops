@@ -77,7 +77,7 @@ const ShellLayout = () => {
 
   const TAB_LABELS: Record<TopTab, string> = {
     missions: "Missions",
-    progress: "Progress",
+    progress: "Pace",
     leaderboard: "Leaderboard",
   };
 

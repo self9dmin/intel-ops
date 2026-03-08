@@ -3,10 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
-import { Button } from "@dynatrace/strato-components/buttons";
+
 import { Chip } from "@dynatrace/strato-components-preview/content";
-import { Select, SelectOption } from "@dynatrace/strato-components-preview/forms";
-import { Switch } from "@dynatrace/strato-components-preview/forms";
+
 import { MISSIONS } from "../data/missions";
 import { LEARNING_PATHS } from "../data/learningPaths";
 import { useUserStateContext } from "../context/UserStateContext";
@@ -14,33 +13,11 @@ import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 import { useFilteredMissions } from "../hooks/useFilteredMissions";
 import type { MissionFilters } from "../hooks/useFilteredMissions";
-import { useRecommendedMissions } from "../hooks/useRecommendedMissions";
+
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
-import { computeTotalXP, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
+import { computeTotalXP } from "../types/UserState";
 import type { Discipline } from "../types/UserState";
-
-const ALL_DISCIPLINES: { value: Discipline; label: string }[] = (
-  Object.keys(DISCIPLINE_META) as Discipline[]
-).map((key) => ({ value: key, label: DISCIPLINE_META[key].label }));
-
-const ALL_TOPICS: { value: string; label: string }[] = Object.entries(TOPIC_META).map(
-  ([key, meta]) => ({ value: key, label: meta.label })
-);
-
-const ALL_DIFFICULTIES: { value: string; label: string }[] = [
-  { value: "rookie", label: "Rookie" },
-  { value: "operator", label: "Operator" },
-  { value: "elite", label: "Elite" },
-  { value: "legend", label: "Legend" },
-];
-
-const MAX_TIME_OPTIONS: { value: string; label: string }[] = [
-  { value: "15", label: "15 min" },
-  { value: "30", label: "30 min" },
-  { value: "45", label: "45 min" },
-  { value: "60", label: "60 min" },
-];
 
 export const MissionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,13 +34,13 @@ export const MissionsPage = () => {
   const [selectedPath, setSelectedPath] = useState<string | null>(
     searchParams.get("path")
   );
-  const [filters, setFilters] = useState<MissionFilters>({
+  const [filters] = useState<MissionFilters>({
     discipline: (searchParams.get("discipline") as Discipline | null),
     topic: searchParams.get("topic"),
     difficulty: searchParams.get("difficulty") as MissionFilters["difficulty"],
     maxTime: searchParams.get("maxTime") ? Number(searchParams.get("maxTime")) : null,
   });
-  const [showLocked, setShowLocked] = useState(false);
+  const showLocked = false;
 
   // Fetch scores for rank on mount if not cached
   useEffect(() => {
@@ -86,13 +63,6 @@ export const MissionsPage = () => {
     showLocked,
     selectedPath
   );
-  const recommendations = useRecommendedMissions(
-    unlockedSet,
-    completedSet,
-    selectedPath,
-    userState!
-  );
-
   // Compute rank
   const totalXP = userState ? computeTotalXP(userState.disciplines) : 0;
   const globalRank = useMemo(() => {
@@ -114,17 +84,6 @@ export const MissionsPage = () => {
       .filter(Boolean);
   };
 
-  const updateFilter = (key: keyof MissionFilters, value: string | null) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    const newParams = new URLSearchParams(searchParams);
-    if (value) {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
-    setSearchParams(newParams, { replace: true });
-  };
-
   const handlePathSelect = (pathId: string | null) => {
     setSelectedPath(pathId);
     const newParams = new URLSearchParams(searchParams);
@@ -135,16 +94,6 @@ export const MissionsPage = () => {
     }
     setSearchParams(newParams, { replace: true });
   };
-
-  const clearAllFilters = () => {
-    setFilters({ discipline: null, topic: null, difficulty: null, maxTime: null });
-    setSelectedPath(null);
-    setShowLocked(false);
-    setSearchParams({}, { replace: true });
-  };
-
-  const hasActiveFilters =
-    filters.discipline || filters.topic || filters.difficulty || filters.maxTime || selectedPath;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", padding: "24px" }}>
@@ -158,39 +107,6 @@ export const MissionsPage = () => {
           streakDays={userState?.streakDays ?? 0}
         />
       </div>
-
-      {/* Recommended Missions */}
-      {recommendations.length > 0 && (
-        <div style={{ marginBottom: "24px" }}>
-        <Flex flexDirection="column" gap={12}>
-          <Heading level={4}>Recommended for you</Heading>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "16px",
-            }}
-          >
-            {recommendations.map((rec) => (
-              <MissionCard
-                key={rec.mission.id}
-                mission={rec.mission}
-                isUnlocked={unlockedSet.has(rec.mission.id)}
-                isCompleted={completedSet.has(rec.mission.id)}
-                recommendReason={rec.reason}
-              />
-            ))}
-          </div>
-        </Flex>
-        </div>
-      )}
-      {completedMissions.length === 0 && recommendations.length === 0 && (
-        <div style={{ marginBottom: "24px" }}>
-          <Text textStyle="small" style={{ opacity: 0.6 }}>
-            Complete a mission to unlock recommendations
-          </Text>
-        </div>
-      )}
 
       {/* Learning Paths Row */}
       <div style={{ marginBottom: "16px" }}>
@@ -220,93 +136,6 @@ export const MissionsPage = () => {
       </Flex>
       </div>
 
-      {/* Mission Filters Row */}
-      <div style={{ marginBottom: "12px" }}>
-      <Flex flexDirection="column" gap={8}>
-        <Text textStyle="small" style={{ fontWeight: 600, opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.5px", fontSize: "11px" }}>
-          Filters
-        </Text>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div style={{ minWidth: "160px" }}>
-            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Discipline</div>
-            <Select
-              name="discipline-filter"
-              value={filters.discipline ?? ""}
-              onChange={(value: string | null) =>
-                updateFilter("discipline", value || null)
-              }
-            >
-              <SelectOption value="" id="disc-none">All Disciplines</SelectOption>
-              {ALL_DISCIPLINES.map((d) => (
-                <SelectOption key={d.value} value={d.value} id={`disc-${d.value}`}>
-                  {d.label}
-                </SelectOption>
-              ))}
-            </Select>
-          </div>
-          <div style={{ minWidth: "140px" }}>
-            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Topic</div>
-            <Select
-              name="topic-filter"
-              value={filters.topic ?? ""}
-              onChange={(value: string | null) =>
-                updateFilter("topic", value || null)
-              }
-            >
-              <SelectOption value="" id="topic-none">All Topics</SelectOption>
-              {ALL_TOPICS.map((t) => (
-                <SelectOption key={t.value} value={t.value} id={`topic-${t.value}`}>
-                  {t.label}
-                </SelectOption>
-              ))}
-            </Select>
-          </div>
-          <div style={{ minWidth: "140px" }}>
-            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Difficulty</div>
-            <Select
-              name="difficulty-filter"
-              value={filters.difficulty ?? ""}
-              onChange={(value: string | null) =>
-                updateFilter("difficulty", value || null)
-              }
-            >
-              <SelectOption value="" id="diff-none">All Difficulties</SelectOption>
-              {ALL_DIFFICULTIES.map((d) => (
-                <SelectOption key={d.value} value={d.value} id={`diff-${d.value}`}>
-                  {d.label}
-                </SelectOption>
-              ))}
-            </Select>
-          </div>
-          <div style={{ minWidth: "120px" }}>
-            <div style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: "4px" }}>Max Time</div>
-            <Select
-              name="maxtime-filter"
-              value={filters.maxTime ? String(filters.maxTime) : ""}
-              onChange={(value: string | null) =>
-                updateFilter("maxTime", value || null)
-              }
-            >
-              <SelectOption value="" id="time-none">Any Time</SelectOption>
-              {MAX_TIME_OPTIONS.map((t) => (
-                <SelectOption key={t.value} value={t.value} id={`time-${t.value}`}>
-                  {t.label}
-                </SelectOption>
-              ))}
-            </Select>
-          </div>
-          <Switch value={showLocked} onChange={setShowLocked}>
-            Show Locked
-          </Switch>
-          {hasActiveFilters && (
-            <Button variant="default" onClick={clearAllFilters}>
-              Clear Filters
-            </Button>
-          )}
-        </div>
-      </Flex>
-      </div>
-
       {/* Mission Grid */}
       <div style={{ marginTop: "8px" }}>
       <Flex flexDirection="column" gap={12}>
@@ -319,9 +148,6 @@ export const MissionsPage = () => {
         {filteredMissions.length === 0 ? (
           <Flex flexDirection="column" gap={8} alignItems="center" padding={24}>
             <Text>No missions match your filters</Text>
-            <Button variant="default" onClick={clearAllFilters}>
-              Clear All Filters
-            </Button>
           </Flex>
         ) : (
           <div

@@ -29,7 +29,6 @@ interface MissionCardProps {
   isUnlocked: boolean;
   isCompleted: boolean;
   prerequisiteNames?: string[];
-  recommendReason?: string;
 }
 
 export const MissionCard = ({
@@ -37,7 +36,6 @@ export const MissionCard = ({
   isUnlocked,
   isCompleted,
   prerequisiteNames,
-  recommendReason,
 }: MissionCardProps) => {
   const navigate = useNavigate();
   const hasUnmetPrereqs = !isUnlocked && prerequisiteNames && prerequisiteNames.length > 0;
@@ -55,11 +53,6 @@ export const MissionCard = ({
         gap: "8px",
       }}
     >
-      {recommendReason && (
-        <Text textStyle="small" style={{ opacity: 0.7, fontStyle: "italic" }}>
-          {recommendReason}
-        </Text>
-      )}
       <Flex justifyContent="space-between" alignItems="center">
         <Text textStyle="small">
           <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
@@ -80,11 +73,6 @@ export const MissionCard = ({
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>
-      {hasUnmetPrereqs && (
-        <Text textStyle="small" style={{ opacity: 0.5, fontSize: "11px" }}>
-          ℹ Suggested: complete {prerequisiteNames.join(", ")} first
-        </Text>
-      )}
       <Flex justifyContent="space-between" alignItems="center">
         {isCompleted ? (
           <Flex gap={8} alignItems="center">

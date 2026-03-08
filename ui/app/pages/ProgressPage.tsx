@@ -19,8 +19,7 @@ import { useLeaderboardContext, type StoredScore } from "../context/LeaderboardC
 import { SkeletonRows } from "../components/SkeletonRows";
 import { ErrorRetry } from "../components/ErrorRetry";
 import { EmptyState } from "../components/EmptyState";
-import type { Discipline, DisciplineProgress } from "../types/UserState";
-import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
+import { XP_THRESHOLDS, TOPIC_META } from "../types/UserState";
 
 // --- Skills Tab ---
 
@@ -135,12 +134,6 @@ function SkillsTab() {
 
   if (!userState) return null;
 
-  const disciplines: Discipline[] = [
-    "sre",
-    "developer",
-    "incident-commander",
-    "platform-engineer",
-  ];
   const topicXP = userState.topicXP ?? {};
 
   const missionCountByTopic = useMemo(() => {
@@ -153,37 +146,8 @@ function SkillsTab() {
     return counts;
   }, []);
 
-  const missionCountByDiscipline = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const m of MISSIONS) {
-      for (const d of m.disciplines) {
-        counts[d.track] = (counts[d.track] ?? 0) + 1;
-      }
-    }
-    return counts;
-  }, []);
-
   return (
     <Flex flexDirection="column" gap={20}>
-      <Heading level={4}>Discipline Tracks</Heading>
-      <div>
-        {disciplines.map((disc) => {
-          const meta = DISCIPLINE_META[disc];
-          const progress = userState.disciplines[disc];
-          return (
-            <SkillRow
-              key={disc}
-              label={meta.label}
-              color={meta.color}
-              xp={progress.xp}
-              thresholds={XP_THRESHOLDS}
-              missionCount={missionCountByDiscipline[disc] ?? 0}
-              filterUrl={`/missions?discipline=${disc}`}
-            />
-          );
-        })}
-      </div>
-
       <Heading level={4}>Topic Tracks</Heading>
       <div>
         {Object.entries(TOPIC_META).map(([topicId, meta]) => (
@@ -538,7 +502,7 @@ export const ProgressPage = () => {
 
   return (
     <Flex flexDirection="column" gap={24} padding={24}>
-      <Heading level={2}>Progress</Heading>
+      <Heading level={2}>Pace</Heading>
 
       {/* Tab bar */}
       <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid var(--dt-colors-border-neutral-default)" }}>

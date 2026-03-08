@@ -1,15 +1,15 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
-import { Button } from "@dynatrace/strato-components/buttons";
+
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { MISSIONS } from "../data/missions";
 import { LEARNING_PATHS } from "../data/learningPaths";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
-import { useRecommendedMissions } from "../hooks/useRecommendedMissions";
+
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
 import { computeTotalXP } from "../types/UserState";
@@ -78,7 +78,6 @@ function applyFilters(
 
 export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { userState } = useUserStateContext();
   const { scores, loading: leaderboardLoading, fetchScores } = useLeaderboardContext();
 
@@ -102,13 +101,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const completedSet = useMemo(() => new Set(completedMissions), [completedMissions]);
   const earnedBadges = useMemo(() => new Set(userState?.badges ?? []), [userState?.badges]);
   const unlockedSet = useUnlockedMissions(completedMissions);
-  const recommendations = useRecommendedMissions(
-    unlockedSet,
-    completedSet,
-    selectedPath,
-    userState!
-  );
-
   const filteredMissions = useMemo(
     () => applyFilters(MISSIONS, filters, selectedPath, unlockedSet, completedSet),
     [filters, selectedPath, unlockedSet, completedSet]
@@ -143,8 +135,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
     setSearchParams(newParams, { replace: true });
   };
 
-  const nextMission = recommendations[0]?.mission;
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {/* Player Stats Strip */}
@@ -157,29 +147,13 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           marginBottom: "32px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <PlayerStatusStrip
-            playerName={displayName}
-            totalXP={totalXP}
-            globalRank={globalRank}
-            missionsCompleted={completedMissions.length}
-            streakDays={userState?.streakDays ?? 0}
-          />
-          {nextMission && (
-            <Button
-              variant="emphasized"
-              onClick={() => navigate(`/missions/${nextMission.id}`)}
-            >
-              Continue Next Mission →
-            </Button>
-          )}
-        </div>
+        <PlayerStatusStrip
+          playerName={displayName}
+          totalXP={totalXP}
+          globalRank={globalRank}
+          missionsCompleted={completedMissions.length}
+          streakDays={userState?.streakDays ?? 0}
+        />
 
         {/* Achievements Strip */}
         <div
@@ -225,38 +199,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           })}
         </div>
       </div>
-
-      {/* Recommended Missions */}
-      {recommendations.length > 0 && (
-        <div style={{ marginBottom: "24px" }}>
-          <Heading level={5}>Recommended for you</Heading>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "12px",
-              marginTop: "8px",
-            }}
-          >
-            {recommendations[0] && (
-              <MissionCard
-                mission={recommendations[0].mission}
-                isUnlocked={unlockedSet.has(recommendations[0].mission.id)}
-                isCompleted={completedSet.has(recommendations[0].mission.id)}
-                recommendReason={recommendations[0].reason}
-              />
-            )}
-            {recommendations[1] && (
-              <MissionCard
-                mission={recommendations[1].mission}
-                isUnlocked={unlockedSet.has(recommendations[1].mission.id)}
-                isCompleted={completedSet.has(recommendations[1].mission.id)}
-                recommendReason={recommendations[1].reason}
-              />
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Learning Paths */}
       <div style={{ marginBottom: "16px" }}>

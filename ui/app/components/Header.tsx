@@ -11,7 +11,7 @@ export const Header = () => {
           Missions
         </AppHeader.NavItem>
         <AppHeader.NavItem as={Link} to="/progress">
-          Progress
+          Pace
         </AppHeader.NavItem>
       </AppHeader.NavItems>
     </AppHeader>

@@ -232,16 +232,6 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
     return counts;
   }, []);
 
-  const missionCountByDiscipline = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const m of MISSIONS) {
-      for (const d of m.disciplines) {
-        counts[d.track] = (counts[d.track] ?? 0) + 1;
-      }
-    }
-    return counts;
-  }, []);
-
   const handleExportCSV = useCallback(() => {
     if (!userState) return;
     const csv = buildCSV(userState);
@@ -263,44 +253,16 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
 
   if (!userState) return null;
 
-  const disciplines: Discipline[] = [
-    "sre",
-    "developer",
-    "incident-commander",
-    "platform-engineer",
-  ];
   const topicXP = userState.topicXP ?? {};
   const earnedBadges = new Set(userState.badges);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Heading level={4}>Progress</Heading>
+        <Heading level={4}>Pace</Heading>
         <Button variant="default" onClick={handleExportCSV}>
           Export CSV
         </Button>
-      </div>
-
-      {/* Discipline Tracks */}
-      <div>
-        <Heading level={5}>Discipline Tracks</Heading>
-        <div style={{ marginTop: "8px" }}>
-          {disciplines.map((disc) => {
-            const meta = DISCIPLINE_META[disc];
-            const progress = userState.disciplines[disc];
-            return (
-              <SkillRow
-                key={disc}
-                label={meta.label}
-                color={meta.color}
-                xp={progress.xp}
-                thresholds={XP_THRESHOLDS}
-                missionCount={missionCountByDiscipline[disc] ?? 0}
-                onClickRow={() => handleNavigateToMissions({ discipline: disc })}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Topic Tracks */}
