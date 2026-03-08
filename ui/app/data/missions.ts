@@ -937,29 +937,24 @@ export const MISSIONS: Mission[] = [
     checkpoints: [
       {
         id: "cp1",
-        title: "Open Smartscape Classic",
+        title: "Open Infrastructure & Operations",
         instruction:
-          "Open the Smartscape Classic app from the Apps menu. How many tiers are visible in the Smartscape Classic view?",
-        hint: "Find Smartscape Classic via the Apps menu (grid icon, top left). The tier labels run down the left side of the map. Count all tiers shown — Applications, Services, Processes, Hosts, Data centers.",
+          "Open the Infrastructure & Operations app from the Apps menu. How many entity types are shown as tiles on the overview page? (e.g. Hosts, Services, Processes, etc.)",
+        hint: "Infrastructure & Operations is under the Infrastructure Observability category in the Apps menu. The overview page shows a grid of entity type tiles — count all of them.",
         type: "multiple-choice",
-        choices: ["3", "4", "5", "6"],
-        correctChoice: "5",
+        choices: ["3", "4", "5", "6 or more"],
+        correctChoice: "6 or more",
         points: 100,
       },
       {
         id: "cp2",
-        title: "Count Monitored Hosts",
+        title: "Check Discovery & Coverage",
         instruction:
-          "Open the Hosts Classic app from the Apps menu (search for 'Hosts Classic'). How many hosts are currently monitored in this environment?",
-        hint: "The host count is displayed in the header of Hosts Classic. You can also see it in Infrastructure & Operations. Look for the total count shown at the top of the list.",
+          "Open the Discovery & Coverage app (Apps menu → Manage). What is the first coverage category shown on the page?",
+        hint: "Discovery & Coverage is under the Manage category in the Apps menu. It shows what's being monitored across your environment.",
         type: "multiple-choice",
-        choices: [
-          "Less than 5",
-          "Between 5 and 15",
-          "Between 15 and 30",
-          "More than 30",
-        ],
-        correctChoice: "Between 15 and 30",
+        choices: ["Hosts", "Services", "Applications", "Infrastructure"],
+        correctChoice: "Hosts",
         points: 100,
       },
       {
