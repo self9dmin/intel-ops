@@ -99,6 +99,18 @@ export const Debrief = () => {
           content: new Blob([scoreContent], { type: "application/json" }),
         },
       })
+      .then((created) =>
+        documentsClient.updateDocument({
+          id: created.id,
+          optimisticLockingVersion: created.version,
+          body: {
+            name: created.name,
+            type: created.type,
+            isPrivate: false,
+            content: new Blob([scoreContent], { type: "application/json" }),
+          },
+        })
+      )
       .then(() => {
         setSaveStatus("saved");
         markStale();
