@@ -99,21 +99,24 @@ export const Debrief = () => {
           content: new Blob([scoreContent], { type: "application/json" }),
         },
       })
-      .then((created) =>
-        documentsClient.updateDocument({
-          id: created.id,
-          optimisticLockingVersion: created.version,
-          body: {
-            name: created.name,
-            type: created.type,
-            isPrivate: false,
-            content: new Blob([scoreContent], { type: "application/json" }),
-          },
-        })
-      )
-      .then(() => {
+      .then(async (created) => {
         setSaveStatus("saved");
         markStale();
+        // Best-effort: make score public for leaderboard
+        try {
+          await documentsClient.updateDocument({
+            id: created.id,
+            optimisticLockingVersion: created.version,
+            body: {
+              name: created.name,
+              type: created.type,
+              isPrivate: false,
+              content: new Blob([scoreContent], { type: "application/json" }),
+            },
+          });
+        } catch (visibilityError: unknown) {
+          console.warn("Could not make score public:", visibilityError);
+        }
       })
       .catch((saveError: unknown) => {
         console.error("Failed to save score:", saveError);
