@@ -62,11 +62,6 @@ export const MissionCard = ({
           {mission.difficulty.toUpperCase()}
         </Chip>
       </Flex>
-      <Text textStyle="small">
-        <span style={{ fontFamily: "monospace", opacity: 0.6 }}>
-          {mission.codename}
-        </span>
-      </Text>
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>

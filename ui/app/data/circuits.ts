@@ -8,25 +8,25 @@ export interface Circuit {
 export const CIRCUITS: Circuit[] = [
   {
     id: "incident-response",
-    name: "Incident Response",
+    name: "First Response",
     description: "Master the art of incident triage and resolution",
     missionIds: ["operation-3am-database-spike", "operation-flatline"],
   },
   {
     id: "sre-fundamentals",
-    name: "SRE Fundamentals",
+    name: "Reliability Run",
     description: "Build reliability engineering skills from the ground up",
     missionIds: ["operation-silent-rollout", "operation-3am-database-spike"],
   },
   {
     id: "platform-mastery",
-    name: "Platform Mastery",
+    name: "Cluster Control",
     description: "Deep dive into Kubernetes and infrastructure observability",
     missionIds: ["operation-k8s-meltdown", "operation-silent-rollout"],
   },
   {
     id: "developer-debugging",
-    name: "Developer Debugging",
+    name: "Signal Hunt",
     description: "Trace and resolve application-level issues",
     missionIds: ["operation-ghost-in-the-trace", "operation-silent-rollout"],
   },

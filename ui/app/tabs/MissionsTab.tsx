@@ -153,51 +153,48 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           globalRank={globalRank}
           missionsCompleted={completedMissions.length}
           streakDays={userState?.streakDays ?? 0}
-        />
-
-        {/* Achievements Strip */}
-        <div
-          onClick={() => onSwitchTab?.("progress")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "8px 0 0 0",
-            marginTop: "8px",
-            cursor: "pointer",
-            borderTop: "1px solid var(--dt-colors-border-neutral-disabled)",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              color: "var(--dt-colors-text-neutral-disabled)",
-              marginRight: "4px",
-            }}
-          >
-            ACHIEVEMENTS
-          </span>
-          {ALL_BADGES.map((badge) => {
-            const isEarned = earnedBadges.has(badge.id);
-            return (
+          rightContent={
+            <div
+              onClick={() => onSwitchTab?.("progress")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+              }}
+            >
               <span
-                key={badge.id}
-                title={badge.name}
                 style={{
-                  fontSize: "18px",
-                  opacity: isEarned ? 1 : 0.3,
-                  filter: isEarned ? "none" : "grayscale(1)",
-                  transition: "opacity 0.2s",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  color: "var(--dt-colors-text-neutral-disabled)",
+                  marginRight: "4px",
                 }}
               >
-                {getBadgeEmoji(badge.icon)}
+                ACHIEVEMENTS
               </span>
-            );
-          })}
-        </div>
+              {ALL_BADGES.map((badge) => {
+                const isEarned = earnedBadges.has(badge.id);
+                return (
+                  <span
+                    key={badge.id}
+                    title={badge.name}
+                    style={{
+                      fontSize: "18px",
+                      opacity: isEarned ? 1 : 0.3,
+                      filter: isEarned ? "none" : "grayscale(1)",
+                      transition: "opacity 0.2s",
+                    }}
+                  >
+                    {getBadgeEmoji(badge.icon)}
+                  </span>
+                );
+              })}
+            </div>
+          }
+        />
       </div>
 
       {/* Circuits */}

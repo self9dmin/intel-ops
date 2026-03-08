@@ -1,6 +1,48 @@
 import React, { useState } from "react";
+import {
+  HostsIcon,
+  WarningIcon,
+  AiIcon,
+  AnalyticsIcon,
+  TracesIcon,
+  BarChartIcon,
+  LogsIcon,
+  ContainerIcon,
+  HttpIcon,
+  GridIcon,
+  ServicesIcon,
+  SmartscapeIcon,
+  DocumentIcon,
+  ServiceLevelObjectivesIcon,
+  SettingIcon,
+  AutomationEngineIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+  type SvgIconProps,
+} from "@dynatrace/strato-icons";
 import { TOPIC_META_ORDERED } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
+
+const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
+  infrastructure: HostsIcon,
+  problems: WarningIcon,
+  "dt-intelligence": AiIcon,
+  dql: AnalyticsIcon,
+  traces: TracesIcon,
+  metrics: BarChartIcon,
+  logs: LogsIcon,
+  kubernetes: ContainerIcon,
+  synthetics: HttpIcon,
+  dashboards: GridIcon,
+  services: ServicesIcon,
+  smartscape: SmartscapeIcon,
+  notebooks: DocumentIcon,
+  slo: ServiceLevelObjectivesIcon,
+  settings: SettingIcon,
+  automation: AutomationEngineIcon,
+  security: ApplicationSecurityIcon,
+  bizevents: EventIcon,
+};
 
 export interface SidebarFilters {
   status: "not_started" | "completed" | null;
@@ -161,11 +203,15 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
             {/* Active topics */}
             {activeTopics.map((topic) => {
               const isActive = filters.topic === topic.id;
+              const IconComponent = TOPIC_ICON_MAP[topic.id as TopicId];
               return (
                 <div
                   key={topic.id}
                   onClick={() => update("topic", isActive ? null : topic.id)}
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
                     padding: "4px 8px",
                     fontSize: "12px",
                     cursor: "pointer",
@@ -179,7 +225,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                     fontWeight: isActive ? 600 : 400,
                     transition: "background 0.15s",
                     overflow: "hidden",
-                    textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
@@ -193,7 +238,12 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                     }
                   }}
                 >
-                  {topic.label}
+                  {IconComponent && (
+                    <span style={{ display: "flex", flexShrink: 0, color: "var(--dt-colors-text-neutral-subdued)" }}>
+                      <IconComponent size="small" style={{ width: 14, height: 14 }} />
+                    </span>
+                  )}
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{topic.label}</span>
                 </div>
               );
             })}
@@ -214,23 +264,33 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
             </div>
 
             {/* Inactive topics */}
-            {comingSoonTopics.map((topic) => (
-              <div
-                key={topic.id}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "12px",
-                  borderRadius: "4px",
-                  color: "var(--dt-colors-text-neutral-subdued)",
-                  opacity: 0.38,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {topic.label}
-              </div>
-            ))}
+            {comingSoonTopics.map((topic) => {
+              const IconComponent = TOPIC_ICON_MAP[topic.id as TopicId];
+              return (
+                <div
+                  key={topic.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 8px",
+                    fontSize: "12px",
+                    borderRadius: "4px",
+                    color: "var(--dt-colors-text-neutral-subdued)",
+                    opacity: 0.38,
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {IconComponent && (
+                    <span style={{ display: "flex", flexShrink: 0, color: "var(--dt-colors-text-neutral-subdued)" }}>
+                      <IconComponent size="small" style={{ width: 14, height: 14 }} />
+                    </span>
+                  )}
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{topic.label}</span>
+                </div>
+              );
+            })}
           </div>
         </>
       ) : (
