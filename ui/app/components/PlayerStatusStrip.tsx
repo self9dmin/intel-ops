@@ -46,9 +46,7 @@ export const PlayerStatusStrip = ({
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",
           gap: "16px",
         }}
       >
@@ -56,7 +54,6 @@ export const PlayerStatusStrip = ({
           style={{
             display: "flex",
             gap: "32px",
-            flexWrap: "wrap",
           }}
         >
           <StatCell value={String(totalXP)} label="XP" />
@@ -67,7 +64,11 @@ export const PlayerStatusStrip = ({
           <StatCell value={String(missionsCompleted)} label="Missions" />
           <StatCell value={String(streakDays)} label="Streak" />
         </div>
-        {rightContent}
+        {rightContent && (
+          <div style={{ marginLeft: "auto", alignSelf: "flex-start", paddingTop: "3px" }}>
+            {rightContent}
+          </div>
+        )}
       </div>
     </div>
   );
