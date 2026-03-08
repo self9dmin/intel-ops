@@ -55,28 +55,8 @@ function applyFilters(
     result = result.filter((m) => completedSet.has(m.id));
   }
 
-  if (sidebarFilters.difficulty) {
-    result = result.filter((m) => m.difficulty === sidebarFilters.difficulty);
-  }
-
-  if (sidebarFilters.time) {
-    result = result.filter((m) => {
-      const mins = m.timerSeconds / 60;
-      switch (sidebarFilters.time) {
-        case "quick":
-          return mins < 15;
-        case "standard":
-          return mins >= 15 && mins <= 30;
-        case "deep":
-          return mins > 30;
-        default:
-          return true;
-      }
-    });
-  }
-
-  if (sidebarFilters.category) {
-    result = result.filter((m) => m.category === sidebarFilters.category);
+  if (sidebarFilters.topic) {
+    result = result.filter((m) => m.topics.includes(sidebarFilters.topic!));
   }
 
   // Sort: unlocked & incomplete first, then completed, then locked

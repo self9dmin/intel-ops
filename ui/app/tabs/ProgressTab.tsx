@@ -14,6 +14,12 @@ import {
   AutomationEngineIcon,
   ApplicationSecurityIcon,
   EventIcon,
+  HostsIcon,
+  WarningIcon,
+  GridIcon,
+  ServicesIcon,
+  DocumentIcon,
+  SettingIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
 import { MISSIONS } from "../data/missions";
@@ -26,15 +32,21 @@ import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 // --- Icon lookup ---
 
 const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
+  infrastructure: HostsIcon,
+  problems: WarningIcon,
+  "dt-intelligence": AiIcon,
   dql: AnalyticsIcon,
   traces: TracesIcon,
-  davis: AiIcon,
   metrics: BarChartIcon,
   logs: LogsIcon,
-  smartscape: SmartscapeIcon,
   kubernetes: ContainerIcon,
   synthetics: HttpIcon,
+  dashboards: GridIcon,
+  services: ServicesIcon,
+  smartscape: SmartscapeIcon,
+  notebooks: DocumentIcon,
   slo: ServiceLevelObjectivesIcon,
+  settings: SettingIcon,
   automation: AutomationEngineIcon,
   security: ApplicationSecurityIcon,
   bizevents: EventIcon,
@@ -208,7 +220,7 @@ interface ProgressTabProps {
 }
 
 export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
-  const { userState } = useUserStateContext();
+  const { userState, resetUserState } = useUserStateContext();
 
   const missionCountByTopic = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -349,6 +361,17 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
             );
           })}
         </div>
+      </div>
+
+      {/* Dev reset */}
+      <div style={{ marginTop: "32px", display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="default"
+          onClick={() => void resetUserState()}
+          style={{ opacity: 0.4, fontSize: "11px" }}
+        >
+          Reset Onboarding (Dev)
+        </Button>
       </div>
     </div>
   );
