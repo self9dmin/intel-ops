@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Mission } from "../types/mission.types";
 import type { Discipline } from "../types/UserState";
-import { LEARNING_PATHS } from "../data/learningPaths";
+import { CIRCUITS } from "../data/circuits";
 
 export interface MissionFilters {
   discipline: Discipline | null;
@@ -22,7 +22,7 @@ export function useFilteredMissions(
     let result = [...missions];
 
     if (selectedPath) {
-      const path = LEARNING_PATHS.find((p) => p.id === selectedPath);
+      const path = CIRCUITS.find((p) => p.id === selectedPath);
       const pathMissionIds = path?.missionIds ?? [];
       result = result.filter((m) => pathMissionIds.includes(m.id));
     }
