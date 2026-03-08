@@ -149,7 +149,16 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                   <Container
                     key={discipline.id}
                     color="warning"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${discipline.title} discipline`}
                     onClick={() => setSelectedDiscipline(discipline.id)}
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedDiscipline(discipline.id);
+                      }
+                    }}
                     style={{ cursor: "pointer" }}
                   >
                     <Flex flexDirection="column" gap={8} padding={16}>
@@ -163,7 +172,16 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 ) : (
                   <Surface
                     key={discipline.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${discipline.title} discipline`}
                     onClick={() => setSelectedDiscipline(discipline.id)}
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedDiscipline(discipline.id);
+                      }
+                    }}
                     style={{ cursor: "pointer" }}
                   >
                     <Flex flexDirection="column" gap={8} padding={16}>

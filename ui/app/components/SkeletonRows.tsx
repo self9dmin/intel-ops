@@ -7,6 +7,7 @@ interface SkeletonRowsProps {
 export const SkeletonRows = ({ rows = 5 }: SkeletonRowsProps) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      {/* key={i} is safe here — static-length list of identical placeholder rows */}
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}

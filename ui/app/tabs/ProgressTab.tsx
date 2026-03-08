@@ -81,7 +81,15 @@ function SkillRow({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onClickRow}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClickRow();
+        }
+      }}
       style={{
         display: "grid",
         gridTemplateColumns: "200px 1fr 160px",

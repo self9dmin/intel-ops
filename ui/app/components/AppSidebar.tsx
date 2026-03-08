@@ -84,7 +84,15 @@ function FilterSection({
         return (
           <div
             key={opt.value ?? "__all__"}
+            role="button"
+            tabIndex={0}
             onClick={() => onSelect(opt.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(opt.value);
+              }
+            }}
             style={{
               padding: "4px 8px",
               fontSize: "12px",
