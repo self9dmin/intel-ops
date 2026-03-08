@@ -17,7 +17,7 @@ function StatCell({ value, label }: { value: string; label: string }) {
       <div
         style={{
           fontSize: "11px",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--dt-colors-text-neutral-subdued)",
           marginTop: "4px",
           textTransform: "uppercase",
           letterSpacing: "0.5px",
@@ -40,7 +40,7 @@ export const PlayerStatusStrip = ({
     <div
       style={{
         padding: "16px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
       }}
     >
       <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>

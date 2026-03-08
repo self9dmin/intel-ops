@@ -13,7 +13,7 @@ export const SkeletonRows = ({ rows = 5 }: SkeletonRowsProps) => {
           style={{
             height: "40px",
             borderRadius: "4px",
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--dt-colors-background-container-neutral-subdued)",
             animation: "pulse 1.5s ease-in-out infinite",
           }}
         />

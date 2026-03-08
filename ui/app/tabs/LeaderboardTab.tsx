@@ -104,10 +104,10 @@ export const LeaderboardTab = () => {
               padding: "8px 12px",
               fontSize: "12px",
               fontWeight: 600,
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--dt-colors-text-neutral-subdued)",
               textTransform: "uppercase",
               letterSpacing: "0.5px",
-              borderBottom: "1px solid rgba(255,255,255,0.1)",
+              borderBottom: "1px solid var(--dt-colors-border-neutral-default)",
             }}
           >
             <span>Rank</span>
@@ -124,9 +124,9 @@ export const LeaderboardTab = () => {
                 gridTemplateColumns: "60px 1fr 1fr 100px 120px",
                 padding: "8px 12px",
                 fontSize: "13px",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
                 background: row.isCurrentUser
-                  ? "rgba(114,203,255,0.08)"
+                  ? "var(--dt-colors-background-container-primary-default)"
                   : "transparent",
               }}
             >

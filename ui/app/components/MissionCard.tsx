@@ -47,8 +47,8 @@ export const MissionCard = ({
       style={{
         padding: "12px",
         borderRadius: "8px",
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "var(--dt-colors-background-container-neutral-subdued)",
+        border: "1px solid var(--dt-colors-border-neutral-disabled)",
         opacity: hasUnmetPrereqs ? 0.85 : 1,
         display: "flex",
         flexDirection: "column",

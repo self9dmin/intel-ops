@@ -75,7 +75,7 @@ function SkillRow({
         gridTemplateColumns: "200px 1fr 160px",
         alignItems: "center",
         padding: "8px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -94,7 +94,7 @@ function SkillRow({
       <div style={{ padding: "0 16px" }}>
         <div
           style={{
-            background: "rgba(255,255,255,0.1)",
+            background: "var(--dt-colors-background-container-neutral-default)",
             borderRadius: "4px",
             height: "6px",
             overflow: "hidden",
@@ -112,7 +112,7 @@ function SkillRow({
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "12px" }}>
-        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>
+        <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
           {xp} / {isMax ? "MAX" : `${next.xp} XP`}
         </span>
         <span
@@ -190,7 +190,7 @@ function SkillsTab() {
           <SkillRow
             key={topicId}
             label={meta.label}
-            color="#888"
+            color="var(--dt-colors-text-neutral-disabled)"
             xp={topicXP[topicId] ?? 0}
             thresholds={XP_THRESHOLDS}
             missionCount={missionCountByTopic[topicId] ?? 0}
@@ -481,7 +481,7 @@ function AchievementsTab() {
               gap: "8px",
               padding: "8px 12px",
               borderRadius: "6px",
-              background: "rgba(255,255,255,0.04)",
+              background: "var(--dt-colors-background-container-neutral-subdued)",
               opacity: isEarned ? 1 : 0.35,
             }}
           >
@@ -541,7 +541,7 @@ export const ProgressPage = () => {
       <Heading level={2}>Progress</Heading>
 
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+      <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid var(--dt-colors-border-neutral-default)" }}>
         {TAB_IDS.map((tabId) => (
           <button
             key={tabId}
@@ -549,8 +549,8 @@ export const ProgressPage = () => {
             style={{
               padding: "8px 16px",
               border: "none",
-              background: activeTab === tabId ? "rgba(255,255,255,0.1)" : "transparent",
-              color: activeTab === tabId ? "var(--dt-colors-text-primary-default, #fff)" : "rgba(255,255,255,0.6)",
+              background: activeTab === tabId ? "var(--dt-colors-background-container-neutral-default)" : "transparent",
+              color: activeTab === tabId ? "var(--dt-colors-text-primary-default, #fff)" : "var(--dt-colors-text-neutral-subdued)",
               cursor: "pointer",
               fontSize: "14px",
               fontWeight: activeTab === tabId ? 600 : 400,

@@ -71,7 +71,7 @@ function FilterSection({
           fontWeight: 600,
           textTransform: "uppercase",
           letterSpacing: "0.5px",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--dt-colors-text-neutral-subdued)",
           marginBottom: "6px",
         }}
       >
@@ -91,11 +91,11 @@ function FilterSection({
               cursor: "pointer",
               borderRadius: "4px",
               background: isActive
-                ? "rgba(255,255,255,0.1)"
+                ? "var(--dt-colors-background-container-neutral-default)"
                 : "transparent",
               color: isActive
                 ? "var(--dt-colors-text-primary-default, #fff)"
-                : "rgba(255,255,255,0.6)",
+                : "var(--dt-colors-text-neutral-subdued)",
               fontWeight: isActive ? 600 : 400,
               opacity: dimmed && !isActive ? 0.4 : 1,
               transition: "background 0.15s",
@@ -105,7 +105,7 @@ function FilterSection({
             }}
             onMouseEnter={(e) => {
               if (!isActive) {
-                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
               }
             }}
             onMouseLeave={(e) => {
@@ -154,7 +154,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
         minWidth: "180px",
         maxWidth: "180px",
         flexShrink: 0,
-        borderRight: "1px solid rgba(255,255,255,0.1)",
+        borderRight: "1px solid var(--dt-colors-border-neutral-default)",
         padding: "16px 12px",
         overflowY: "auto",
         overflow: "hidden",
@@ -195,13 +195,13 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
           style={{
             margin: "16px 0",
             padding: "8px 12px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--dt-colors-background-container-neutral-subdued)",
+            border: "1px solid var(--dt-colors-border-neutral-default)",
             borderRadius: "4px",
             cursor: "pointer",
             fontSize: "12px",
             fontFamily: "inherit",
-            color: "rgba(255,255,255,0.7)",
+            color: "var(--dt-colors-text-neutral-subdued)",
             width: "100%",
           }}
         >
