@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
-import type { UserState, Discipline } from "../types/UserState";
+import type { UserState, Discipline, ExperienceLevel } from "../types/UserState";
 import { createDefaultDisciplines, calculateLevel, migrateUserState, computeTotalXP } from "../types/UserState";
 import type { XPGrant } from "../types/mission.types";
 import { ALL_BADGES } from "../data/badges";
@@ -164,6 +164,9 @@ export function useUserState(): UseUserStateResult {
         streakDays: 0,
         lastActiveDate: "",
         badges: [],
+        selectedAreas: [],
+        topicTrackPriority: [],
+        experienceLevel: "new" as ExperienceLevel,
       };
 
       const result = await documentsClient.createDocument({

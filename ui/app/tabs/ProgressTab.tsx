@@ -14,6 +14,12 @@ import {
   AutomationEngineIcon,
   ApplicationSecurityIcon,
   EventIcon,
+  HostIcon,
+  ProblemIcon,
+  DashboardIcon,
+  ServiceIcon,
+  NotebookIcon,
+  SettingsIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
 import { MISSIONS } from "../data/missions";
@@ -26,15 +32,21 @@ import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 // --- Icon lookup ---
 
 const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
+  infrastructure: HostIcon,
+  problems: ProblemIcon,
+  "dt-intelligence": AiIcon,
   dql: AnalyticsIcon,
   traces: TracesIcon,
-  davis: AiIcon,
   metrics: BarChartIcon,
   logs: LogsIcon,
-  smartscape: SmartscapeIcon,
   kubernetes: ContainerIcon,
   synthetics: HttpIcon,
+  dashboards: DashboardIcon,
+  services: ServiceIcon,
+  smartscape: SmartscapeIcon,
+  notebooks: NotebookIcon,
   slo: ServiceLevelObjectivesIcon,
+  settings: SettingsIcon,
   automation: AutomationEngineIcon,
   security: ApplicationSecurityIcon,
   bizevents: EventIcon,
