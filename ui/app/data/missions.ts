@@ -320,7 +320,7 @@ export const MISSIONS: Mission[] = [
       { track: "platform-engineer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["kubernetes", "metrics"],
+    topics: ["kubernetes", "infrastructure", "metrics"],
     category: "configuration",
     checkpoints: [
       {
@@ -864,7 +864,7 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 75 },
       { track: "sre", xp: 25 },
     ],
-    topics: ["slos", "applications", "services"],
+    topics: ["slos", "services", "synthetics"],
     category: "incident-response",
     checkpoints: [
       {
