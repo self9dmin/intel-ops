@@ -50,7 +50,7 @@ export const TOPIC_META: Record<TopicId, TopicMeta> = {
   automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon", active: false },
   security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: false },
   bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon", active: false },
-  dem: { id: "dem", label: "Digital Experience", icon: "RealUserMonitoringIcon", active: false },
+  dem: { id: "dem", label: "Digital Experience", icon: "UserSessionsIcon", active: false },
   community: { id: "community", label: "Community & Support", icon: "GroupIcon", active: false },
 };
 
