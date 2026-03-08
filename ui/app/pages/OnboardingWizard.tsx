@@ -6,6 +6,17 @@ import { Surface } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
+import {
+  WarningIcon,
+  HostsIcon,
+  CodeIcon,
+  ApplicationSecurityIcon,
+  SettingIcon,
+  AnalyticsIcon,
+  AiIcon,
+  GuideIcon,
+} from "@dynatrace/strato-icons";
+import type { SvgIconProps } from "@dynatrace/strato-icons";
 import type { Discipline, DisciplineProgress, TopicId, ExperienceLevel } from "../types/UserState";
 import { createDefaultDisciplines, TOPIC_META } from "../types/UserState";
 import { MISSIONS } from "../data/missions";
@@ -34,69 +45,32 @@ interface OnboardingWizardProps {
 interface RoleOption {
   id: string;
   label: string;
+  icon: React.ComponentType<SvgIconProps>;
 }
 
 const ROLE_OPTIONS: RoleOption[] = [
-  { id: "incident-responder", label: "I respond to incidents and outages" },
-  { id: "platform-engineer", label: "I manage infrastructure and platforms" },
-  { id: "developer", label: "I build and ship software" },
-  { id: "secops", label: "I work in security" },
-  { id: "it-ops", label: "I manage or configure Dynatrace" },
-  { id: "business-analyst", label: "I analyze data and report on it" },
-  { id: "ai-engineer", label: "I work with AI systems" },
-  { id: "new-to-dt", label: "I'm new to Dynatrace" },
+  { id: "incident-responder", label: "Incident Response & Triage", icon: WarningIcon },
+  { id: "platform-engineer", label: "Infrastructure & Platform Engineering", icon: HostsIcon },
+  { id: "developer", label: "Software Development & Delivery", icon: CodeIcon },
+  { id: "secops", label: "Security Operations", icon: ApplicationSecurityIcon },
+  { id: "it-ops", label: "Platform Administration", icon: SettingIcon },
+  { id: "business-analyst", label: "Observability & Analytics", icon: AnalyticsIcon },
+  { id: "ai-engineer", label: "AI & Automation Engineering", icon: AiIcon },
+  { id: "new-to-dt", label: "New to Dynatrace", icon: GuideIcon },
 ];
 
-const SUB_NEEDS: Record<string, string[]> = {
-  "incident-responder": [
-    "I need to quickly identify root cause during an outage",
-    "I want to monitor SLOs and ensure we hit reliability targets",
-    "I need to set up alerts before incidents impact users",
-    "I want to analyze past incidents to reduce MTTR",
-  ],
-  "platform-engineer": [
-    "I need to monitor Kubernetes clusters and cloud resources",
-    "I want to optimize resource usage and reduce cloud costs",
-    "I need to handle traffic spikes and scaling issues",
-    "I want to troubleshoot pod failures and network issues",
-  ],
-  developer: [
-    "I need to trace distributed transactions and find latency",
-    "I want to debug code-level issues causing errors or slowdowns",
-    "I need to understand how my deployments affect performance",
-    "I want to monitor third-party API dependencies",
-  ],
-  secops: [
-    "I need to identify and prioritize application vulnerabilities",
-    "I want to monitor for real-time threats and attacks",
-    "I need to ensure compliance and reduce attack surface",
-    "I want to integrate security insights into my workflows",
-  ],
-  "it-ops": [
-    "I need to configure monitoring for new apps and services",
-    "I want to manage user roles and access control",
-    "I need to set up management zones for different teams",
-    "I want to integrate Dynatrace with other tools",
-  ],
-  "business-analyst": [
-    "I need to track how performance impacts business KPIs",
-    "I want to analyze user sessions and customer journeys",
-    "I need to measure the impact of new feature releases",
-    "I want to monitor conversion rates and digital experience",
-  ],
-  "ai-engineer": [
-    "I need to use Davis AI to detect anomalies and predict issues",
-    "I want to integrate Dynatrace data into custom AI/ML models",
-    "I need to automate responses to detected problems",
-    "I want to experiment with custom metrics and the Dynatrace API",
-  ],
-  "new-to-dt": [
-    "I need to understand how Dynatrace maps my environment",
-    "I want to set up basic monitoring and learn the platform",
-    "I need to explore dashboards and key metrics",
-    "I want to learn Dynatrace for my specific role",
-  ],
-};
+interface GapOption {
+  id: string;
+  label: string;
+  subtext: string;
+}
+
+const GAP_OPTIONS: GapOption[] = [
+  { id: "investigation", label: "Investigation & Root Cause", subtext: "Finding what broke and why" },
+  { id: "monitoring", label: "Monitoring & Alerting Setup", subtext: "Getting signal from the noise" },
+  { id: "dql", label: "Querying & DQL", subtext: "Getting answers from Grail" },
+  { id: "ai-copilot", label: "AI & Davis CoPilot", subtext: "Using Dynatrace AI effectively" },
+];
 
 const ROLE_TO_CIRCUIT: Record<string, string> = {
   "incident-responder": "first-response",
@@ -120,7 +94,16 @@ const ROLE_TO_DISCIPLINE: Record<string, Discipline> = {
   "new-to-dt": "sre",
 };
 
-const FALLBACK_ROLES = new Set(["secops", "ai-engineer"]);
+function getCircuitTier(circuitId: string): string {
+  const preSeason = new Set(["terrain-recon", "ground-zero", "operator-readiness"]);
+  const qualifying = new Set(["first-response", "reliability-run", "cluster-control", "insight"]);
+  const raceDay = new Set(["signal-hunt", "root-cause-run"]);
+
+  if (preSeason.has(circuitId)) return "Pre-Season Testing";
+  if (qualifying.has(circuitId)) return "Qualifying";
+  if (raceDay.has(circuitId)) return "Race Day";
+  return "Qualifying";
+}
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   const steps = [1, 2, 3, 4];
@@ -161,13 +144,13 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [selectedSubNeed, setSelectedSubNeed] = useState<string | null>(null);
+  const [selectedGap, setSelectedGap] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const currentUser = getCurrentUserDetails();
   const firstName =
     currentUser.name?.split(" ")[0] ?? currentUser.email?.split("@")[0] ?? "Operator";
-  const displayEmail = currentUser.email ?? "";
+  const fullName = currentUser.name ?? currentUser.email ?? "Operator";
 
   const startingCircuitId = selectedRole ? ROLE_TO_CIRCUIT[selectedRole] : undefined;
   const startingCircuit = useMemo(
@@ -186,8 +169,6 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .filter((m): m is NonNullable<typeof m> => m !== undefined);
   }, [startingCircuit]);
 
-  const firstMission = circuitMissions[0] ?? null;
-
   const topicPriority = useMemo((): TopicId[] => {
     const counts = new Map<TopicId, number>();
     for (const m of circuitMissions) {
@@ -201,7 +182,13 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .map(([topic]) => topic);
   }, [circuitMissions]);
 
-  const isFallbackRole = selectedRole !== null && FALLBACK_ROLES.has(selectedRole);
+  function getFirstUnlockedMissionId(): string | null {
+    if (circuitMissions.length === 0) return null;
+    const unlocked = circuitMissions.find(
+      (m) => m.prerequisites.length === 0
+    );
+    return unlocked?.id ?? circuitMissions[0].id;
+  }
 
   async function handleFinish() {
     const startingDiscipline: Discipline = selectedRole
@@ -223,17 +210,50 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         topicTrackPriority: topicPriority,
         experienceLevel,
         selectedRole: selectedRole ?? undefined,
-        selectedSubNeed: selectedSubNeed ?? undefined,
+        selectedSubNeed: selectedGap ?? undefined,
         startingCircuit: startingCircuitId,
       });
-      if (firstMission) {
-        navigate(`/mission/${firstMission.id}`);
+      const firstMissionId = getFirstUnlockedMissionId();
+      if (firstMissionId) {
+        navigate(`/mission/${firstMissionId}`);
       } else {
         navigate("/");
       }
     } catch (err: unknown) {
       console.error("Failed to save user state:", err);
       setSaving(false);
+    }
+  }
+
+  const cardBase: React.CSSProperties = {
+    padding: "16px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "all 0.15s",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "10px",
+    textAlign: "center",
+  };
+
+  function cardStyle(isSelected: boolean): React.CSSProperties {
+    return {
+      ...cardBase,
+      border: isSelected
+        ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+        : "1px solid var(--dt-colors-border-neutral-default)",
+      background: isSelected
+        ? "var(--dt-colors-background-container-neutral-default)"
+        : "transparent",
+    };
+  }
+
+  function handleHover(e: React.MouseEvent<HTMLDivElement>, isSelected: boolean, enter: boolean) {
+    if (!isSelected) {
+      e.currentTarget.style.background = enter
+        ? "var(--dt-colors-background-container-neutral-subdued)"
+        : "transparent";
     }
   }
 
@@ -251,83 +271,60 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       >
         {step >= 1 && <StepIndicator currentStep={step} />}
 
-        {/* Step 0 — Welcome */}
+        {/* Screen 1 — Welcome (pre-step) */}
         {step === 0 && (
           <Flex flexDirection="column" alignItems="center" gap={24}>
-            <Heading level={1}>Intel Ops</Heading>
-            <Text textStyle="base" style={{ textAlign: "center", opacity: 0.7, maxWidth: "480px" }}>
-              Structured Dynatrace training, mission by mission. Work through real scenarios against
-              a live environment and build skills that matter on the job.
+            <Heading level={1}>Mission Control</Heading>
+            <Text textStyle="base" style={{ textAlign: "center", opacity: 0.6 }}>
+              Train Here. Perform Everywhere.
             </Text>
-            {displayEmail && (
-              <Surface>
-                <Flex padding={16} justifyContent="center">
-                  <Text textStyle="small">
-                    Signed in as <strong>{currentUser.name ?? displayEmail}</strong>
-                    {currentUser.name && displayEmail ? ` (${displayEmail})` : ""}
-                  </Text>
-                </Flex>
-              </Surface>
-            )}
+            <div style={{
+              marginTop: "8px",
+              padding: "20px 32px",
+              borderRadius: "8px",
+              background: "var(--dt-colors-background-container-neutral-subdued)",
+              textAlign: "center",
+            }}>
+              <Text textStyle="base" style={{ fontSize: "20px", fontWeight: 600 }}>
+                {fullName}
+              </Text>
+            </div>
+            <Text textStyle="small" style={{ opacity: 0.6, textAlign: "center" }}>
+              Your seat on the grid is ready.
+            </Text>
             <Button variant="emphasized" onClick={() => setStep(1)}>
-              Let&apos;s get started &rarr;
+              Enter the Briefing Room &rarr;
             </Button>
           </Flex>
         )}
 
-        {/* Step 1 — Role selection */}
+        {/* Screen 2 — Role picker (step 1 of 4) */}
         {step === 1 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>What best describes you?</Heading>
+              <Heading level={2}>What best describes your role?</Heading>
               <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
-                Pick the one that fits best — this shapes your starting missions.
+                This shapes your starting missions and recommended path.
               </Text>
             </Flex>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               {ROLE_OPTIONS.map((role) => {
                 const isSelected = selectedRole === role.id;
+                const IconComponent = role.icon;
                 return (
                   <div
                     key={role.id}
                     onClick={() => {
                       setSelectedRole(role.id);
-                      setSelectedSubNeed(null);
+                      setSelectedGap(null);
                     }}
-                    style={{
-                      padding: "14px 16px",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      border: isSelected
-                        ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
-                        : "1px solid var(--dt-colors-border-neutral-default)",
-                      background: isSelected
-                        ? "var(--dt-colors-background-container-neutral-default)"
-                        : "transparent",
-                      transition: "all 0.15s",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = "transparent";
-                      }
-                    }}
+                    style={cardStyle(isSelected)}
+                    onMouseEnter={(e) => handleHover(e, isSelected, true)}
+                    onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
-                    <span style={{ fontSize: "13px", fontWeight: isSelected ? 600 : 400 }}>
+                    <IconComponent size="small" />
+                    <span style={{ fontSize: "13px", fontWeight: isSelected ? 600 : 400, lineHeight: "1.3" }}>
                       {role.label}
                     </span>
                   </div>
@@ -348,20 +345,20 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Step 2 — Sub-need selection */}
-        {step === 2 && selectedRole && (
+        {/* Screen 3 — Biggest gap (step 2 of 4) */}
+        {step === 2 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>What do you need most?</Heading>
+              <Heading level={2}>What&apos;s your biggest gap right now?</Heading>
             </Flex>
 
             <Flex flexDirection="column" gap={12}>
-              {(SUB_NEEDS[selectedRole] ?? []).map((need) => {
-                const isSelected = selectedSubNeed === need;
+              {GAP_OPTIONS.map((gap) => {
+                const isSelected = selectedGap === gap.id;
                 return (
                   <div
-                    key={need}
-                    onClick={() => setSelectedSubNeed(need)}
+                    key={gap.id}
+                    onClick={() => setSelectedGap(gap.id)}
                     style={{
                       padding: "16px 20px",
                       borderRadius: "8px",
@@ -374,19 +371,14 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                         : "transparent",
                       transition: "all 0.15s",
                     }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.background = "transparent";
-                      }
-                    }}
+                    onMouseEnter={(e) => handleHover(e, isSelected, true)}
+                    onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
                     <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                      {need}
+                      {gap.label}
+                    </div>
+                    <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
+                      {gap.subtext}
                     </div>
                   </div>
                 );
@@ -397,7 +389,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               <Button onClick={() => setStep(1)}>Back</Button>
               <Button
                 variant="emphasized"
-                disabled={selectedSubNeed === null}
+                disabled={selectedGap === null}
                 onClick={() => setStep(3)}
               >
                 Continue
@@ -406,16 +398,34 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Step 3 — Starting circuit */}
+        {/* Screen 4 — Starting path (step 3 of 4) */}
         {step === 3 && startingCircuit && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>Your starting path, {firstName}</Heading>
+              <Heading level={2}>Your Grid Position, {firstName}</Heading>
             </Flex>
 
             <Surface>
               <Flex flexDirection="column" padding={20} gap={12}>
-                <Heading level={4}>{startingCircuit.name}</Heading>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}>
+                  <Heading level={4}>{startingCircuit.name}</Heading>
+                  <span style={{
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    padding: "2px 10px",
+                    borderRadius: "4px",
+                    background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
+                    color: "#fff",
+                    letterSpacing: "0.5px",
+                  }}>
+                    {getCircuitTier(startingCircuit.id)}
+                  </span>
+                </div>
                 <Text textStyle="small" style={{ opacity: 0.7 }}>
                   {startingCircuit.description}
                 </Text>
@@ -448,114 +458,28 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                     );
                   })}
                 </div>
-
-                {isFallbackRole && (
-                  <Text textStyle="small" style={{ opacity: 0.6, fontStyle: "italic", marginTop: "4px" }}>
-                    Your dedicated circuit is coming soon. We&apos;ve started you on the best available path in the meantime.
-                  </Text>
-                )}
               </Flex>
             </Surface>
 
             <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
-              You can explore all missions freely &mdash; this is just your starting point.
+              You can change your path at any time from the Pace tab.
             </Text>
 
             {operatorReadiness && (
               <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
-                Everyone starts with <strong>{operatorReadiness.name}</strong> &mdash; 3 short missions
-                that give you the foundation every Dynatrace user needs.
+                All drivers complete <strong>{operatorReadiness.name}</strong> first &mdash; 3 short missions
+                that build your foundation.
               </Text>
             )}
 
             <Flex justifyContent="center" gap={12}>
               <Button onClick={() => setStep(2)}>Back</Button>
-              <Button variant="emphasized" onClick={() => setStep(4)}>
-                Continue
+              <Button variant="emphasized" onClick={() => {
+                void handleFinish();
+              }}>
+                {saving ? "" : "Take Your Position \u2192"}
+                {saving && <ProgressCircle />}
               </Button>
-            </Flex>
-          </Flex>
-        )}
-
-        {/* Step 4 — First mission */}
-        {step === 4 && (
-          <Flex flexDirection="column" gap={24}>
-            <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>Your first mission</Heading>
-            </Flex>
-
-            {firstMission ? (
-              <Surface>
-                <Flex flexDirection="column" padding={20} gap={12}>
-                  <Flex justifyContent="space-between" alignItems="center">
-                    <Heading level={4}>{firstMission.title}</Heading>
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        padding: "2px 8px",
-                        borderRadius: "4px",
-                        background: "var(--dt-colors-background-container-neutral-subdued)",
-                        color: "var(--dt-colors-text-neutral-subdued)",
-                      }}
-                    >
-                      {firstMission.difficulty}
-                    </span>
-                  </Flex>
-                  <Text textStyle="small" style={{ opacity: 0.7 }}>
-                    {firstMission.description}
-                  </Text>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "2px" }}>
-                    <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
-                      {Math.ceil(firstMission.timerSeconds / 60)} min
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "4px" }}>
-                    {firstMission.topics.map((topic) => (
-                      <span
-                        key={topic}
-                        style={{
-                          fontSize: "11px",
-                          padding: "2px 8px",
-                          borderRadius: "4px",
-                          background: "var(--dt-colors-background-container-neutral-subdued)",
-                          color: "var(--dt-colors-text-neutral-subdued)",
-                        }}
-                      >
-                        {TOPIC_META[topic as TopicId]?.label ?? topic}
-                      </span>
-                    ))}
-                  </div>
-                </Flex>
-              </Surface>
-            ) : (
-              <Text textStyle="base" style={{ textAlign: "center", opacity: 0.7 }}>
-                No missions available yet. Head to the missions board to explore.
-              </Text>
-            )}
-
-            <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
-              You&apos;ll need the Dynatrace Playground &mdash; open it at{" "}
-              <a
-                href="https://playground.apps.dynatrace.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--dt-colors-charts-categorical-default-12, #1496ff)" }}
-              >
-                playground.apps.dynatrace.com
-              </a>
-            </Text>
-
-            <Flex justifyContent="center" gap={12}>
-              <Button onClick={() => setStep(3)}>Back</Button>
-              {saving ? (
-                <ProgressCircle />
-              ) : (
-                <Button variant="emphasized" onClick={() => void handleFinish()}>
-                  {firstMission ? "Launch Mission \u2192" : "Go to missions \u2192"}
-                </Button>
-              )}
             </Flex>
           </Flex>
         )}
