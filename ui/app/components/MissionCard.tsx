@@ -67,9 +67,6 @@ export const MissionCard = ({
         </Chip>
       </Flex>
       <Text textStyle="small" style={{ fontWeight: 600 }}>{mission.title}</Text>
-      <Flex gap={4} style={{ flexWrap: "wrap" }}>
-        <Chip color="neutral">{mission.role}</Chip>
-      </Flex>
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>

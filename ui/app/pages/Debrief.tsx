@@ -16,7 +16,7 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint, XPGrant } from "../types/mission.types";
 import { getMissionById, MISSIONS } from "../data/missions";
-import { LEARNING_PATHS } from "../data/learningPaths";
+import { CIRCUITS } from "../data/circuits";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 
@@ -242,7 +242,7 @@ export const Debrief = () => {
         const completedSet = new Set(completedMissions);
 
         // Circuit (Learning Path) Progress
-        const matchingPaths = LEARNING_PATHS.filter((p) =>
+        const matchingPaths = CIRCUITS.filter((p) =>
           p.missionIds.includes(id ?? "")
         );
 
