@@ -6,7 +6,6 @@ import { Button } from "@dynatrace/strato-components/buttons";
 import { Paragraph } from "@dynatrace/strato-components/typography";
 
 import { Mission } from "./pages/Mission";
-import { ControlTower } from "./pages/ControlTower";
 import { Debrief } from "./pages/Debrief";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
 import { UserStateProvider, useUserStateContext } from "./context/UserStateContext";
@@ -16,14 +15,14 @@ import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
 
-type TopTab = "control-tower" | "missions" | "progress" | "leaderboard";
-const TAB_ORDER: TopTab[] = ["control-tower", "missions", "progress", "leaderboard"];
+type TopTab = "missions" | "progress" | "leaderboard";
+const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
 
 const ShellLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initTab = (searchParams.get("tab") as TopTab) || "control-tower";
+  const initTab = (searchParams.get("tab") as TopTab) || "missions";
   const [activeTab, setActiveTab] = useState<TopTab>(
-    TAB_ORDER.includes(initTab) ? initTab : "control-tower"
+    TAB_ORDER.includes(initTab) ? initTab : "missions"
   );
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
@@ -64,7 +63,6 @@ const ShellLayout = () => {
         onSwitchToMissions={() => handleSwitchToMissions()}
       />
       <main style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
-        {activeTab === "control-tower" && <ControlTower />}
         {activeTab === "missions" && (
           <MissionsTab
             filters={filters}
@@ -78,8 +76,7 @@ const ShellLayout = () => {
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
-    "control-tower": "Control Tower",
-    missions: "Missions",
+    missions: "Control Tower",
     progress: "Pace",
     leaderboard: "Leaderboard",
   };

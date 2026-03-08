@@ -8,7 +8,7 @@ export interface SidebarFilters {
 }
 
 interface AppSidebarProps {
-  activeTab: "control-tower" | "missions" | "progress" | "leaderboard";
+  activeTab: "missions" | "progress" | "leaderboard";
   onFilterChange: (filters: SidebarFilters) => void;
   onSwitchToMissions: () => void;
 }
@@ -18,10 +18,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
     status: null,
     topic: null,
   });
-
-  if (activeTab === "control-tower") {
-    return null;
-  }
 
   const isMissions = activeTab === "missions";
 
