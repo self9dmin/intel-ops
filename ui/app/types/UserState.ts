@@ -32,7 +32,7 @@ export interface TopicMeta {
 export const TOPIC_META: Record<TopicId, TopicMeta> = {
   infrastructure: { id: "infrastructure", label: "Infrastructure", icon: "HostIcon", active: true },
   problems: { id: "problems", label: "Problems", icon: "ProblemIcon", active: true },
-  "dt-intelligence": { id: "dt-intelligence", label: "Dynatrace Intelligence", icon: "AiIcon", active: true },
+  "dt-intelligence": { id: "dt-intelligence", label: "Intelligence", icon: "AiIcon", active: true },
   dql: { id: "dql", label: "DQL", icon: "AnalyticsIcon", active: true },
   traces: { id: "traces", label: "Traces", icon: "TracesIcon", active: true },
   metrics: { id: "metrics", label: "Metrics", icon: "BarChartIcon", active: true },
