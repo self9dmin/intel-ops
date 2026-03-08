@@ -182,14 +182,6 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .map(([topic]) => topic);
   }, [circuitMissions]);
 
-  function getFirstUnlockedMissionId(): string | null {
-    if (circuitMissions.length === 0) return null;
-    const unlocked = circuitMissions.find(
-      (m) => m.prerequisites.length === 0
-    );
-    return unlocked?.id ?? circuitMissions[0].id;
-  }
-
   async function handleFinish() {
     const startingDiscipline: Discipline = selectedRole
       ? ROLE_TO_DISCIPLINE[selectedRole]
@@ -213,12 +205,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         selectedSubNeed: selectedGap ?? undefined,
         startingCircuit: startingCircuitId,
       });
-      const firstMissionId = getFirstUnlockedMissionId();
-      if (firstMissionId) {
-        navigate(`/mission/${firstMissionId}`);
-      } else {
-        navigate("/");
-      }
+      navigate("/");
     } catch (err: unknown) {
       console.error("Failed to save user state:", err);
       setSaving(false);
