@@ -4,7 +4,6 @@
   "app": {
     "name": "Mission Control",
     "version": "0.1.39",
->>>>>>> Stashed changes
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "icon": "ui/assets/app-icon.svg",
     "id": "my.intelops.training",
