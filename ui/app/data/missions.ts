@@ -18,7 +18,7 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 75 },
       { track: "incident-commander", xp: 75 },
     ],
-    topics: ["dql", "dt-intelligence", "logs"],
+    topics: ["slo", "services", "synthetics"],
     category: "incident-response",
     checkpoints: [
       {
@@ -173,7 +173,7 @@ export const MISSIONS: Mission[] = [
       { track: "developer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["traces", "dql"],
+    topics: ["traces", "dql", "services"],
     category: "root-cause-analysis",
     checkpoints: [
       {
@@ -630,7 +630,7 @@ export const MISSIONS: Mission[] = [
     status: "available",
     prerequisites: [],
     disciplines: [{ track: "sre", xp: 75 }],
-    topics: ["problems", "infrastructure", "metrics"],
+    topics: ["infrastructure", "problems"],
     category: "incident-response",
     checkpoints: [
       {
@@ -701,7 +701,7 @@ export const MISSIONS: Mission[] = [
       { track: "platform-engineer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["problems", "infrastructure", "grail"],
+    topics: ["infrastructure", "problems", "dql"],
     category: "configuration",
     checkpoints: [
       {
@@ -782,7 +782,7 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 75 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["problems", "databases"],
+    topics: ["problems", "infrastructure"],
     category: "incident-response",
     checkpoints: [
       {
