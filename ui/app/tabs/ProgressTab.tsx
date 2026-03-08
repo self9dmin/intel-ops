@@ -259,7 +259,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Heading level={4}>Progress</Heading>
+        <Heading level={4}>Pace</Heading>
         <Button variant="default" onClick={handleExportCSV}>
           Export CSV
         </Button>

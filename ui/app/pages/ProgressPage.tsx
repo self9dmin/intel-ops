@@ -502,7 +502,7 @@ export const ProgressPage = () => {
 
   return (
     <Flex flexDirection="column" gap={24} padding={24}>
-      <Heading level={2}>Progress</Heading>
+      <Heading level={2}>Pace</Heading>
 
       {/* Tab bar */}
       <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid var(--dt-colors-border-neutral-default)" }}>
