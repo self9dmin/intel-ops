@@ -6,6 +6,7 @@ import { Button } from "@dynatrace/strato-components/buttons";
 import { Paragraph } from "@dynatrace/strato-components/typography";
 
 import { Mission } from "./pages/Mission";
+import { ControlTower } from "./pages/ControlTower";
 import { Debrief } from "./pages/Debrief";
 import { OnboardingWizard } from "./pages/OnboardingWizard";
 import { UserStateProvider, useUserStateContext } from "./context/UserStateContext";
@@ -171,6 +172,7 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<ShellLayout />} />
+      <Route path="/control-tower" element={<ControlTower />} />
       <Route path="/missions" element={<Navigate to="/?tab=missions" replace />} />
       <Route path="/missions/:id" element={<Mission />} />
       <Route path="/debrief/:id" element={<Debrief />} />
