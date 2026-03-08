@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
+import { Surface } from "@dynatrace/strato-components/layouts";
 
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
@@ -81,123 +82,135 @@ export const ControlTower = () => {
   }, [completedSet, nextMission]);
 
   return (
-    <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "32px" }}>
-      <Heading level={2}>Control Tower</Heading>
+    <div style={{ padding: "24px", maxWidth: "960px", margin: "0 auto" }}>
+      <Heading level={2} style={{ textAlign: "center", marginBottom: "24px" }}>
+        Control Tower
+      </Heading>
 
-      {/* Section 1: Next Mission */}
-      <div>
-        <div
-          style={{
-            fontSize: "10px",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            color: "var(--dt-colors-text-neutral-subdued)",
-            marginBottom: "8px",
-          }}
-        >
-          RECOMMENDED NEXT
-        </div>
-        {nextMission ? (
-          <div style={{ maxWidth: "360px" }}>
-            <MissionCard
-              mission={nextMission}
-              isUnlocked={true}
-              isCompleted={false}
-            />
-          </div>
-        ) : (
-          <Text>All available missions complete.</Text>
-        )}
-      </div>
-
-      {/* Section 2: Active Circuit */}
-      <div>
-        <Heading level={4}>{activeCircuit.name}</Heading>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-          {circuitMissionRows.map((row) => (
-            <div
-              key={row.title}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                fontSize: "13px",
-              }}
-            >
-              <span>{row.icon}</span>
-              <span
-                style={{
-                  opacity: row.status === "locked" ? 0.5 : 1,
-                  color: "var(--dt-colors-text-primary-default, #fff)",
-                }}
-              >
-                {row.title}
-              </span>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "24px",
+        }}
+      >
+        {/* Top Left: Next Mission */}
+        <Surface>
+          <div style={{ padding: "16px" }}>
+            <Heading level={4}>Next Mission</Heading>
+            <div style={{ marginTop: "12px" }}>
+              {nextMission ? (
+                <MissionCard
+                  mission={nextMission}
+                  isUnlocked={true}
+                  isCompleted={false}
+                />
+              ) : (
+                <Text>All available missions complete.</Text>
+              )}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </Surface>
 
-      {/* Section 3: Your Pace */}
-      <div>
-        <Heading level={4}>Your Pace</Heading>
-        {topTopics.length === 0 ? (
-          <Text style={{ marginTop: "8px" }}>Complete missions to track your pace.</Text>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "8px", maxWidth: "360px" }}>
-            {topTopics.map((t) => (
-              <div key={t.topic}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
-                  <span style={{ color: "var(--dt-colors-text-primary-default, #fff)" }}>{t.label}</span>
-                  <span style={{ color: "var(--dt-colors-text-neutral-subdued)" }}>{t.xp} XP</span>
-                </div>
+        {/* Top Right: Active Circuit */}
+        <Surface>
+          <div style={{ padding: "16px" }}>
+            <Heading level={4}>{activeCircuit.name}</Heading>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
+              {circuitMissionRows.map((row) => (
                 <div
+                  key={row.title}
                   style={{
-                    height: "4px",
-                    borderRadius: "2px",
-                    background: "var(--dt-colors-background-container-neutral-subdued)",
-                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "13px",
                   }}
                 >
-                  <div
+                  <span>{row.icon}</span>
+                  <span
                     style={{
-                      height: "100%",
-                      width: `${t.widthPercent}%`,
-                      background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
-                      borderRadius: "2px",
+                      opacity: row.status === "locked" ? 0.5 : 1,
+                      color: "var(--dt-colors-text-primary-default, #fff)",
                     }}
-                  />
+                  >
+                    {row.title}
+                  </span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+        </Surface>
 
-      {/* Section 4: Quick Missions */}
-      {quickMissions.length > 0 && (
-        <div>
-          <Heading level={4}>Quick Missions</Heading>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "12px",
-              marginTop: "8px",
-            }}
-          >
-            {quickMissions.map((mission) => (
-              <MissionCard
-                key={mission.id}
-                mission={mission}
-                isUnlocked={true}
-                isCompleted={false}
-              />
-            ))}
+        {/* Bottom Left: Your Pace */}
+        <Surface>
+          <div style={{ padding: "16px" }}>
+            <Heading level={4}>Your Pace</Heading>
+            <div style={{ marginTop: "12px" }}>
+              {topTopics.length === 0 ? (
+                <Text>Complete missions to track your pace.</Text>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {topTopics.map((t) => (
+                    <div key={t.topic}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
+                        <span style={{ color: "var(--dt-colors-text-primary-default, #fff)" }}>{t.label}</span>
+                        <span style={{ color: "var(--dt-colors-text-neutral-subdued)" }}>{t.xp} XP</span>
+                      </div>
+                      <div
+                        style={{
+                          height: "4px",
+                          borderRadius: "2px",
+                          background: "var(--dt-colors-background-container-neutral-subdued)",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${t.widthPercent}%`,
+                            background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
+                            borderRadius: "2px",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        </Surface>
+
+        {/* Bottom Right: Quick Missions */}
+        <Surface>
+          <div style={{ padding: "16px" }}>
+            <Heading level={4}>Quick Missions</Heading>
+            <div style={{ marginTop: "12px" }}>
+              {quickMissions.length > 0 ? (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                    gap: "12px",
+                  }}
+                >
+                  {quickMissions.map((mission) => (
+                    <MissionCard
+                      key={mission.id}
+                      mission={mission}
+                      isUnlocked={true}
+                      isCompleted={false}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Text>No quick missions available.</Text>
+              )}
+            </div>
+          </div>
+        </Surface>
+      </div>
     </div>
   );
 };

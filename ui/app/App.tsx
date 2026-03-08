@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Route, Routes, Navigate, useSearchParams, useLocation, Link } from "react-router-dom";
+import { Route, Routes, useSearchParams, useLocation, Link } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { Button } from "@dynatrace/strato-components/buttons";
@@ -102,20 +102,20 @@ const ShellLayout = () => {
         </span>
         <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
           <Link
-            to="/control-tower"
+            to="/"
             style={{
               padding: "6px 14px",
               border: "none",
-              background: location.pathname === "/control-tower" ? "var(--dt-colors-background-container-neutral-default)" : "transparent",
-              color: location.pathname === "/control-tower"
+              background: location.pathname === "/" ? "var(--dt-colors-background-container-neutral-default)" : "transparent",
+              color: location.pathname === "/"
                 ? "var(--dt-colors-text-primary-default, #fff)"
                 : "var(--dt-colors-text-neutral-subdued)",
               cursor: "pointer",
               fontSize: "13px",
-              fontWeight: location.pathname === "/control-tower" ? 600 : 400,
+              fontWeight: location.pathname === "/" ? 600 : 400,
               fontFamily: "inherit",
               borderRadius: "4px",
-              borderBottom: location.pathname === "/control-tower"
+              borderBottom: location.pathname === "/"
                 ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
                 : "2px solid transparent",
               textDecoration: "none",
@@ -194,12 +194,10 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<ShellLayout />} />
-      <Route path="/control-tower" element={<ControlTower />} />
-      <Route path="/missions" element={<Navigate to="/?tab=missions" replace />} />
+      <Route path="/" element={<ControlTower />} />
+      <Route path="/missions" element={<ShellLayout />} />
       <Route path="/missions/:id" element={<Mission />} />
       <Route path="/debrief/:id" element={<Debrief />} />
-      <Route path="/progress" element={<Navigate to="/?tab=progress" replace />} />
     </Routes>
   );
 };
