@@ -1,13 +1,14 @@
 import React, { createContext, useContext } from "react";
 import { useUserState } from "../hooks/useUserState";
-import type { UserState, Discipline } from "../types/UserState";
+import type { UserState } from "../types/UserState";
 import type { XPGrant } from "../types/mission.types";
+import type { OnboardingPartial } from "../pages/OnboardingWizard";
 
 export interface UserStateContextValue {
   userState: UserState | null;
   loading: boolean;
   error: string | null;
-  saveUserState: (startingDiscipline: Discipline) => Promise<void>;
+  saveUserState: (partial: OnboardingPartial) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;

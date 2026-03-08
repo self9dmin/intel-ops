@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
-import type { UserState, Discipline, ExperienceLevel } from "../types/UserState";
-import { createDefaultDisciplines, calculateLevel, migrateUserState, computeTotalXP } from "../types/UserState";
+import type { UserState } from "../types/UserState";
+import { calculateLevel, migrateUserState, computeTotalXP } from "../types/UserState";
+import type { OnboardingPartial } from "../pages/OnboardingWizard";
 import type { XPGrant } from "../types/mission.types";
 import { ALL_BADGES } from "../data/badges";
 
@@ -10,7 +11,7 @@ interface UseUserStateResult {
   userState: UserState | null;
   loading: boolean;
   error: string | null;
-  saveUserState: (startingDiscipline: Discipline) => Promise<void>;
+  saveUserState: (partial: OnboardingPartial) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;
@@ -151,22 +152,13 @@ export function useUserState(): UseUserStateResult {
   );
 
   const saveUserState = useCallback(
-    async (startingDiscipline: Discipline) => {
+    async (partial: OnboardingPartial) => {
       const state: UserState = {
         userId: currentUser.id,
         userEmail: currentUser.email ?? "",
-        startingDiscipline,
-        disciplines: createDefaultDisciplines(),
-        topicXP: {},
         onboardingComplete: true,
         createdAt: new Date().toISOString(),
-        completedMissions: [],
-        streakDays: 0,
-        lastActiveDate: "",
-        badges: [],
-        selectedAreas: [],
-        topicTrackPriority: [],
-        experienceLevel: "new" as ExperienceLevel,
+        ...partial,
       };
 
       const result = await documentsClient.createDocument({
