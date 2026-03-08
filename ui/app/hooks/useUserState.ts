@@ -24,7 +24,7 @@ const DOCUMENT_TYPE = "intelops-user-state";
 function isConflictError(err: unknown): boolean {
   if (err instanceof Error) {
     const msg = err.message;
-    if (msg.includes("409") || msg.includes("Conflict") || msg.includes("optimistic") || msg.includes("Expected to find document with version")) {
+    if (msg.includes("409") || msg.includes("Conflict") || msg.includes("optimistic") || msg.includes("Expected to find document")) {
       return true;
     }
   }
