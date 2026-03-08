@@ -3,7 +3,7 @@ import type { Mission } from "../types/mission.types";
 export const MISSIONS: Mission[] = [
   {
     id: "operation-3am-database-spike",
-    title: "Operation: 3am Database Spike",
+    title: "3AM Database Spike",
     codename: "NIGHTWATCH",
     role: "Incident Commander",
     difficulty: "rookie",
@@ -85,7 +85,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-silent-rollout",
-    title: "Operation: Silent Rollout",
+    title: "Silent Rollout",
     codename: "CANARY",
     role: "SRE",
     difficulty: "operator",
@@ -158,7 +158,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-ghost-in-the-trace",
-    title: "Operation: Ghost in the Trace",
+    title: "Ghost in the Trace",
     codename: "PHANTOM",
     role: "Developer",
     difficulty: "operator",
@@ -231,7 +231,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-flatline",
-    title: "Operation: Flatline",
+    title: "Flatline",
     codename: "BLACKOUT",
     role: "Incident Commander",
     difficulty: "elite",
@@ -305,7 +305,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-k8s-meltdown",
-    title: "Operation: K8s Meltdown",
+    title: "K8s Meltdown",
     codename: "PROMETHEUS",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -379,7 +379,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-what-are-you",
-    title: "Operation: What Are You",
+    title: "What Are You",
     codename: "WHAT ARE YOU",
     role: "SRE",
     difficulty: "rookie",
@@ -454,7 +454,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-grid-search",
-    title: "Operation: Grid Search",
+    title: "Grid Search",
     codename: "GRID SEARCH",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -531,7 +531,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-follow-the-wire",
-    title: "Operation: Follow the Wire",
+    title: "Follow the Wire",
     codename: "FOLLOW THE WIRE",
     role: "Developer",
     difficulty: "operator",
@@ -618,7 +618,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-iron-floor",
-    title: "Operation: Iron Floor",
+    title: "Iron Floor",
     codename: "IRON FLOOR",
     role: "SRE",
     difficulty: "rookie",
@@ -686,7 +686,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-stone-wall",
-    title: "Operation: Stone Wall",
+    title: "Stone Wall",
     codename: "STONE WALL",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -767,7 +767,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-silent-query",
-    title: "Operation: Silent Query",
+    title: "Silent Query",
     codename: "SILENT QUERY",
     role: "Incident Commander",
     difficulty: "rookie",
@@ -849,7 +849,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-golden-signal",
-    title: "Operation: Golden Signal",
+    title: "Golden Signal",
     codename: "GOLDEN SIGNAL",
     role: "Incident Commander",
     difficulty: "rookie",
