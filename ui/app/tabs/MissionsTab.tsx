@@ -78,7 +78,6 @@ function applyFilters(
 
 export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { userState } = useUserStateContext();
   const { scores, loading: leaderboardLoading, fetchScores } = useLeaderboardContext();
 
