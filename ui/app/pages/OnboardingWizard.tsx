@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from "react";
+import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
@@ -146,31 +146,53 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedGap, setSelectedGap] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [lightsOn, setLightsOn] = useState([true, true, true, true, true]);
-  const [lightsRunning, setLightsRunning] = useState(false);
+  const [lightsOn, setLightsOn] = useState([false, false, false, false, false]);
+  const [lightsExiting, setLightsExiting] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  const startLightsOut = useCallback(() => {
-    if (lightsRunning) return;
-    setLightsRunning(true);
-    setLightsOn([true, true, true, true, true]);
+  // Entry: illuminate lights left-to-right when arriving at step 3
+  useEffect(() => {
+    if (step !== 3) return;
+    setLightsOn([false, false, false, false, false]);
+    setLightsExiting(false);
     const timers: ReturnType<typeof setTimeout>[] = [];
     for (let i = 0; i < 5; i++) {
       const t = setTimeout(() => {
         setLightsOn((prev) => {
           const next = [...prev];
-          next[i] = false;
+          next[i] = true;
           return next;
         });
-      }, 300 + i * 120);
+      }, 150 + i * 150);
+      timers.push(t);
+    }
+    timersRef.current = timers;
+    return () => { timers.forEach(clearTimeout); };
+  }, [step]);
+
+  const handleFinishRef = useRef<() => Promise<void>>();
+
+  // Exit: darken lights right-to-left then call handleFinish
+  const startLightsExit = useCallback(() => {
+    if (lightsExiting) return;
+    setLightsExiting(true);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 0; i < 5; i++) {
+      const t = setTimeout(() => {
+        setLightsOn((prev) => {
+          const next = [...prev];
+          next[4 - i] = false;
+          return next;
+        });
+      }, i * 100);
       timers.push(t);
     }
     const proceed = setTimeout(() => {
-      setStep(1);
-    }, 900);
+      void handleFinishRef.current?.();
+    }, 5 * 100);
     timers.push(proceed);
     timersRef.current = timers;
-  }, [lightsRunning]);
+  }, [lightsExiting]);
 
   const currentUser = getCurrentUserDetails();
   const firstName =
@@ -207,6 +229,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .map(([topic]) => topic);
   }, [circuitMissions]);
 
+  // Keep ref in sync so the lights-exit callback always calls the latest version
   async function handleFinish() {
     const startingDiscipline: Discipline = selectedRole
       ? ROLE_TO_DISCIPLINE[selectedRole]
@@ -236,6 +259,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       setSaving(false);
     }
   }
+  handleFinishRef.current = handleFinish;
 
   const cardBase: React.CSSProperties = {
     padding: "16px",
@@ -281,7 +305,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         gap={32}
         style={{ maxWidth: "640px", width: "100%" }}
       >
-        {step >= 1 && <StepIndicator currentStep={step} />}
+        {step >= 1 && step < 3 && <StepIndicator currentStep={step} />}
 
         {/* Screen 1 — Welcome (pre-step) */}
         {step === 0 && (
@@ -375,24 +399,9 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 Your seat on the grid is ready.
               </span>
 
-              {/* Formation lights */}
-              <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
-                {lightsOn.map((on, i) => (
-                  <svg key={i} width="18" height="18" viewBox="0 0 18 18">
-                    <circle
-                      cx="9"
-                      cy="9"
-                      r="9"
-                      fill={on ? "#e8001e" : "#1c1c2e"}
-                      filter={on ? "drop-shadow(0 0 6px #e8001e)" : "none"}
-                    />
-                  </svg>
-                ))}
-              </div>
-
               {/* CTA with pulse */}
-              <div style={{ animation: lightsRunning ? "none" : "ctaPulse 2.5s ease-in-out infinite", borderRadius: "8px" }}>
-                <Button variant="emphasized" disabled={lightsRunning} onClick={startLightsOut}>
+              <div style={{ animation: "ctaPulse 2.5s ease-in-out infinite", borderRadius: "8px" }}>
+                <Button variant="emphasized" onClick={() => setStep(1)}>
                   Enter the Briefing Room &rarr;
                 </Button>
               </div>
@@ -503,6 +512,21 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         {/* Screen 4 — Starting path (step 3 of 4) */}
         {step === 3 && startingCircuit && (
           <Flex flexDirection="column" gap={24}>
+            {/* Formation lights replace step indicator */}
+            <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "8px" }}>
+              {lightsOn.map((on, i) => (
+                <svg key={i} width="18" height="18" viewBox="0 0 18 18">
+                  <circle
+                    cx="9"
+                    cy="9"
+                    r="9"
+                    fill={on ? "#e8001e" : "#1c1c2e"}
+                    filter={on ? "drop-shadow(0 0 6px #e8001e)" : "none"}
+                  />
+                </svg>
+              ))}
+            </div>
+
             <Flex flexDirection="column" alignItems="center" gap={8}>
               <Heading level={2}>Your Grid Position, {firstName}</Heading>
             </Flex>
@@ -576,9 +600,11 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
 
             <Flex justifyContent="center" gap={12}>
               <Button onClick={() => setStep(2)}>Back</Button>
-              <Button variant="emphasized" onClick={() => {
-                void handleFinish();
-              }}>
+              <Button
+                variant="emphasized"
+                disabled={lightsExiting || saving}
+                onClick={startLightsExit}
+              >
                 {saving ? "" : "Take Your Position \u2192"}
                 {saving && <ProgressCircle />}
               </Button>
