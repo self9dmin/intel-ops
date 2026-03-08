@@ -26,9 +26,7 @@ const ShellLayout = () => {
   );
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
-    difficulty: null,
-    time: null,
-    category: null,
+    topic: null,
   });
 
   const handleTabChange = useCallback(
