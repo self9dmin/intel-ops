@@ -2,8 +2,8 @@
   "$schema": "./.dt-app/app.config.schema.json",
   "environmentUrl": "https://nom24698.apps.dynatrace.com/",
   "app": {
-    "name": "War Room",
-    "version": "0.1.40",
+    "name": "Mission Control",
+    "version": "0.1.39",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "icon": "ui/assets/app-icon.svg",
     "id": "my.intelops.training",

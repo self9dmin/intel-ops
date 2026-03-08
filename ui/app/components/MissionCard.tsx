@@ -54,11 +54,7 @@ export const MissionCard = ({
       }}
     >
       <Flex justifyContent="space-between" alignItems="center">
-        <Text textStyle="small">
-          <span style={{ fontFamily: "monospace", opacity: 0.7 }}>
-            {mission.codename}
-          </span>
-        </Text>
+        <Text style={{ fontWeight: 600 }}>{mission.title}</Text>
         <Chip
           color={getDifficultyColor(mission.difficulty)}
           variant="emphasized"
@@ -66,10 +62,11 @@ export const MissionCard = ({
           {mission.difficulty.toUpperCase()}
         </Chip>
       </Flex>
-      <Text textStyle="small" style={{ fontWeight: 600 }}>{mission.title}</Text>
-      <Flex gap={4} style={{ flexWrap: "wrap" }}>
-        <Chip color="neutral">{mission.role}</Chip>
-      </Flex>
+      <Text textStyle="small">
+        <span style={{ fontFamily: "monospace", opacity: 0.6 }}>
+          {mission.codename}
+        </span>
+      </Text>
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>

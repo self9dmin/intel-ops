@@ -15,7 +15,8 @@ import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { SuccessIcon } from "@dynatrace/strato-icons";
 import type { Checkpoint, XPGrant } from "../types/mission.types";
-import { getMissionById } from "../data/missions";
+import { getMissionById, MISSIONS } from "../data/missions";
+import { CIRCUITS } from "../data/circuits";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 
@@ -40,7 +41,7 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
-  const { awardXP, completeMission, updateStreak } = useUserStateContext();
+  const { awardXP, completeMission, updateStreak, userState } = useUserStateContext();
   const { markStale } = useLeaderboardContext();
 
   const state = location.state as DebriefState | undefined;
@@ -231,6 +232,107 @@ export const Debrief = () => {
           </Flex>
         </Flex>
       </Surface>
+
+      {/* What's Next */}
+      {(() => {
+        const completedMissions = [
+          ...(userState?.completedMissions ?? []),
+          ...(id && !(userState?.completedMissions ?? []).includes(id) ? [id] : []),
+        ];
+        const completedSet = new Set(completedMissions);
+
+        // Circuit (Learning Path) Progress
+        const matchingPaths = CIRCUITS.filter((p) =>
+          p.missionIds.includes(id ?? "")
+        );
+
+        // Next Recommended Mission
+        const nextMission = MISSIONS.find(
+          (m) =>
+            m.id !== id &&
+            !completedSet.has(m.id) &&
+            m.prerequisites.every((pre) => completedSet.has(pre))
+        );
+
+        if (matchingPaths.length === 0 && !nextMission) return null;
+
+        return (
+          <Surface>
+            <Flex flexDirection="column" padding={20} gap={12}>
+              <Heading level={3}>What&apos;s Next</Heading>
+
+              {matchingPaths.map((path) => (
+                <div key={path.id}>
+                  <Text
+                    textStyle="small"
+                    style={{
+                      opacity: 0.6,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {path.name}
+                  </Text>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+                    {path.missionIds.map((mId) => {
+                      const m = getMissionById(mId);
+                      if (!m) return null;
+                      const isCompleted = completedSet.has(mId);
+                      const isUnlocked = m.prerequisites.every((pre) =>
+                        completedSet.has(pre)
+                      );
+                      const icon = isCompleted
+                        ? "\u2714"
+                        : isUnlocked
+                          ? "\u23F3"
+                          : "\uD83D\uDD12";
+                      return (
+                        <div key={mId} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <span>{icon}</span>
+                          <Text>{m.title}</Text>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {nextMission && (
+                <>
+                  {matchingPaths.length > 0 && <Divider />}
+                  <Surface>
+                    <Flex flexDirection="column" padding={16} gap={8}>
+                      <Text
+                        textStyle="small"
+                        style={{
+                          opacity: 0.6,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        NEXT MISSION
+                      </Text>
+                      <Heading level={4}>{nextMission.title}</Heading>
+                      <Text
+                        textStyle="small"
+                        style={{ fontFamily: "monospace", opacity: 0.6 }}
+                      >
+                        {nextMission.codename}
+                      </Text>
+                      <Button
+                        variant="emphasized"
+                        onClick={() => navigate(`/missions/${nextMission.id}`)}
+                      >
+                        Start Mission
+                      </Button>
+                    </Flex>
+                  </Surface>
+                </>
+              )}
+            </Flex>
+          </Surface>
+        );
+      })()}
 
       {/* Actions */}
       <Flex gap={16} justifyContent="center">

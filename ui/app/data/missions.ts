@@ -3,7 +3,7 @@ import type { Mission } from "../types/mission.types";
 export const MISSIONS: Mission[] = [
   {
     id: "operation-3am-database-spike",
-    title: "Operation: 3am Database Spike",
+    title: "3AM Database Spike",
     codename: "NIGHTWATCH",
     role: "Incident Commander",
     difficulty: "rookie",
@@ -85,7 +85,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-silent-rollout",
-    title: "Operation: Silent Rollout",
+    title: "Silent Rollout",
     codename: "CANARY",
     role: "SRE",
     difficulty: "operator",
@@ -158,7 +158,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-ghost-in-the-trace",
-    title: "Operation: Ghost in the Trace",
+    title: "Ghost in the Trace",
     codename: "PHANTOM",
     role: "Developer",
     difficulty: "operator",
@@ -231,7 +231,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-flatline",
-    title: "Operation: Flatline",
+    title: "Three Services Down",
     codename: "BLACKOUT",
     role: "Incident Commander",
     difficulty: "elite",
@@ -305,7 +305,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "operation-k8s-meltdown",
-    title: "Operation: K8s Meltdown",
+    title: "K8s Meltdown",
     codename: "PROMETHEUS",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -379,7 +379,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-what-are-you",
-    title: "Operation: What Are You",
+    title: "Identify the Signal",
     codename: "WHAT ARE YOU",
     role: "SRE",
     difficulty: "rookie",
@@ -454,7 +454,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-grid-search",
-    title: "Operation: Grid Search",
+    title: "Map the Kubernetes Cluster",
     codename: "GRID SEARCH",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -531,7 +531,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-follow-the-wire",
-    title: "Operation: Follow the Wire",
+    title: "Trace the Service Dependency Chain",
     codename: "FOLLOW THE WIRE",
     role: "Developer",
     difficulty: "operator",
@@ -618,7 +618,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-iron-floor",
-    title: "Operation: Iron Floor",
+    title: "Silent Disk Drain",
     codename: "IRON FLOOR",
     role: "SRE",
     difficulty: "rookie",
@@ -686,7 +686,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-stone-wall",
-    title: "Operation: Stone Wall",
+    title: "Extract the Host Evidence",
     codename: "STONE WALL",
     role: "Platform Engineer",
     difficulty: "operator",
@@ -767,7 +767,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-silent-query",
-    title: "Operation: Silent Query",
+    title: "Investigate the Database Failure",
     codename: "SILENT QUERY",
     role: "Incident Commander",
     difficulty: "rookie",
@@ -849,7 +849,7 @@ export const MISSIONS: Mission[] = [
   },
   {
     id: "mission-golden-signal",
-    title: "Operation: Golden Signal",
+    title: "Find the Failing SLO",
     codename: "GOLDEN SIGNAL",
     role: "Incident Commander",
     difficulty: "rookie",

@@ -3,7 +3,6 @@ export interface Circuit {
   name: string;
   description: string;
   missionIds: string[];
-  codename?: string;
 }
 
 export const CIRCUITS: Circuit[] = [
@@ -32,7 +31,3 @@ export const CIRCUITS: Circuit[] = [
     missionIds: ["operation-ghost-in-the-trace", "operation-silent-rollout"],
   },
 ];
-
-export function getCircuitById(id: string): Circuit | undefined {
-  return CIRCUITS.find((p) => p.id === id);
-}
