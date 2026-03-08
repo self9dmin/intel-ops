@@ -1,3 +1,5 @@
+import type { Mission } from "../types/mission.types";
+
 export interface Circuit {
   id: string;
   name: string;
@@ -7,27 +9,62 @@ export interface Circuit {
 
 export const CIRCUITS: Circuit[] = [
   {
-    id: "incident-response",
+    id: "first-response",
     name: "First Response",
-    description: "Master the art of incident triage and resolution",
-    missionIds: ["operation-3am-database-spike", "operation-flatline"],
+    description: "Triage, investigate, and resolve incidents before the business wakes up.",
+    missionIds: [
+      "operation-3am-database-spike",
+      "operation-flatline",
+      "mission-silent-query",
+      "mission-iron-floor",
+    ],
   },
   {
-    id: "sre-fundamentals",
+    id: "reliability-run",
     name: "Reliability Run",
-    description: "Build reliability engineering skills from the ground up",
-    missionIds: ["operation-silent-rollout", "operation-3am-database-spike"],
+    description: "SLOs, synthetic monitors, and deployment gates — keep the system honest.",
+    missionIds: [
+      "mission-golden-signal",
+      "operation-silent-rollout",
+    ],
   },
   {
-    id: "platform-mastery",
+    id: "cluster-control",
     name: "Cluster Control",
-    description: "Deep dive into Kubernetes and infrastructure observability",
-    missionIds: ["operation-k8s-meltdown", "operation-silent-rollout"],
+    description: "Navigate Kubernetes infrastructure before something breaks at 3am.",
+    missionIds: [
+      "mission-grid-search",
+      "operation-k8s-meltdown",
+    ],
   },
   {
-    id: "developer-debugging",
+    id: "signal-hunt",
     name: "Signal Hunt",
-    description: "Trace and resolve application-level issues",
-    missionIds: ["operation-ghost-in-the-trace", "operation-silent-rollout"],
+    description: "Trace distributed systems and extract evidence from raw telemetry.",
+    missionIds: [
+      "operation-ghost-in-the-trace",
+      "mission-follow-the-wire",
+      "mission-stone-wall",
+    ],
+  },
+  {
+    id: "root-cause-run",
+    name: "Root Cause Run",
+    description: "Go from alert to root cause using problems, traces, and logs.",
+    missionIds: [
+      "operation-3am-database-spike",
+      "mission-what-are-you",
+      "operation-ghost-in-the-trace",
+    ],
+  },
+  {
+    id: "terrain-recon",
+    name: "Terrain Recon",
+    description: "Learn the lay of the land — infrastructure, services, and entity topology.",
+    missionIds: [
+      "mission-what-are-you",
+      "mission-grid-search",
+      "mission-follow-the-wire",
+    ],
   },
 ];
