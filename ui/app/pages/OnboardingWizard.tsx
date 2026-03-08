@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
@@ -146,6 +146,31 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedGap, setSelectedGap] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [lightsOn, setLightsOn] = useState([true, true, true, true, true]);
+  const [lightsRunning, setLightsRunning] = useState(false);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const startLightsOut = useCallback(() => {
+    if (lightsRunning) return;
+    setLightsRunning(true);
+    setLightsOn([true, true, true, true, true]);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 0; i < 5; i++) {
+      const t = setTimeout(() => {
+        setLightsOn((prev) => {
+          const next = [...prev];
+          next[i] = false;
+          return next;
+        });
+      }, 300 + i * 120);
+      timers.push(t);
+    }
+    const proceed = setTimeout(() => {
+      setStep(1);
+    }, 900);
+    timers.push(proceed);
+    timersRef.current = timers;
+  }, [lightsRunning]);
 
   const currentUser = getCurrentUserDetails();
   const firstName =
@@ -350,9 +375,24 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 Your seat on the grid is ready.
               </span>
 
+              {/* Formation lights */}
+              <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "16px" }}>
+                {lightsOn.map((on, i) => (
+                  <svg key={i} width="18" height="18" viewBox="0 0 18 18">
+                    <circle
+                      cx="9"
+                      cy="9"
+                      r="9"
+                      fill={on ? "#e8001e" : "#1c1c2e"}
+                      filter={on ? "drop-shadow(0 0 6px #e8001e)" : "none"}
+                    />
+                  </svg>
+                ))}
+              </div>
+
               {/* CTA with pulse */}
-              <div style={{ animation: "ctaPulse 2.5s ease-in-out infinite", borderRadius: "8px" }}>
-                <Button variant="emphasized" onClick={() => setStep(1)}>
+              <div style={{ animation: lightsRunning ? "none" : "ctaPulse 2.5s ease-in-out infinite", borderRadius: "8px" }}>
+                <Button variant="emphasized" disabled={lightsRunning} onClick={startLightsOut}>
                   Enter the Briefing Room &rarr;
                 </Button>
               </div>
