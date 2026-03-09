@@ -8,7 +8,7 @@ export const Header = () => {
       <AppHeader.NavItems>
         <AppHeader.AppNavLink as={Link} to="/missions" />
         <AppHeader.NavItem as={Link} to="/control-tower">
-          Control Tower
+          Race Control
         </AppHeader.NavItem>
         <AppHeader.NavItem as={Link} to="/missions">
           Missions
