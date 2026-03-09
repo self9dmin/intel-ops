@@ -416,7 +416,7 @@ export const MISSIONS: Mission[] = [
         title: "Find a Process Group Entity",
         instruction:
           "Open Technologies & Processes. Find the 'webserver' process group running on 'frontend-high-cpu'. What is the entity type prefix for process groups?",
-        hint: "Processes in Dynatrace are grouped by their executable path — all instances of the same binary roll up into one PROCESS_GROUP. Check the URL when you open it.",
+        hint: "In the Problems app, use the Impact filter in the left panel and select 'Infrastructure'. This will narrow the list to problems affecting hosts, processes, and network devices.",
         type: "multiple-choice",
         choices: ["HOST-", "PROCESS_GROUP-", "PROCESS-", "SERVICE-"],
         correctChoice: "PROCESS_GROUP-",
@@ -426,17 +426,11 @@ export const MISSIONS: Mission[] = [
         id: "cp3",
         title: "Find a Custom Device Entity",
         instruction:
-          "Navigate to the Problems app and find the open MySQL availability problem. Click into it and then click the affected entity link. What entity type prefix does the MySQL RDS instance use — and why is it different from a HOST?",
-        hint: "Open the Problems app, set timeframe to Last 7 days, and find the problem titled 'MySQL availability'. Click the problem, then click the affected entity name under '1 impacted infrastructure component'. The entity ID prefix is visible in the URL or Properties panel.",
+          "Open the problem P-2603734 ('Process CPU problem'). Look at the Root cause column in the problems list. What entity type is listed?",
+        hint: "Check the Root cause column in the problems list view (not the detail panel). For P-2603734, the root cause is shown there directly. Note: the detail panel may show 'No root cause' — use the column value instead.",
         type: "multiple-choice",
-        choices: [
-          "HOST- — because databases are always monitored as hosts",
-          "SERVICE- — because databases are accessed via service calls",
-          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
-          "PROCESS_GROUP- — because MySQL is a process running on a server",
-        ],
-        correctChoice:
-          "CUSTOM_DEVICE- — because it is monitored via an extension, not a OneAgent",
+        choices: ["Process", "Host", "Service", "No root cause found"],
+        correctChoice: "Process",
         points: 200,
       },
       {
@@ -647,7 +641,7 @@ export const MISSIONS: Mission[] = [
         title: "Find the Chronic Disk Problem",
         instruction:
           "Open the Problems app. Set the timeframe to Last 30 days. Find the oldest open problem on the list — it affects a host named 'frontend-high-cpu'. What is the name of the host shown in the problem title?",
-        hint: "Sort the problem list by Start date ascending — oldest problems appear at the bottom. Look for a RESOURCE_CONTENTION problem on a host named 'frontend-high-cpu' that started in early February.",
+        hint: "In the Problems app, open the timeframe picker and manually type 'now()-30d' in the custom field — there is no 'Last 30 days' preset. Then sort by 'Started' ascending. The oldest problem will appear at the TOP of the list (ascending = oldest first).",
         type: "multiple-choice",
         choices: [
           "frontend-high-cpu",
@@ -663,7 +657,7 @@ export const MISSIONS: Mission[] = [
         title: "Identify the Affected Mount Point",
         instruction:
           "Open the disk problem on frontend-high-cpu. Read the subtitle beneath the 'Disk available %' chart. Which disk mount point is at issue?",
-        hint: "The subtitle under the chart header states the exact mount path that breached the threshold.",
+        hint: "Open the problem P-2602454. On the Overview tab, expand the impact row or click into the Events tab. The mount point is stated in plain text in the event description: 'The total available space on disk /data is lower than 3%'. There is no chart — look for the description text.",
         type: "multiple-choice",
         choices: ["/", "/boot", "/data", "/var"],
         correctChoice: "/data",
@@ -674,7 +668,7 @@ export const MISSIONS: Mission[] = [
         title: "Confirm the Alert Threshold",
         instruction:
           "Still on the disk problem detail page, what is the alert threshold percentage shown on the dashed line in the Disk available % chart?",
-        hint: "The dashed red line on the chart is labeled with the threshold value. It is also stated verbatim in the problem subtitle.",
+        hint: "The threshold percentage appears in the same event description text as the mount point: 'The total available space on disk /data is lower than 3%'. There is no chart or dashed line in the gen3 UI — the value is in the text description.",
         type: "multiple-choice",
         choices: ["1%", "3%", "5%", "10%"],
         correctChoice: "3%",
@@ -684,8 +678,8 @@ export const MISSIONS: Mission[] = [
         id: "cp4",
         title: "Count the Disks on the Host",
         instruction:
-          "From the problem detail page, click the 'frontend-high-cpu' entity link to open the host. Scroll to the Disk analysis section. How many disks does this host have?",
-        hint: "The Disk analysis section header states 'Contains N Disks.' Count all mount points shown in the table.",
+          "From the problem P-2602454, click 'View host' to open the frontend-high-cpu host. Navigate to the 'Disk' or 'Storage' section. How many disks are shown?",
+        hint: "From the problem detail, click 'View host'. In the host detail view, look for a Disk or Storage section. You may need to scroll or switch tabs to find the disk list. If you cannot find a disk count in the gen3 host view, try opening the host directly from Infrastructure & Operations and checking the storage section.",
         type: "multiple-choice",
         choices: ["2", "3", "4", "6"],
         correctChoice: "4",
@@ -828,8 +822,8 @@ export const MISSIONS: Mission[] = [
         id: "cp3",
         title: "Confirm the Alert Type Classification",
         instruction:
-          "On the MySQL availability problem detail page, expand the 'Show details' link beneath the MySQL availability event. What is the value of the event.db_ready_made_alert_type field?",
-        hint: "After clicking Show details, a table of event properties appears. Look for the row labeled event.db_ready_made_alert_type.",
+          "In the problem for P-2603263, click the Events tab. Expand the 'MySQL availability' event group. Click the Properties sub-tab. Search for 'db_ready' in the search box. What is the value of event.db_ready_made_alert_type?",
+        hint: "Navigate to: Events tab → expand the MySQL availability event → Properties sub-tab → type 'db_ready' in the search bar. The field won't appear by default when scrolling — you need to search for it.",
         type: "multiple-choice",
         choices: [
           "DB_CONNECTION_FAILED",
@@ -844,8 +838,8 @@ export const MISSIONS: Mission[] = [
         id: "cp4",
         title: "Find the Entity ID",
         instruction:
-          "Still in the Show details panel, what is the value of the dt.source_entity field? This is the Dynatrace entity ID for the MySQL instance.",
-        hint: "Look for the dt.source_entity field in the Show details panel. It starts with CUSTOM_DEVICE- because RDS instances monitored via extension appear as custom devices, not HOST entities.",
+          "Still in the Properties sub-tab of the MySQL availability event, scroll down to find dt.source_entity. What prefix does the entity ID start with?",
+        hint: "In the Properties sub-tab (same place as CP3), scroll through the list — dt.source_entity is visible without searching. RDS instances monitored via extension appear as CUSTOM_DEVICE entities.",
         type: "multiple-choice",
         choices: [
           "HOST-07DAB01EB3E1AD56",
@@ -865,9 +859,9 @@ export const MISSIONS: Mission[] = [
     role: "Incident Commander",
     difficulty: "rookie",
     description:
-      "Before you can declare a customer-facing incident for EasyTrade, you need to catalogue its SLOs.",
+      "Before you can declare a customer-facing incident, you need to catalogue the SLOs defined in your environment.",
     briefing:
-      "The EasyTrade trading platform has three SLOs defined. Before you can declare a customer-facing incident, you need to catalogue them — find each SLO target, warning threshold, and signal type. Then locate the hipstershop CartService SLO for comparison. This intelligence is required before any incident declaration. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
+      "Service-Level Objectives define the contract between your platform and your users. Before you can declare a customer-facing incident, you need to catalogue the SLOs that exist — find each target, warning threshold, and signal type across EasyTravel, Astroshop, and CUJ services. This intelligence is required before any incident declaration. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 300,
     status: "available",
     prerequisites: [],
@@ -881,51 +875,46 @@ export const MISSIONS: Mission[] = [
     checkpoints: [
       {
         id: "cp1",
-        title: "Find the EasyTrade Availability SLO Target",
+        title: "Find the EasyTravel Performance SLO Target",
         instruction:
-          "Navigate to the SLOs section in Dynatrace. Filter for SLOs with 'EasyTrade' in the name. What is the target percentage for the SLO named 'EasyTrade - Application - Availability'?",
-        hint: "This SLO covers synthetic test results — its target is notably lower than typical 99.x% targets. The value is not a whole number.",
+          "In the Service-Level Objectives app, find the SLO named 'Performance SLO for my critical EasyTravel services'. What is its target?",
+        hint: "Open the SLOs app from Apps → Observe and explore. Search for 'EasyTravel'. The target percentage is shown in the Target column.",
         type: "multiple-choice",
-        choices: ["95%", "99.9%", "87.5%", "60%"],
-        correctChoice: "87.5%",
+        choices: ["85%", "90%", "95%", "99%"],
+        correctChoice: "90%",
         points: 100,
       },
       {
         id: "cp2",
-        title: "Find the EasyTrade Success Rate SLO",
+        title: "Find the Astroshop Service Performance SLO",
         instruction:
-          "For the SLO named 'EasyTrade - Application - Success Rate', what is the target percentage and what service name pattern does the entity filter apply to (look for the SLO_SVC tag value)?",
-        hint: "The entity filter in this SLO uses a tag with a wildcard pattern. Look at the full filter expression — the SLO_SVC tag contains the service name with a -* suffix.",
+          "Find the Astroshop service performance SLO. What is its target?",
+        hint: "Search for 'Astroshop' in the SLO list. Look for the service performance SLO — the target is shown in the Target column.",
         type: "multiple-choice",
-        choices: [
-          "95% / frontendreverseproxy-*",
-          "99% / easytradeloginservice-*",
-          "95% / easytrade-frontend",
-          "99.9% / frontentreverseproxy",
-        ],
-        correctChoice: "95% / frontendreverseproxy-*",
+        choices: ["90%", "95%", "98%", "99%"],
+        correctChoice: "95%",
         points: 150,
       },
       {
         id: "cp3",
-        title: "Find the EasyTrade User Experience SLO Warning",
+        title: "Find the Astroshop User Conversion Rate SLO Warning",
         instruction:
-          "For the SLO 'EasyTrade - Application - User Experience', what is the warning threshold? This SLO is measured against the EasyTrade APPLICATION entity.",
-        hint: "Warning sits just above the target. Both are relatively low — this SLO measures Apdex/user satisfaction, not availability. The target is 60%.",
+          "Find the Astroshop user conversion rate SLO. What is the warning threshold?",
+        hint: "Search for 'Astroshop' and find the user-conversion rate SLO. The warning threshold is shown in the Warning column (the yellow threshold).",
         type: "multiple-choice",
-        choices: ["60%", "64%", "70%", "80%"],
-        correctChoice: "64%",
+        choices: ["50%", "60%", "66%", "75%"],
+        correctChoice: "66%",
         points: 150,
       },
       {
         id: "cp4",
-        title: "Find the Hipstershop CartService SLO Target",
+        title: "Find the CUJ Availability SLO Target",
         instruction:
-          "Locate the SLO for hipstershop's CartService (name contains 'hipstershop.CartService'). What is its target percentage?",
-        hint: "CartService is a core commerce service — expect a high-availability target. Note: the SLO name has a typo ('avaliability' not 'availability') — use that to find it.",
+          "Find the availability SLO for CUJ services. What is its target?",
+        hint: "Search for 'CUJ' in the SLO list. Find the availability SLO — the target is in the Target column.",
         type: "multiple-choice",
-        choices: ["98%", "99%", "99.9%", "99.98%"],
-        correctChoice: "99.98%",
+        choices: ["95%", "98%", "99%", "99.9%"],
+        correctChoice: "99%",
         points: 150,
       },
     ],
@@ -953,7 +942,7 @@ export const MISSIONS: Mission[] = [
         title: "Open Infrastructure & Operations",
         instruction:
           "Open the Infrastructure & Operations app (Apps menu → Infrastructure Observability). How many entity types are listed in the left sidebar of the app?",
-        hint: "Infrastructure & Operations opens to an explorer view. The left sidebar lists all entity types — Data centers, Hosts, Processes, Containers, and one more. Count them all.",
+        hint: "Open the Apps menu and look under the 'Infrastructure Observability' section. The app is listed there as 'Infrastructure & Operations'.",
         type: "multiple-choice",
         choices: ["3", "4", "5", "6 or more"],
         correctChoice: "5",
@@ -1092,16 +1081,16 @@ export const MISSIONS: Mission[] = [
         id: "cp1",
         title: "Open the Logs app",
         instruction:
-          "Open the Logs app in the Dynatrace Playground. What is the default timeframe shown when you first open it?",
-        hint: "The timeframe selector is in the top right. Look at what's selected by default when you first land on the Logs app.",
+          "Open the Logs app in the Dynatrace Playground. What is the default timeframe shown when you first open it? The default is Last 30 minutes.",
+        hint: "When you first open the Logs app, check what the timeframe selector shows in the top-right. The default is Last 30 minutes.",
         type: "multiple-choice",
         choices: [
           "Last 15 minutes",
-          "Last 2 hours",
+          "Last 30 minutes",
           "Last 6 hours",
           "Last 24 hours",
         ],
-        correctChoice: "Last 2 hours",
+        correctChoice: "Last 30 minutes",
         points: 100,
       },
       {
@@ -1109,7 +1098,7 @@ export const MISSIONS: Mission[] = [
         title: "Filter by log level",
         instruction:
           "Filter the logs to show only ERROR level entries. Approximately how many ERROR log entries are visible in the last 2 hours?",
-        hint: "Use the 'Log level' filter or type 'status=error' in the search bar. The result count appears at the top of the log list.",
+        hint: "In the filter bar, type 'status=error' — the UI will auto-format it to 'status = ERROR'. Alternatively, click the 'Error' checkbox in the left facet panel. Note: the list shows '1K of 34K records' — the table caps at 1,000 rows but the true count is the second number.",
         type: "multiple-choice",
         choices: ["0 — no errors", "Fewer than 50", "50-500", "More than 500"],
         correctChoice: "More than 500",
@@ -1119,8 +1108,8 @@ export const MISSIONS: Mission[] = [
         id: "cp3",
         title: "Read a log entry",
         instruction:
-          "Click on any ERROR log entry to expand it. Which field tells you which host or service produced this log?",
-        hint: "Expand the log entry by clicking on it. Look at the structured fields shown — one of them identifies the source entity.",
+          "Click on any ERROR log entry to expand it. Which field tells you which host or service produced this log? Note: Network device and syslog entries may not show these fields. Look for an application or container log (e.g. one with content like 'OTel export failure' or a Kubernetes log).",
+        hint: "Click an application-style ERROR log entry. In the expanded view, look in the Topology section for dt.entity.host or the Fields section for host.name. If neither appears, try a different log entry — network device logs use different fields.",
         type: "multiple-choice",
         choices: [
           "dt.entity.host or host.name",
@@ -1136,7 +1125,7 @@ export const MISSIONS: Mission[] = [
         title: "Correlate with a problem",
         instruction:
           "In the Logs app, use the filter to search for logs related to 'easytrade'. How many log lines mention easytrade in the last 2 hours?",
-        hint: "Type 'easytrade' in the search/filter bar. The count updates in real time.",
+        hint: "Type 'easytrade' in the filter bar. A dropdown will appear asking you to select a filter type — choose 'content = *easytrade* (Contains)'. The count will update to show matching records.",
         type: "multiple-choice",
         choices: ["0", "1-100", "100-1000", "More than 1000"],
         correctChoice: "More than 1000",
@@ -1170,15 +1159,15 @@ export const MISSIONS: Mission[] = [
         title: "Find Davis CoPilot",
         instruction:
           "Open the Dynatrace Playground and locate Davis CoPilot. Where is it accessed from?",
-        hint: "Look for a chat bubble or CoPilot icon — it's typically in the bottom left or top right of the interface.",
+        hint: "Look for 'Assist' with a sparkle (✦) icon near the top of the left nav. Keyboard shortcut: Ctrl+I. In gen3, this feature is labeled 'Assist' in the nav — you may also see it referred to as 'Dynatrace Intelligence' inside the panel.",
         type: "multiple-choice",
         choices: [
-          "Bottom left navigation bar",
+          "Top of the left navigation bar",
           "Top right of the interface",
           "Inside the Problems app only",
           "Settings menu",
         ],
-        correctChoice: "Bottom left navigation bar",
+        correctChoice: "Top of the left navigation bar",
         points: 100,
       },
       {
@@ -1241,7 +1230,7 @@ export const MISSIONS: Mission[] = [
         title: "Find the Dynatrace Community",
         instruction:
           "Navigate to community.dynatrace.com. What is the name of the section where users ask troubleshooting questions?",
-        hint: "The community has several sections. Look for a forum or Q&A area specifically for technical troubleshooting.",
+        hint: "On community.dynatrace.com, click the 'Ask' menu in the top nav. Look for the general-purpose Q&A section — it's called 'Open Q&A' and is described as the place for questions that don't fit a specific subforum.",
         type: "multiple-choice",
         choices: [
           "Troubleshooting",
@@ -1256,27 +1245,33 @@ export const MISSIONS: Mission[] = [
         id: "cp2",
         title: "Find Dynatrace University",
         instruction:
-          "Navigate to university.dynatrace.com. What types of content does DTU offer?",
-        hint: "Look at the main navigation or landing page of DTU to see the content categories available.",
+          "Go to university.dynatrace.com. What is the name of the main navigation tab for learning content?",
+        hint: "Look at the navigation tabs on the DTU homepage. The primary tab for all learning content is labeled 'Courses and learning plans'.",
         type: "multiple-choice",
         choices: [
-          "Courses and certifications only",
+          "Courses and learning plans",
           "Courses, certifications, and hands-on labs",
           "Video tutorials only",
           "Live instructor-led training only",
         ],
-        correctChoice: "Courses, certifications, and hands-on labs",
+        correctChoice: "Courses and learning plans",
         points: 150,
       },
       {
         id: "cp3",
         title: "Find the documentation",
         instruction:
-          "Navigate to docs.dynatrace.com. What is the search shortcut key shown on the documentation home page?",
-        hint: "The docs site shows a keyboard shortcut hint in the search bar. Look at the search field on the main page.",
+          "In the Playground, press the ? key. What does it open? Then find where to access Documentation.",
+        hint: "The ? key opens the Keyboard Shortcuts panel. Documentation is NOT accessible via keyboard shortcut — click the ? icon button in the top-right corner of the UI, then select 'Documentation' from the dropdown.",
         type: "multiple-choice",
-        choices: ["Ctrl+F", "Ctrl+K", "Ctrl+D", "Ctrl+S"],
-        correctChoice: "Ctrl+K",
+        choices: [
+          "? opens Keyboard Shortcuts; Documentation is under the ? icon button",
+          "? opens Documentation directly",
+          "Documentation is in the Settings menu",
+          "There is no documentation shortcut",
+        ],
+        correctChoice:
+          "? opens Keyboard Shortcuts; Documentation is under the ? icon button",
         points: 150,
       },
     ],
