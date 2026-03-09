@@ -55,6 +55,10 @@ function applyFilters(
     result = result.filter((m) => completedSet.has(m.id));
   }
 
+  if (sidebarFilters.difficulty) {
+    result = result.filter((m) => m.difficulty === sidebarFilters.difficulty);
+  }
+
   if (sidebarFilters.topic) {
     result = result.filter((m) => m.topics.includes(sidebarFilters.topic!));
   }
