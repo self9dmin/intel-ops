@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <!-- Flagpole -->
+  <rect x="6" y="4" width="2" height="34" rx="1" fill="#aaaaaa"/>
+  <!-- Flag body: 4x4 checkerboard -->
+  <g transform="translate(8, 4)">
+    <!-- Row 1 -->
+    <rect x="0"  y="0" width="6" height="5" fill="#1496ff"/>
+    <rect x="6"  y="0" width="6" height="5" fill="#ffffff"/>
+    <rect x="12" y="0" width="6" height="5" fill="#1496ff"/>
+    <rect x="18" y="0" width="6" height="5" fill="#ffffff"/>
+    <!-- Row 2 -->
+    <rect x="0"  y="5" width="6" height="5" fill="#ffffff"/>
+    <rect x="6"  y="5" width="6" height="5" fill="#1496ff"/>
+    <rect x="12" y="5" width="6" height="5" fill="#ffffff"/>
+    <rect x="18" y="5" width="6" height="5" fill="#1496ff"/>
+    <!-- Row 3 -->
+    <rect x="0"  y="10" width="6" height="5" fill="#1496ff"/>
+    <rect x="6"  y="10" width="6" height="5" fill="#ffffff"/>
+    <rect x="12" y="10" width="6" height="5" fill="#1496ff"/>
+    <rect x="18" y="10" width="6" height="5" fill="#ffffff"/>
+    <!-- Row 4 -->
+    <rect x="0"  y="15" width="6" height="5" fill="#ffffff"/>
+    <rect x="6"  y="15" width="6" height="5" fill="#1496ff"/>
+    <rect x="12" y="15" width="6" height="5" fill="#ffffff"/>
+    <rect x="18" y="15" width="6" height="5" fill="#1496ff"/>
+  </g>
+  <!-- Flag border -->
+  <rect x="8" y="4" width="24" height="20" fill="none" stroke="#1496ff" stroke-width="0.5" opacity="0.3"/>
+</svg>
