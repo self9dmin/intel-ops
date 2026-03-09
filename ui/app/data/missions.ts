@@ -416,7 +416,7 @@ export const MISSIONS: Mission[] = [
         title: "Find a Process Group Entity",
         instruction:
           "Open Technologies & Processes. Find the 'webserver' process group running on 'frontend-high-cpu'. What is the entity type prefix for process groups?",
-        hint: "In the Problems app, use the Impact filter in the left panel and select 'Infrastructure'. This will narrow the list to problems affecting hosts, processes, and network devices.",
+        hint: "In the Problems app, use the Impact filter in the left panel and select 'Infrastructure'. This narrows the list to host/process/network problems. The host 'frontend-high-cpu' is not shown as a standalone row in the list — open problem P-2603734 and check the Impact section in the detail panel to see it listed as a Host entity.",
         type: "multiple-choice",
         choices: ["HOST-", "PROCESS_GROUP-", "PROCESS-", "SERVICE-"],
         correctChoice: "PROCESS_GROUP-",
@@ -641,7 +641,7 @@ export const MISSIONS: Mission[] = [
         title: "Find the Chronic Disk Problem",
         instruction:
           "Open the Problems app. Set the timeframe to Last 30 days. Find the oldest open problem on the list — it affects a host named 'frontend-high-cpu'. What is the name of the host shown in the problem title?",
-        hint: "In the Problems app, open the timeframe picker and manually type 'now()-30d' in the custom field — there is no 'Last 30 days' preset. Then sort by 'Started' ascending. The oldest problem will appear at the TOP of the list (ascending = oldest first).",
+        hint: "In the Problems app, open the timeframe picker — 'Last 30 days' is available as a preset. Select it. Then click the 'Started' column header to sort ascending — oldest problems appear at the TOP of the list.",
         type: "multiple-choice",
         choices: [
           "frontend-high-cpu",
@@ -657,7 +657,7 @@ export const MISSIONS: Mission[] = [
         title: "Identify the Affected Mount Point",
         instruction:
           "Open the disk problem on frontend-high-cpu. Read the subtitle beneath the 'Disk available %' chart. Which disk mount point is at issue?",
-        hint: "Open the problem P-2602454. On the Overview tab, expand the impact row or click into the Events tab. The mount point is stated in plain text in the event description: 'The total available space on disk /data is lower than 3%'. There is no chart — look for the description text.",
+        hint: "Open problem P-2602454. The Overview tab shows a 'Disk available %' time-series chart. The mount point appears in the chart subtitle and in the Davis® side panel under 'Disk: /data'. Full text: 'The total available space on disk /data is lower than 3%'.",
         type: "multiple-choice",
         choices: ["/", "/boot", "/data", "/var"],
         correctChoice: "/data",
@@ -668,7 +668,7 @@ export const MISSIONS: Mission[] = [
         title: "Confirm the Alert Threshold",
         instruction:
           "Still on the disk problem detail page, what is the alert threshold percentage shown on the dashed line in the Disk available % chart?",
-        hint: "The threshold percentage appears in the same event description text as the mount point: 'The total available space on disk /data is lower than 3%'. There is no chart or dashed line in the gen3 UI — the value is in the text description.",
+        hint: "The threshold is visible both as text in the event description AND as a dashed red horizontal line on the 'Disk available %' chart on the Overview tab. Look for the dashed red line at 3%.",
         type: "multiple-choice",
         choices: ["1%", "3%", "5%", "10%"],
         correctChoice: "3%",
@@ -861,7 +861,7 @@ export const MISSIONS: Mission[] = [
     description:
       "Before you can declare a customer-facing incident, you need to catalogue the SLOs defined in your environment.",
     briefing:
-      "Service-Level Objectives define the contract between your platform and your users. Before you can declare a customer-facing incident, you need to catalogue the SLOs that exist — find each target, warning threshold, and signal type across EasyTravel, Astroshop, and CUJ services. This intelligence is required before any incident declaration. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
+      "Service-Level Objectives define the contract between your platform and your users. Before you can declare a customer-facing incident, you need to catalogue the SLOs that exist — find each target, warning threshold, and signal type across EasyTravel, Astroshop, and CUJ services. This intelligence is required before any incident declaration. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission. Note: The Service-Level Objectives app may be listed under Apps → Software Delivery in your environment.",
     timerSeconds: 300,
     status: "available",
     prerequisites: [],
@@ -878,7 +878,7 @@ export const MISSIONS: Mission[] = [
         title: "Find the EasyTravel Performance SLO Target",
         instruction:
           "In the Service-Level Objectives app, find the SLO named 'Performance SLO for my critical EasyTravel services'. What is its target?",
-        hint: "Open the SLOs app from Apps → Observe and explore. Search for 'EasyTravel'. The target percentage is shown in the Target column.",
+        hint: "Open the SLOs app from Apps → Software Delivery (or search 'Service-Level Objectives' in the Apps search). Search for 'EasyTravel'. The target is shown in the Target column.",
         type: "multiple-choice",
         choices: ["85%", "90%", "95%", "99%"],
         correctChoice: "90%",
