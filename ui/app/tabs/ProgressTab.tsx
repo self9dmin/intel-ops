@@ -330,7 +330,10 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
             const activeTopics = group.topics.filter(
               (t) => TOPIC_META[t]?.active === true
             );
-            if (activeTopics.length === 0) return null;
+            const inactiveTopics = group.topics.filter(
+              (t) => TOPIC_META[t]?.active === false
+            );
+            if (activeTopics.length === 0 && inactiveTopics.length === 0) return null;
             return (
               <div key={group.label}>
                 <div
@@ -358,6 +361,48 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                       missionCount={missionCountByTopic[topicId] ?? 0}
                       onClickRow={() => handleNavigateToMissions({ topic: topicId })}
                     />
+                  );
+                })}
+                {inactiveTopics.map((topicId) => {
+                  const meta = TOPIC_META[topicId];
+                  const IconComponent = TOPIC_ICON_MAP[topicId];
+                  return (
+                    <div
+                      key={topicId}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "200px 1fr 160px",
+                        alignItems: "center",
+                        padding: "8px 0",
+                        borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
+                        opacity: 0.35,
+                        cursor: "default",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {IconComponent && (
+                          <span style={{ flexShrink: 0, display: "flex", opacity: 0.7 }}>
+                            <IconComponent size="small" />
+                          </span>
+                        )}
+                        <span style={{ fontSize: "13px", fontWeight: 600 }}>{meta.label}</span>
+                      </div>
+                      <div style={{ padding: "0 16px" }}>
+                        <div
+                          style={{
+                            background: "var(--dt-colors-background-container-neutral-default)",
+                            borderRadius: "4px",
+                            height: "6px",
+                            overflow: "hidden",
+                          }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                        <span style={{ fontSize: "11px", opacity: 0.4 }}>
+                          Coming Soon
+                        </span>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
