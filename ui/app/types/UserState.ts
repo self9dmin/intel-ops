@@ -44,13 +44,13 @@ export const TOPIC_META: Record<TopicId, TopicMeta> = {
   dashboards: { id: "dashboards", label: "Dashboards", icon: "DashboardIcon", active: true },
   services: { id: "services", label: "Services & APM", icon: "ServiceIcon", active: false },
   smartscape: { id: "smartscape", label: "Smartscape", icon: "SmartscapeIcon", active: false },
-  notebooks: { id: "notebooks", label: "Notebooks", icon: "NotebookIcon", active: false },
+  notebooks: { id: "notebooks", label: "Notebooks", icon: "NotebookIcon", active: true },
   slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon", active: false },
   settings: { id: "settings", label: "Settings & Admin", icon: "SettingsIcon", active: true },
-  automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon", active: false },
-  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: false },
-  bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon", active: false },
-  dem: { id: "dem", label: "Digital Experience", icon: "UserSessionsIcon", active: false },
+  automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon", active: true },
+  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: true },
+  bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon", active: true },
+  dem: { id: "dem", label: "Digital Experience", icon: "UserSessionsIcon", active: true },
   community: { id: "community", label: "Community & Support", icon: "GroupIcon", active: false },
 };
 
