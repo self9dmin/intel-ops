@@ -211,7 +211,7 @@ const ShellLayout = () => {
                     opacity: 0.7,
                   }}
                 >
-                  Built by Dan Quintero, Customer Success · v0.1.45
+                  Built by Dan Quintero · v0.1.45
                 </div>
               </div>
             )}
