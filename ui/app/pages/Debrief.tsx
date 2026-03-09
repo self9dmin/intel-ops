@@ -31,6 +31,7 @@ interface DebriefState {
   codename: string;
   role: string;
   difficulty: string;
+  timedOut?: boolean;
 }
 
 export const Debrief = () => {
@@ -151,12 +152,26 @@ export const Debrief = () => {
 
   return (
     <Flex flexDirection="column" gap={24} padding={24} style={{ maxWidth: 720, margin: "0 auto" }}>
-      {/* Top — success header */}
+      {/* Time Expired banner */}
+      {state.timedOut && (
+        <Flex justifyContent="center" padding={12} style={{
+          background: "var(--dt-colors-background-critical-default, rgba(231, 76, 60, 0.15))",
+          borderRadius: "8px",
+        }}>
+          <Heading level={2}>
+            <span style={{ color: "var(--dt-colors-text-critical-default, #e74c3c)" }}>
+              Time Expired
+            </span>
+          </Heading>
+        </Flex>
+      )}
+
+      {/* Top — header */}
       <Flex flexDirection="column" alignItems="center" gap={8}>
-        <SuccessIcon size="large" />
-        <Heading level={1}>Mission Complete</Heading>
+        {!state.timedOut && <SuccessIcon size="large" />}
+        <Heading level={1}>{state.timedOut ? "Mission Incomplete" : "Mission Complete"}</Heading>
         <Text textStyle="small" style={{ opacity: 0.6 }}>
-          <span style={{ fontFamily: "monospace" }}>{codename}</span> — Success
+          <span style={{ fontFamily: "monospace" }}>{codename}</span> — {state.timedOut ? "Time Expired" : "Success"}
         </Text>
       </Flex>
 

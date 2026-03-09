@@ -47,8 +47,7 @@ export const Mission = () => {
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
-  const [escalateStep, setEscalateStep] = useState<0 | 1 | 2>(0);
-  const [timerPaused, setTimerPaused] = useState(false);
+  const [abandonConfirm, setAbandonConfirm] = useState(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -61,7 +60,6 @@ export const Mission = () => {
   useEffect(() => {
     if (!mission) return;
     if (timerSeconds <= 0) return;
-    if (timerPaused) return;
 
     const interval = setInterval(() => {
       setTimerSeconds((prev) => {
@@ -74,7 +72,7 @@ export const Mission = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mission, timerSeconds, timerPaused]);
+  }, [mission, timerSeconds]);
 
   const getCheckpointStatus = useCallback(
     (index: number): CheckpointStatus => {
@@ -178,22 +176,27 @@ export const Mission = () => {
     return "green" as const;
   }, [timerSeconds, mission]);
 
-  const handleEscalateClick = useCallback(() => {
-    setTimerPaused(true);
-    setEscalateStep(1);
-  }, []);
-
-  const handleEscalateConfirm = useCallback(() => {
-    setEscalateStep(2);
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
-  }, [navigate]);
-
-  const handleKeepFighting = useCallback(() => {
-    setTimerPaused(false);
-    setEscalateStep(0);
-  }, []);
+  // Timer expiry — navigate to debrief as a failed mission
+  useEffect(() => {
+    if (!mission || timerSeconds > 0) return;
+    const hintPenalty = hintsUsed.length * HINT_PENALTY;
+    const totalScore = Math.max(0, baseScore - hintPenalty);
+    navigate(`/debrief/${mission.id}`, {
+      state: {
+        baseScore,
+        timeBonus: 0,
+        hintsUsed: hintsUsed.length,
+        totalScore,
+        timerSecondsRemaining: 0,
+        checkpoints: mission.checkpoints,
+        missionTitle: mission.title,
+        codename: mission.codename,
+        role: mission.role,
+        difficulty: mission.difficulty,
+        timedOut: true,
+      },
+    });
+  }, [mission, timerSeconds, baseScore, hintsUsed, navigate]);
 
   // Mission not found
   if (!mission) {
@@ -282,11 +285,11 @@ export const Mission = () => {
           </Flex>
         </Surface>
 
-        {/* Escalate to War Room */}
+        {/* Abandon Mission */}
         <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
-          {escalateStep === 0 && (
+          {!abandonConfirm ? (
             <button
-              onClick={handleEscalateClick}
+              onClick={() => setAbandonConfirm(true)}
               style={{
                 background: "transparent",
                 border: "none",
@@ -298,10 +301,9 @@ export const Mission = () => {
                 padding: "0",
               }}
             >
-              Escalate to War Room
+              Abandon Mission
             </button>
-          )}
-          {escalateStep === 1 && (
+          ) : (
             <div
               style={{
                 display: "flex",
@@ -313,10 +315,10 @@ export const Mission = () => {
                 marginTop: "32px",
               }}
             >
-              <span>Are you sure? This will end your mission.</span>
+              <span>This will end your mission.</span>
               <div style={{ display: "flex", gap: "24px" }}>
                 <button
-                  onClick={handleEscalateConfirm}
+                  onClick={() => navigate("/missions")}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -328,10 +330,10 @@ export const Mission = () => {
                     padding: "0",
                   }}
                 >
-                  Yes, Escalate
+                  Confirm
                 </button>
                 <button
-                  onClick={handleKeepFighting}
+                  onClick={() => setAbandonConfirm(false)}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -343,23 +345,9 @@ export const Mission = () => {
                     padding: "0",
                   }}
                 >
-                  Keep Fighting
+                  Cancel
                 </button>
               </div>
-            </div>
-          )}
-          {escalateStep === 2 && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "8px",
-                color: "var(--dt-colors-text-neutral-disabled)",
-                fontSize: "13px",
-              }}
-            >
-              <span>{"\u26A0"} Escalating to War Room... Your team has been paged. Mission failed.</span>
             </div>
           )}
         </div>
