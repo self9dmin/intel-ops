@@ -386,6 +386,20 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                           </span>
                         )}
                         <span style={{ fontSize: "13px", fontWeight: 600 }}>{meta.label}</span>
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            color: "var(--dt-colors-text-neutral-subdued)",
+                            background: "rgba(255,255,255,0.06)",
+                            borderRadius: "4px",
+                            padding: "1px 5px",
+                          }}
+                        >
+                          Coming Soon
+                        </span>
                       </div>
                       <div style={{ padding: "0 16px" }}>
                         <div
@@ -398,8 +412,8 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                         />
                       </div>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                        <span style={{ fontSize: "11px", opacity: 0.4 }}>
-                          Coming Soon
+                        <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
+                          —
                         </span>
                       </div>
                     </div>
