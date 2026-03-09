@@ -977,13 +977,13 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "cp4",
-        title: "Count Settings Categories",
+        title: "Explore Notification Settings",
         instruction:
-          "Still in the Settings app, how many main categories are listed in the left sidebar?",
-        hint: "Scroll through the full left sidebar in Settings and count each top-level category. Do not count sub-items — only the main section headers.",
+          "In Settings, navigate to Analyze and alert → Notifications. How many configuration options are listed?",
+        hint: "Open Settings from the left sidebar. In the Settings left nav, click 'Analyze and alert', then click 'Notifications' in the main panel. Count every item listed inside the Notifications section.",
         type: "multiple-choice",
-        choices: ["5", "7", "10", "12"],
-        correctChoice: "10",
+        choices: ["3", "4", "5", "6"],
+        correctChoice: "5",
         points: 150,
       },
     ],
