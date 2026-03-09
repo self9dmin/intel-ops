@@ -24,6 +24,7 @@ import {
   GroupIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
+import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { ALL_BADGES } from "../data/badges";
 import { useUserStateContext } from "../context/UserStateContext";
@@ -217,6 +218,16 @@ function buildCSV(
   return lines.join("\n");
 }
 
+// --- Topic domain groups ---
+
+const TOPIC_DOMAIN_GROUPS: { label: string; topics: TopicId[] }[] = [
+  { label: "SEE", topics: ["infrastructure", "kubernetes", "metrics"] },
+  { label: "INVESTIGATE", topics: ["problems", "logs", "traces", "dql"] },
+  { label: "UNDERSTAND", topics: ["services", "dashboards", "synthetics", "slo"] },
+  { label: "ACT", topics: ["dt-intelligence", "automation", "settings"] },
+  { label: "EXPLORE", topics: ["community", "bizevents", "dem", "security", "notebooks", "smartscape"] },
+];
+
 // --- Main ProgressTab ---
 
 interface ProgressTabProps {
@@ -263,32 +274,10 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Heading level={4}>Pace</Heading>
+        <Heading level={4}>Progress</Heading>
         <Button variant="default" onClick={handleExportCSV}>
           Export CSV
         </Button>
-      </div>
-
-      {/* Topic Tracks */}
-      <div>
-        <Heading level={5}>Topic Tracks</Heading>
-        <div style={{ marginTop: "8px" }}>
-          {(Object.keys(TOPIC_META) as TopicId[]).map((topicId) => {
-            const meta = TOPIC_META[topicId];
-            return (
-              <SkillRow
-                key={topicId}
-                icon={TOPIC_ICON_MAP[topicId]}
-                label={meta.label}
-                color="var(--dt-colors-text-neutral-disabled)"
-                xp={topicXP[topicId] ?? 0}
-                thresholds={XP_THRESHOLDS}
-                missionCount={missionCountByTopic[topicId] ?? 0}
-                onClickRow={() => handleNavigateToMissions({ topic: topicId })}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Achievements */}
@@ -305,24 +294,72 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
           {ALL_BADGES.map((badge) => {
             const isEarned = earnedBadges.has(badge.id);
             return (
-              <div
+              <Tooltip
                 key={badge.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  background: "var(--dt-colors-background-container-neutral-subdued)",
-                  opacity: isEarned ? 1 : 0.35,
-                }}
+                text={`${badge.name} — ${isEarned ? badge.description : badge.howToEarn}`}
               >
-                <span style={{ fontSize: "18px", flexShrink: 0 }}>
-                  {getBadgeEmoji(badge.icon)}
-                </span>
-                <span style={{ fontSize: "13px", fontWeight: isEarned ? 600 : 400 }}>
-                  {badge.name}
-                </span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    background: "var(--dt-colors-background-container-neutral-subdued)",
+                    opacity: isEarned ? 1 : 0.35,
+                  }}
+                >
+                  <span style={{ fontSize: "18px", flexShrink: 0 }}>
+                    {getBadgeEmoji(badge.icon)}
+                  </span>
+                  <span style={{ fontSize: "13px", fontWeight: isEarned ? 600 : 400 }}>
+                    {badge.name}
+                  </span>
+                </div>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Topic Tracks */}
+      <div>
+        <Heading level={5}>Topic Tracks</Heading>
+        <div style={{ marginTop: "8px" }}>
+          {TOPIC_DOMAIN_GROUPS.map((group) => {
+            const activeTopics = group.topics.filter(
+              (t) => TOPIC_META[t]?.active === true
+            );
+            if (activeTopics.length === 0) return null;
+            return (
+              <div key={group.label}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    opacity: 0.5,
+                    marginTop: "16px",
+                    marginBottom: "4px",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {group.label}
+                </div>
+                {activeTopics.map((topicId) => {
+                  const meta = TOPIC_META[topicId];
+                  return (
+                    <SkillRow
+                      key={topicId}
+                      icon={TOPIC_ICON_MAP[topicId]}
+                      label={meta.label}
+                      color="var(--dt-colors-text-neutral-disabled)"
+                      xp={topicXP[topicId] ?? 0}
+                      thresholds={XP_THRESHOLDS}
+                      missionCount={missionCountByTopic[topicId] ?? 0}
+                      onClickRow={() => handleNavigateToMissions({ topic: topicId })}
+                    />
+                  );
+                })}
               </div>
             );
           })}
