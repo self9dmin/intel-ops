@@ -29,7 +29,6 @@ const ShellLayout = () => {
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
     difficulty: null,
-    app: null,
     topic: null,
   });
   const [infoOpen, setInfoOpen] = useState(false);

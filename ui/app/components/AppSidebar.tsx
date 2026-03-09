@@ -53,7 +53,7 @@ const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
 export interface SidebarFilters {
   status: "not_started" | "completed" | null;
   difficulty: "rookie" | "operator" | "elite" | null;
-  app: string | null;
+
   topic: TopicId | null;
 }
 
@@ -67,14 +67,13 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
     difficulty: null,
-    app: null,
     topic: null,
   });
   const { userState } = useUserStateContext();
 
   const [statusOpen, setStatusOpen] = useState(true);
   const [difficultyOpen, setDifficultyOpen] = useState(true);
-  const [appOpen, setAppOpen] = useState(true);
+
   const [topicOpen, setTopicOpen] = useState(true);
 
   const isMissions = activeTab === "missions";
@@ -116,16 +115,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
     { value: "operator", label: "Operator", count: difficultyCounts.operator },
     { value: "elite", label: "Elite", count: difficultyCounts.elite },
   ];
-
-  const uniqueApps = useMemo(() => {
-    const set = new Set<string>();
-    for (const m of MISSIONS) {
-      for (const a of m.apps ?? []) {
-        if (a) set.add(a);
-      }
-    }
-    return [...set].sort();
-  }, []);
 
   return (
     <div
@@ -326,7 +315,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
           />
 
           {/* Topic Track section */}
-          <div style={{ marginBottom: "16px" }}>
+          <div>
             <div
               onClick={() => setTopicOpen((v) => !v)}
               style={{
@@ -479,116 +468,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                 </div>
               );
             })}
-            </>}
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{
-              height: "1px",
-              background: "var(--dt-colors-border-neutral-default)",
-              margin: "8px 0 16px 0",
-            }}
-          />
-
-          {/* By App section */}
-          <div>
-            <div
-              onClick={() => setAppOpen((v) => !v)}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                cursor: "pointer",
-                fontSize: "12px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-                color: "var(--dt-colors-text-neutral-subdued)",
-                marginBottom: "6px",
-              }}
-            >
-              By App
-              <span
-                style={{
-                  display: "inline-block",
-                  transition: "none",
-                  transform: appOpen ? "rotate(0deg)" : "rotate(-90deg)",
-                  fontSize: "10px",
-                  lineHeight: 1,
-                }}
-              >
-                ▾
-              </span>
-            </div>
-            {appOpen && <>
-              <div
-                onClick={() => update("app", null)}
-                style={{
-                  padding: "4px 8px",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  borderRadius: "4px",
-                  background: filters.app === null
-                    ? "var(--dt-colors-background-container-neutral-default)"
-                    : "transparent",
-                  color: filters.app === null
-                    ? "var(--dt-colors-text-primary-default, #fff)"
-                    : "var(--dt-colors-text-neutral-subdued)",
-                  fontWeight: filters.app === null ? 600 : 400,
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (filters.app !== null) {
-                    e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (filters.app !== null) {
-                    e.currentTarget.style.background = "transparent";
-                  }
-                }}
-              >
-                All
-              </div>
-              {uniqueApps.map((appName) => {
-                const isActive = filters.app === appName;
-                return (
-                  <div
-                    key={appName}
-                    onClick={() => update("app", isActive ? null : appName)}
-                    style={{
-                      padding: "4px 8px",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      borderRadius: "4px",
-                      background: isActive
-                        ? "var(--dt-colors-background-container-neutral-default)"
-                        : "transparent",
-                      color: isActive
-                        ? "var(--dt-colors-text-primary-default, #fff)"
-                        : "var(--dt-colors-text-neutral-subdued)",
-                      fontWeight: isActive ? 600 : 400,
-                      transition: "background 0.15s",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textOverflow: "ellipsis",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "transparent";
-                      }
-                    }}
-                  >
-                    {appName}
-                  </div>
-                );
-              })}
             </>}
           </div>
         </>
