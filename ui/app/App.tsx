@@ -109,9 +109,18 @@ const ShellLayout = () => {
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
-          Train Here. Perform Everywhere.
-        </span>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="./assets/app-icon.png"
+            width={20}
+            height={20}
+            style={{ marginRight: "8px", borderRadius: "4px", verticalAlign: "middle" }}
+            alt="Mission Control"
+          />
+          <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
+            Mission Control
+          </span>
+        </div>
         <div style={{ display: "flex", gap: "4px", marginLeft: "16px" }}>
           {TAB_ORDER.map((tab) => (
             <button
@@ -167,7 +176,8 @@ const ShellLayout = () => {
                   position: "absolute",
                   top: "40px",
                   right: 0,
-                  background: "var(--dt-colors-background-surface-raised-default)",
+                  background: "#16192a",
+                  backdropFilter: "none",
                   border: "1px solid rgba(255,255,255,0.1)",
                   borderRadius: "8px",
                   padding: "16px",
@@ -180,7 +190,7 @@ const ShellLayout = () => {
                   Mission Control
                 </div>
                 <div style={{ fontSize: "13px", lineHeight: 1.5, color: "var(--dt-colors-text-neutral-subdued)" }}>
-                  Structured Dynatrace training, mission by mission. Work through real scenarios against a live environment and build skills that matter on the job.
+                  Dynatrace sponsors some of the fastest cars on the grid because performance under pressure is what we're built for. Mission Control brings that same standard to learning — real scenarios, live data, no shortcuts.
                 </div>
                 <div
                   style={{
@@ -189,8 +199,8 @@ const ShellLayout = () => {
                     margin: "12px 0",
                   }}
                 />
-                <div style={{ fontSize: "13px", lineHeight: 1.5, color: "var(--dt-colors-text-neutral-subdued)" }}>
-                  Built to help Dynatrace users learn the platform through hands-on practice — not documentation.
+                <div style={{ fontSize: "14px", fontWeight: 700, lineHeight: 1.5 }}>
+                  Train here. Perform everywhere.
                 </div>
                 <div
                   style={{
@@ -201,7 +211,7 @@ const ShellLayout = () => {
                     opacity: 0.7,
                   }}
                 >
-                  Built by Dan Quintero · v0.1.45
+                  Built by Dan Quintero, Customer Success · v0.1.45
                 </div>
               </div>
             )}
