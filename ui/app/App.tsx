@@ -15,7 +15,6 @@ import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
 import { InformationIcon, BugReportIcon } from "@dynatrace/strato-icons";
-import appIcon from "../assets/app-icon.svg";
 
 type TopTab = "missions" | "progress" | "leaderboard";
 const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
@@ -112,13 +111,6 @@ const ShellLayout = () => {
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src={appIcon}
-            width={20}
-            height={20}
-            style={{ marginRight: "8px", borderRadius: "4px", verticalAlign: "middle" }}
-            alt="Mission Control"
-          />
           <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
             Mission Control
           </span>
