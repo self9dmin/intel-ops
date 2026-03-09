@@ -387,7 +387,11 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
               const groupActiveTopics = group.topics.filter(
                 (t) => TOPIC_META[t]?.active === true
               );
-              if (groupActiveTopics.length === 0) return null;
+              const groupInactiveTopics = group.topics.filter(
+                (t) => TOPIC_META[t]?.active === false
+              );
+              const isExplore = group.label === "EXPLORE";
+              if (groupActiveTopics.length === 0 && !isExplore) return null;
               return (
                 <React.Fragment key={group.label}>
                   <div
@@ -447,6 +451,36 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                           </span>
                         )}
                         <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{topic.label}</span>
+                      </div>
+                    );
+                  })}
+                  {isExplore && groupInactiveTopics.map((topicId) => {
+                    const topic = TOPIC_META[topicId];
+                    const IconComponent = TOPIC_ICON_MAP[topicId];
+                    return (
+                      <div
+                        key={topicId}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "4px 8px",
+                          fontSize: "12px",
+                          borderRadius: "4px",
+                          color: "var(--dt-colors-text-neutral-subdued)",
+                          opacity: 0.4,
+                          cursor: "default",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {IconComponent && (
+                          <span style={{ display: "flex", flexShrink: 0 }}>
+                            <IconComponent size="small" style={{ width: 14, height: 14 }} />
+                          </span>
+                        )}
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{topic.label}</span>
+                        <span style={{ fontSize: "9px", opacity: 0.7, flexShrink: 0 }}>Soon</span>
                       </div>
                     );
                   })}
