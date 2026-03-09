@@ -18,8 +18,9 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 75 },
       { track: "incident-commander", xp: 75 },
     ],
-    topics: ["problems", "dt-intelligence", "metrics"],
+    topics: ["problems", "dt-intelligence", "logs", "infrastructure"],
     category: "incident-response",
+    apps: ["Problems", "Services", "Logs", "Infrastructure & Operations"],
     checkpoints: [
       {
         id: "cp1",
@@ -100,8 +101,9 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 100 },
       { track: "developer", xp: 50 },
     ],
-    topics: ["traces", "metrics"],
+    topics: ["traces", "metrics", "slo", "services"],
     category: "performance",
+    apps: ["Services", "Service-Level Objectives", "Distributed Tracing"],
     checkpoints: [
       {
         id: "cp1",
@@ -173,8 +175,9 @@ export const MISSIONS: Mission[] = [
       { track: "developer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["traces", "dql", "services"],
+    topics: ["traces", "services"],
     category: "root-cause-analysis",
+    apps: ["Distributed Tracing", "Services"],
     checkpoints: [
       {
         id: "cp1",
@@ -246,8 +249,9 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["problems", "dt-intelligence", "metrics"],
+    topics: ["problems", "dt-intelligence", "metrics", "services", "infrastructure"],
     category: "incident-response",
+    apps: ["Problems", "Services", "Infrastructure & Operations"],
     checkpoints: [
       {
         id: "cp1",
@@ -322,6 +326,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["kubernetes", "metrics"],
     category: "configuration",
+    apps: ["Kubernetes"],
     checkpoints: [
       {
         id: "cp1",
@@ -391,8 +396,9 @@ export const MISSIONS: Mission[] = [
     status: "available",
     prerequisites: [],
     disciplines: [{ track: "sre", xp: 75 }],
-    topics: ["entities", "infrastructure", "databases"],
+    topics: ["infrastructure", "problems"],
     category: "root-cause-analysis",
+    apps: ["Infrastructure & Operations", "Problems"],
     checkpoints: [
       {
         id: "cp1",
@@ -471,6 +477,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["kubernetes", "infrastructure"],
     category: "configuration",
+    apps: ["Kubernetes"],
     checkpoints: [
       {
         id: "cp1",
@@ -546,8 +553,9 @@ export const MISSIONS: Mission[] = [
       { track: "developer", xp: 100 },
       { track: "sre", xp: 50 },
     ],
-    topics: ["services", "databases", "entities"],
+    topics: ["services", "infrastructure"],
     category: "root-cause-analysis",
+    apps: ["Services", "Frontend"],
     checkpoints: [
       {
         id: "cp1",
@@ -632,6 +640,7 @@ export const MISSIONS: Mission[] = [
     disciplines: [{ track: "sre", xp: 75 }],
     topics: ["infrastructure", "problems"],
     category: "incident-response",
+    apps: ["Problems", "Infrastructure & Operations"],
     checkpoints: [
       {
         id: "cp1",
@@ -703,6 +712,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["infrastructure", "problems", "dql"],
     category: "configuration",
+    apps: ["Infrastructure & Operations", "Problems"],
     checkpoints: [
       {
         id: "cp1",
@@ -784,6 +794,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["problems", "infrastructure"],
     category: "incident-response",
+    apps: ["Problems"],
     checkpoints: [
       {
         id: "cp1",
@@ -864,8 +875,9 @@ export const MISSIONS: Mission[] = [
       { track: "incident-commander", xp: 75 },
       { track: "sre", xp: 25 },
     ],
-    topics: ["slos", "applications", "services"],
+    topics: ["slo", "services"],
     category: "incident-response",
+    apps: ["Service-Level Objectives"],
     checkpoints: [
       {
         id: "cp1",
@@ -932,8 +944,9 @@ export const MISSIONS: Mission[] = [
     status: "available",
     prerequisites: [],
     disciplines: [{ track: "platform-engineer", xp: 50 }],
-    topics: ["settings", "smartscape", "infrastructure"],
+    topics: ["settings", "infrastructure"],
     category: "configuration",
+    apps: ["Infrastructure & Operations", "Discovery & Coverage", "Settings"],
     checkpoints: [
       {
         id: "cp1",
@@ -1002,6 +1015,7 @@ export const MISSIONS: Mission[] = [
     disciplines: [{ track: "sre", xp: 50 }],
     topics: ["dashboards", "metrics", "infrastructure"],
     category: "configuration",
+    apps: ["Dashboards"],
     checkpoints: [
       {
         id: "cp1",
@@ -1072,6 +1086,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["logs", "problems", "infrastructure"],
     category: "incident-response",
+    apps: ["Logs"],
     checkpoints: [
       {
         id: "cp1",
@@ -1148,6 +1163,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["dt-intelligence", "problems"],
     category: "incident-response",
+    apps: ["Davis CoPilot"],
     checkpoints: [
       {
         id: "cp1",
@@ -1216,8 +1232,9 @@ export const MISSIONS: Mission[] = [
       { track: "sre", xp: 25 },
       { track: "platform-engineer", xp: 25 },
     ],
-    topics: ["community", "dt-intelligence"],
+    topics: ["community"],
     category: "configuration",
+    apps: [],
     checkpoints: [
       {
         id: "cp1",

@@ -4,6 +4,7 @@ import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 
 import { Chip } from "@dynatrace/strato-components-preview/content";
+import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
 import { useUserStateContext } from "../context/UserStateContext";
@@ -53,6 +54,10 @@ function applyFilters(
     result = result.filter((m) => !completedSet.has(m.id));
   } else if (sidebarFilters.status === "completed") {
     result = result.filter((m) => completedSet.has(m.id));
+  }
+
+  if (sidebarFilters.difficulty) {
+    result = result.filter((m) => m.difficulty === sidebarFilters.difficulty);
   }
 
   if (sidebarFilters.topic) {
@@ -209,16 +214,17 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             All
           </Chip>
           {CIRCUITS.map((path) => (
-            <Chip
-              key={path.id}
-              color={selectedPath === path.id ? "primary" : "neutral"}
-              variant={selectedPath === path.id ? "emphasized" : undefined}
-              onClick={() =>
-                handlePathSelect(selectedPath === path.id ? null : path.id)
-              }
-            >
-              {path.name}
-            </Chip>
+            <Tooltip key={path.id} text={path.description}>
+              <Chip
+                color={selectedPath === path.id ? "primary" : "neutral"}
+                variant={selectedPath === path.id ? "emphasized" : undefined}
+                onClick={() =>
+                  handlePathSelect(selectedPath === path.id ? null : path.id)
+                }
+              >
+                {path.name}
+              </Chip>
+            </Tooltip>
           ))}
         </div>
       </div>

@@ -27,6 +27,7 @@ const ShellLayout = () => {
   );
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
+    difficulty: null,
     topic: null,
   });
   const [infoOpen, setInfoOpen] = useState(false);
@@ -90,7 +91,7 @@ const ShellLayout = () => {
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
-    missions: "Control Tower",
+    missions: "Race Control",
     progress: "Pace",
     leaderboard: "Leaderboard",
   };
@@ -110,13 +111,6 @@ const ShellLayout = () => {
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src="./assets/app-icon.png"
-            width={20}
-            height={20}
-            style={{ marginRight: "8px", borderRadius: "4px", verticalAlign: "middle" }}
-            alt="Mission Control"
-          />
           <span style={{ fontSize: "15px", fontWeight: 700, whiteSpace: "nowrap" }}>
             Mission Control
           </span>

@@ -38,6 +38,7 @@ export interface Mission {
   prerequisites: string[];
   topics: string[];
   category: MissionCategory;
+  apps?: string[];
 }
 
 export interface XPGrant {
