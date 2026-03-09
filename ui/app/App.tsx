@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Route, Routes, Navigate, useSearchParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
@@ -14,6 +14,7 @@ import { AppSidebar, type SidebarFilters } from "./components/AppSidebar";
 import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
+import { InformationIcon, BugReportIcon } from "@dynatrace/strato-icons";
 
 type TopTab = "missions" | "progress" | "leaderboard";
 const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
@@ -28,6 +29,19 @@ const ShellLayout = () => {
     status: null,
     topic: null,
   });
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!infoOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [infoOpen]);
 
   const handleTabChange = useCallback(
     (index: number) => {
@@ -125,6 +139,95 @@ const ShellLayout = () => {
               {TAB_LABELS[tab]}
             </button>
           ))}
+        </div>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+          <div ref={infoRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setInfoOpen((prev) => !prev)}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: "6px",
+                borderRadius: "4px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--dt-colors-text-neutral-subdued)",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+              aria-label="Info"
+            >
+              <InformationIcon size="small" />
+            </button>
+            {infoOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: 0,
+                  background: "var(--dt-colors-background-surface-raised-default)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                  padding: "16px",
+                  width: "280px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                  zIndex: 1000,
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: "16px", marginBottom: "8px" }}>
+                  Mission Control
+                </div>
+                <div style={{ fontSize: "13px", lineHeight: 1.5, color: "var(--dt-colors-text-neutral-subdued)" }}>
+                  Structured Dynatrace training, mission by mission. Work through real scenarios against a live environment and build skills that matter on the job.
+                </div>
+                <div
+                  style={{
+                    height: "1px",
+                    background: "rgba(255,255,255,0.1)",
+                    margin: "12px 0",
+                  }}
+                />
+                <div style={{ fontSize: "13px", lineHeight: 1.5, color: "var(--dt-colors-text-neutral-subdued)" }}>
+                  Built to help Dynatrace users learn the platform through hands-on practice — not documentation.
+                </div>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontFamily: "monospace",
+                    color: "var(--dt-colors-text-neutral-subdued)",
+                    marginTop: "12px",
+                    opacity: 0.7,
+                  }}
+                >
+                  Built by Dan Quintero · v0.1.45
+                </div>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => {
+              window.location.href =
+                "mailto:daniel.quintero@dynatrace.com?subject=Mission%20Control%20%E2%80%94%20Bug%20Report&body=Describe%20the%20issue%3A%0A%0A%0ASteps%20to%20reproduce%3A%0A%0A%0AExpected%20behavior%3A%0A%0A";
+            }}
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: "6px",
+              borderRadius: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--dt-colors-text-neutral-subdued)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            aria-label="Report a bug"
+          >
+            <BugReportIcon size="small" />
+          </button>
         </div>
       </div>
       {contentPanel}
