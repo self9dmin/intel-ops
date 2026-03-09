@@ -9,7 +9,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "first-response",
     name: "First Response",
-    description: "Triage, investigate, and resolve incidents before the business wakes up.",
+    description: "Triage and resolve active incidents under pressure",
     missionIds: [
       "operation-3am-database-spike",
       "operation-flatline",
@@ -20,7 +20,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "reliability-run",
     name: "Reliability Run",
-    description: "SLOs, synthetic monitors, and deployment gates — keep the system honest.",
+    description: "Build SRE fundamentals — SLOs, deployments, and service health",
     missionIds: [
       "mission-golden-signal",
       "operation-silent-rollout",
@@ -29,7 +29,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "cluster-control",
     name: "Cluster Control",
-    description: "Navigate Kubernetes infrastructure before something breaks at 3am.",
+    description: "Navigate Kubernetes complexity and infrastructure failures",
     missionIds: [
       "mission-grid-search",
       "operation-k8s-meltdown",
@@ -38,7 +38,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "signal-hunt",
     name: "Signal Hunt",
-    description: "Trace distributed systems and extract evidence from raw telemetry.",
+    description: "Trace through distributed systems to pinpoint root cause",
     missionIds: [
       "operation-ghost-in-the-trace",
       "mission-follow-the-wire",
@@ -48,7 +48,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "root-cause-run",
     name: "Root Cause Run",
-    description: "Go from alert to root cause using problems, traces, and logs.",
+    description: "Work backwards from symptoms to find what actually broke",
     missionIds: [
       "operation-3am-database-spike",
       "mission-what-are-you",
@@ -58,7 +58,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "terrain-recon",
     name: "Terrain Recon",
-    description: "Learn the lay of the land — infrastructure, services, and entity topology.",
+    description: "Map the platform and understand entity relationships",
     missionIds: [
       "mission-what-are-you",
       "mission-grid-search",
@@ -68,7 +68,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "operator-readiness",
     name: "Operator Readiness",
-    description: "The baseline every Dynatrace user needs. AI assistance, community resources, and platform orientation.",
+    description: "Get comfortable with core Dynatrace tools and navigation",
     missionIds: [
       "mission-ask-the-ai",
       "mission-find-your-answers",
@@ -78,7 +78,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "ground-zero",
     name: "Ground Zero",
-    description: "Start here if you manage or configure Dynatrace. Map the environment, understand settings, and find your way around.",
+    description: "Orient yourself — first steps for anyone new to Dynatrace",
     missionIds: [
       "mission-orient-platform",
       "mission-what-are-you",
@@ -88,7 +88,7 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "insight",
     name: "Insight",
-    description: "For analysts and product owners who need to turn observability data into business decisions.",
+    description: "Read the data — dashboards, logs, and observability signals",
     missionIds: [
       "mission-read-dashboard",
       "mission-find-the-log",
