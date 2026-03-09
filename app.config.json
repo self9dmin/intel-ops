@@ -1,0 +1,25 @@
+{
+  "$schema": "./.dt-app/app.config.schema.json",
+  "environmentUrl": "https://your-tenant.apps.dynatrace.com/",
+  "app": {
+    "name": "Mission Control",
+    "version": "0.1.47",
+    "description": "Gamified observability training. Learn Dynatrace by doing.",
+    "icon": "ui/assets/app-icon.svg",
+    "id": "my.intelops.training",
+    "scopes": [
+      {
+        "name": "document:documents:read",
+        "comment": "Read user progress and leaderboard"
+      },
+      {
+        "name": "document:documents:write",
+        "comment": "Write user scores and checkpoint state"
+      },
+      {
+        "name": "document:documents:delete",
+        "comment": "Delete user state for onboarding reset"
+      }
+    ]
+  }
+}
