@@ -1008,7 +1008,7 @@ export const MISSIONS: Mission[] = [
         title: "Open Dashboards",
         instruction:
           "Open the Dashboards app in the Dynatrace Playground. How many dashboards are available out of the box?",
-        hint: "The Dashboards app shows all available dashboards in a grid or list. Count the preset ones — there are several pre-built by Dynatrace.",
+        hint: "Click the 'Ready-made' tab in the Dashboards app to see dashboards pre-built by Dynatrace. The list is paginated — you don't need to count them all, just confirm there are many more than 15.",
         type: "multiple-choice",
         choices: [
           "None — you have to create them",
@@ -1021,18 +1021,18 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "cp2",
-        title: "Open a host dashboard",
+        title: "Open the Infrastructure Observability Dashboard",
         instruction:
-          "Find and open a dashboard related to host or infrastructure monitoring. What type of metrics does it show in the first row of tiles?",
-        hint: "Look for a dashboard named something like 'Host Overview' or 'Infrastructure'. The first row of tiles typically shows the most critical metrics.",
+          "In the Dashboards app, click the 'Ready-made' tab and open the 'Infrastructure Observability Dashboard'. What does the first row of tiles show?",
+        hint: "Search for 'Infrastructure' in the Dashboards list or browse the Ready-made tab. Open the dashboard owned by the Infrastructure & Operations app. Look at the very first row of tiles across the top.",
         type: "multiple-choice",
         choices: [
-          "CPU, memory, and disk",
+          "CPU, memory, and disk usage",
+          "Host counts, availability, and problem indicators",
           "Request rate and error rate",
-          "User sessions and conversions",
           "Log volume and ingestion rate",
         ],
-        correctChoice: "CPU, memory, and disk",
+        correctChoice: "Host counts, availability, and problem indicators",
         points: 150,
       },
       {
