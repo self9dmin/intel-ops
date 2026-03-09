@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { Surface } from "@dynatrace/strato-components/layouts";
@@ -48,11 +48,15 @@ export const Mission = () => {
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
   const [abandonConfirm, setAbandonConfirm] = useState(false);
+  const timerStartedRef = useRef(false);
+  const hasTimedOutRef = useRef(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
     if (mission) {
       setTimerSeconds(mission.timerSeconds);
+      timerStartedRef.current = true;
+      hasTimedOutRef.current = false;
     }
   }, [mission]);
 
@@ -179,6 +183,9 @@ export const Mission = () => {
   // Timer expiry — navigate to debrief as a failed mission
   useEffect(() => {
     if (!mission || timerSeconds > 0) return;
+    if (!timerStartedRef.current) return;
+    if (hasTimedOutRef.current) return;
+    hasTimedOutRef.current = true;
     const hintPenalty = hintsUsed.length * HINT_PENALTY;
     const totalScore = Math.max(0, baseScore - hintPenalty);
     navigate(`/debrief/${mission.id}`, {
