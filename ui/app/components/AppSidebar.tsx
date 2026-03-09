@@ -390,8 +390,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
               const groupInactiveTopics = group.topics.filter(
                 (t) => TOPIC_META[t]?.active === false
               );
-              const isExplore = group.label === "EXPLORE";
-              if (groupActiveTopics.length === 0 && !isExplore) return null;
+              if (groupActiveTopics.length === 0 && groupInactiveTopics.length === 0) return null;
               return (
                 <React.Fragment key={group.label}>
                   <div
@@ -454,7 +453,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                       </div>
                     );
                   })}
-                  {isExplore && groupInactiveTopics.map((topicId) => {
+                  {groupInactiveTopics.map((topicId) => {
                     const topic = TOPIC_META[topicId];
                     const IconComponent = TOPIC_ICON_MAP[topicId];
                     return (
