@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   HostsIcon,
   WarningIcon,
@@ -24,6 +24,8 @@ import {
 } from "@dynatrace/strato-icons";
 import { TOPIC_META_ORDERED } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
+import { MISSIONS } from "../data/missions";
+import { useUserStateContext } from "../context/UserStateContext";
 
 const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
   infrastructure: HostsIcon,
@@ -64,6 +66,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
     status: null,
     topic: null,
   });
+  const { userState } = useUserStateContext();
 
   const isMissions = activeTab === "missions";
 
@@ -76,10 +79,18 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
   const activeTopics = TOPIC_META_ORDERED.filter((t) => t.active);
   const comingSoonTopics = TOPIC_META_ORDERED.filter((t) => !t.active);
 
-  const statusOptions: { value: "not_started" | "completed" | null; label: string }[] = [
-    { value: null, label: "All" },
-    { value: "not_started", label: "Not Started" },
-    { value: "completed", label: "Completed" },
+  const statusCounts = useMemo(() => {
+    const total = MISSIONS.length;
+    const completedMissions = userState?.completedMissions ?? [];
+    const completedSet = new Set(completedMissions);
+    const completed = MISSIONS.filter((m) => completedSet.has(m.id)).length;
+    return { total, completed, notStarted: total - completed };
+  }, [userState?.completedMissions]);
+
+  const statusOptions: { value: "not_started" | "completed" | null; label: string; count: number }[] = [
+    { value: null, label: "All", count: statusCounts.total },
+    { value: "not_started", label: "Not Started", count: statusCounts.notStarted },
+    { value: "completed", label: "Completed", count: statusCounts.completed },
   ];
 
   return (
@@ -119,6 +130,9 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                   key={opt.value ?? "__all__"}
                   onClick={() => update("status", opt.value)}
                   style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     padding: "4px 8px",
                     fontSize: "12px",
                     cursor: "pointer",
@@ -144,6 +158,18 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                   }}
                 >
                   {opt.label}
+                  <span
+                    style={{
+                      background: "rgba(255, 255, 255, 0.08)",
+                      borderRadius: "10px",
+                      padding: "1px 7px",
+                      fontSize: "11px",
+                      fontWeight: 500,
+                      color: "inherit",
+                    }}
+                  >
+                    {opt.count}
+                  </span>
                 </div>
               );
             })}
