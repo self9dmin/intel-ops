@@ -59,6 +59,10 @@ function applyFilters(
     result = result.filter((m) => m.difficulty === sidebarFilters.difficulty);
   }
 
+  if (sidebarFilters.app) {
+    result = result.filter((m) => m.apps?.includes(sidebarFilters.app!) ?? false);
+  }
+
   if (sidebarFilters.topic) {
     result = result.filter((m) => m.topics.includes(sidebarFilters.topic!));
   }
