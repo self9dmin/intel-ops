@@ -92,7 +92,7 @@ export const Debrief = () => {
       console.error("Failed to award XP for mission", id, xpError);
     });
 
-    // Step 4: Save score document
+    // Step 4: Save score document (fire once, no retry on timeout)
     const saveScore = async () => {
       try {
         const created = await documentsClient.createDocument({
@@ -125,7 +125,7 @@ export const Debrief = () => {
         setSaveStatus("failed");
       }
     };
-    void saveScore();
+    void saveScore().catch(() => { /* single attempt, no retry */ });
   }, [state, id, mission, awardXP, completeMission, updateStreak, markStale]);
 
   if (!state || !id) {

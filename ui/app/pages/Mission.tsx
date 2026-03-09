@@ -39,7 +39,7 @@ export const Mission = () => {
   const [completedCheckpoints, setCompletedCheckpoints] = useState<number[]>(
     []
   );
-  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [baseScore, setBaseScore] = useState(0);
@@ -48,14 +48,12 @@ export const Mission = () => {
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
   const [abandonConfirm, setAbandonConfirm] = useState(false);
-  const timerStartedRef = useRef(false);
   const hasTimedOutRef = useRef(false);
 
   // Initialize timer when mission loads
   useEffect(() => {
     if (mission) {
       setTimerSeconds(mission.timerSeconds);
-      timerStartedRef.current = true;
       hasTimedOutRef.current = false;
     }
   }, [mission]);
@@ -63,11 +61,11 @@ export const Mission = () => {
   // Timer countdown
   useEffect(() => {
     if (!mission) return;
-    if (timerSeconds <= 0) return;
+    if (timerSeconds === null || timerSeconds <= 0) return;
 
     const interval = setInterval(() => {
       setTimerSeconds((prev) => {
-        if (prev <= 1) {
+        if (prev === null || prev <= 1) {
           clearInterval(interval);
           return 0;
         }
@@ -97,7 +95,7 @@ export const Mission = () => {
       const isLastCheckpoint = index === mission.checkpoints.length - 1;
       if (isLastCheckpoint) {
         const newBaseScore = baseScore + points;
-        const timeBonus = Math.max(0, timerSeconds * TIME_BONUS_PER_SECOND);
+        const timeBonus = Math.max(0, (timerSeconds ?? 0) * TIME_BONUS_PER_SECOND);
         const hintPenalty = hintsUsed.length * HINT_PENALTY;
         const totalScore = Math.max(0, newBaseScore + timeBonus - hintPenalty);
 
@@ -107,7 +105,7 @@ export const Mission = () => {
             timeBonus,
             hintsUsed: hintsUsed.length,
             totalScore,
-            timerSecondsRemaining: timerSeconds,
+            timerSecondsRemaining: timerSeconds ?? 0,
             checkpoints: mission.checkpoints,
             missionTitle: mission.title,
             codename: mission.codename,
@@ -173,7 +171,7 @@ export const Mission = () => {
   );
 
   const colorTier = useMemo(() => {
-    if (!mission) return "green" as const;
+    if (!mission || timerSeconds === null) return "green" as const;
     const pct = timerSeconds / mission.timerSeconds;
     if (pct < 0.2) return "red" as const;
     if (pct < 0.5) return "amber" as const;
@@ -182,8 +180,7 @@ export const Mission = () => {
 
   // Timer expiry — navigate to debrief as a failed mission
   useEffect(() => {
-    if (!mission || timerSeconds > 0) return;
-    if (!timerStartedRef.current) return;
+    if (!mission || timerSeconds !== 0) return;
     if (hasTimedOutRef.current) return;
     hasTimedOutRef.current = true;
     const hintPenalty = hintsUsed.length * HINT_PENALTY;
@@ -224,7 +221,8 @@ export const Mission = () => {
     );
   }
 
-  const timerIsLow = timerSeconds < 60;
+  const displaySeconds = timerSeconds ?? mission.timerSeconds;
+  const timerIsLow = displaySeconds < 60;
 
   return (
     <div style={{ position: "relative", minHeight: "100vh" }}>
@@ -278,7 +276,7 @@ export const Mission = () => {
                       color: timerIsLow ? "var(--dt-colors-text-critical-default, #e74c3c)" : undefined,
                     }}
                   >
-                    {formatTime(timerSeconds)}
+                    {formatTime(displaySeconds)}
                   </span>
                 </Heading>
               </Flex>
