@@ -91,7 +91,7 @@ const ShellLayout = () => {
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
-    missions: "Control Tower",
+    missions: "Race Control",
     progress: "Pace",
     leaderboard: "Leaderboard",
   };
