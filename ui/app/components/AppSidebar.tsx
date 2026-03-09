@@ -68,6 +68,9 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
   });
   const { userState } = useUserStateContext();
 
+  const [statusOpen, setStatusOpen] = useState(true);
+  const [topicOpen, setTopicOpen] = useState(true);
+
   const isMissions = activeTab === "missions";
 
   const update = (key: keyof SidebarFilters, value: string | null) => {
@@ -112,7 +115,12 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
           {/* Status section */}
           <div style={{ marginBottom: "16px" }}>
             <div
+              onClick={() => setStatusOpen((v) => !v)}
               style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: "pointer",
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
@@ -122,8 +130,19 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
               }}
             >
               Status
+              <span
+                style={{
+                  display: "inline-block",
+                  transition: "none",
+                  transform: statusOpen ? "rotate(0deg)" : "rotate(-90deg)",
+                  fontSize: "10px",
+                  lineHeight: 1,
+                }}
+              >
+                ▾
+              </span>
             </div>
-            {statusOptions.map((opt) => {
+            {statusOpen && statusOptions.map((opt) => {
               const isActive = filters.status === opt.value;
               return (
                 <div
@@ -187,7 +206,12 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
           {/* Topic Track section */}
           <div>
             <div
+              onClick={() => setTopicOpen((v) => !v)}
               style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                cursor: "pointer",
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
@@ -197,8 +221,20 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
               }}
             >
               Topic Track
+              <span
+                style={{
+                  display: "inline-block",
+                  transition: "none",
+                  transform: topicOpen ? "rotate(0deg)" : "rotate(-90deg)",
+                  fontSize: "10px",
+                  lineHeight: 1,
+                }}
+              >
+                ▾
+              </span>
             </div>
 
+            {topicOpen && <>
             {/* All Topics */}
             <div
               onClick={() => update("topic", null)}
@@ -321,6 +357,7 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                 </div>
               );
             })}
+            </>}
           </div>
         </>
       ) : (
