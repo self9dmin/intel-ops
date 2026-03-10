@@ -1,3 +1,16 @@
+export type DataMode = 'playground' | 'live';
+
+export interface TenantCapabilities {
+  hasProblems: boolean;
+  hasLogs: boolean;
+  hasMetrics: boolean;
+  hasTraces: boolean;
+  hasSLOs: boolean;
+  hasKubernetes: boolean;
+  hasBizevents: boolean;
+  scannedAt: string;
+}
+
 export type Discipline = "sre" | "developer" | "incident-commander" | "platform-engineer";
 
 export type TopicId =
@@ -166,6 +179,8 @@ export interface UserState {
   selectedRole?: string;
   selectedSubNeed?: string;
   startingCircuit?: string;
+  dataMode: DataMode;
+  tenantCapabilities: TenantCapabilities | null;
 }
 
 export function migrateUserState(loaded: Record<string, unknown>): UserState {
@@ -188,6 +203,8 @@ export function migrateUserState(loaded: Record<string, unknown>): UserState {
     selectedRole: (loaded.selectedRole as string | undefined) ?? undefined,
     selectedSubNeed: (loaded.selectedSubNeed as string | undefined) ?? undefined,
     startingCircuit: (loaded.startingCircuit as string | undefined) ?? undefined,
+    dataMode: (loaded.dataMode as DataMode | undefined) ?? 'playground',
+    tenantCapabilities: (loaded.tenantCapabilities as TenantCapabilities | undefined) ?? null,
   };
 }
 

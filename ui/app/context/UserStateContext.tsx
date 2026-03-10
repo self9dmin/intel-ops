@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 import { useUserState } from "../hooks/useUserState";
-import type { UserState } from "../types/UserState";
+import type { UserState, DataMode, TenantCapabilities } from "../types/UserState";
 import type { XPGrant } from "../types/mission.types";
 import type { OnboardingPartial } from "../pages/OnboardingWizard";
 
@@ -15,6 +15,8 @@ export interface UserStateContextValue {
   updateStreak: () => void;
   awardBadge: (badgeId: string) => void;
   retry: () => void;
+  setDataMode: (mode: DataMode) => Promise<void>;
+  saveTenantCapabilities: (caps: TenantCapabilities) => Promise<void>;
 }
 
 const UserStateContext = createContext<UserStateContextValue | null>(null);

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
+import { Flex } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 
 import { Chip } from "@dynatrace/strato-components-preview/content";
@@ -13,6 +14,8 @@ import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
+import { DataModeToggle } from "../components/DataModeToggle";
+import { TenantCoveragePanel } from "../components/TenantCoveragePanel";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
@@ -152,6 +155,9 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           marginBottom: "32px",
         }}
       >
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+          <DataModeToggle />
+        </div>
         <PlayerStatusStrip
           playerName={displayName}
           totalXP={totalXP}
@@ -202,60 +208,78 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
         />
       </div>
 
-      {/* Circuits */}
-      <div style={{ marginBottom: "16px" }}>
-        <Heading level={5}>Circuits</Heading>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-          <Chip
-            color={selectedPath === null ? "primary" : "neutral"}
-            variant={selectedPath === null ? "emphasized" : undefined}
-            onClick={() => handlePathSelect(null)}
-          >
-            All
-          </Chip>
-          {CIRCUITS.map((path) => (
-            <Tooltip key={path.id} text={path.description}>
-              <Chip
-                color={selectedPath === path.id ? "primary" : "neutral"}
-                variant={selectedPath === path.id ? "emphasized" : undefined}
-                onClick={() =>
-                  handlePathSelect(selectedPath === path.id ? null : path.id)
-                }
-              >
-                {path.name}
-              </Chip>
-            </Tooltip>
-          ))}
+      {/* Tenant Coverage */}
+      {userState?.dataMode === "live" && userState.tenantCapabilities !== null && (
+        <div style={{ marginBottom: "24px" }}>
+          <TenantCoveragePanel capabilities={userState.tenantCapabilities} />
         </div>
-      </div>
+      )}
 
-      {/* Mission Grid */}
-      <div style={{ marginTop: "8px" }}>
-        <Heading level={5}>
-          All Missions{" "}
-          <Text textStyle="small" style={{ opacity: 0.6 }}>
-            ({filteredMissions.length})
+      {userState?.dataMode === "live" ? (
+        <Flex flexDirection="column" alignItems="center" justifyContent="center" style={{ padding: '48px 24px', gap: '16px' }}>
+          <Heading level={3}>Live Mode Active</Heading>
+          <Text textStyle="base" style={{ opacity: 0.7, textAlign: 'center', maxWidth: '480px' }}>
+            Your tenant is connected. Live missions use real data from your environment and are coming soon. Switch back to Playground to access training missions.
           </Text>
-        </Heading>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: "12px",
-            marginTop: "8px",
-          }}
-        >
-          {filteredMissions.map((mission) => (
-            <MissionCard
-              key={mission.id}
-              mission={mission}
-              isUnlocked={unlockedSet.has(mission.id)}
-              isCompleted={completedSet.has(mission.id)}
-              prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-            />
-          ))}
-        </div>
-      </div>
+        </Flex>
+      ) : (
+        <>
+          {/* Circuits */}
+          <div style={{ marginBottom: "16px" }}>
+            <Heading level={5}>Circuits</Heading>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+              <Chip
+                color={selectedPath === null ? "primary" : "neutral"}
+                variant={selectedPath === null ? "emphasized" : undefined}
+                onClick={() => handlePathSelect(null)}
+              >
+                All
+              </Chip>
+              {CIRCUITS.map((path) => (
+                <Tooltip key={path.id} text={path.description}>
+                  <Chip
+                    color={selectedPath === path.id ? "primary" : "neutral"}
+                    variant={selectedPath === path.id ? "emphasized" : undefined}
+                    onClick={() =>
+                      handlePathSelect(selectedPath === path.id ? null : path.id)
+                    }
+                  >
+                    {path.name}
+                  </Chip>
+                </Tooltip>
+              ))}
+            </div>
+          </div>
+
+          {/* Mission Grid */}
+          <div style={{ marginTop: "8px" }}>
+            <Heading level={5}>
+              All Missions{" "}
+              <Text textStyle="small" style={{ opacity: 0.6 }}>
+                ({filteredMissions.length})
+              </Text>
+            </Heading>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                gap: "12px",
+                marginTop: "8px",
+              }}
+            >
+              {filteredMissions.map((mission) => (
+                <MissionCard
+                  key={mission.id}
+                  mission={mission}
+                  isUnlocked={unlockedSet.has(mission.id)}
+                  isCompleted={completedSet.has(mission.id)}
+                  prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
