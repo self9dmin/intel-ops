@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { documentsClient } from "@dynatrace-sdk/client-document";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
-import type { UserState } from "../types/UserState";
+import type { UserState, DataMode, TenantCapabilities } from "../types/UserState";
 import { calculateLevel, migrateUserState, computeTotalXP } from "../types/UserState";
 import type { OnboardingPartial } from "../pages/OnboardingWizard";
 import type { XPGrant } from "../types/mission.types";
@@ -18,6 +18,8 @@ interface UseUserStateResult {
   updateStreak: () => void;
   awardBadge: (badgeId: string) => void;
   retry: () => void;
+  setDataMode: (mode: DataMode) => Promise<void>;
+  saveTenantCapabilities: (caps: TenantCapabilities) => Promise<void>;
 }
 
 const DOCUMENT_TYPE = "intelops-user-state";
@@ -334,6 +336,38 @@ export function useUserState(): UseUserStateResult {
     window.location.reload();
   }, [documentId, documentVersion]);
 
+  const setDataMode = useCallback(
+    async (mode: DataMode) => {
+      if (!userState || !documentId) return;
+
+      const updatedState: UserState = { ...userState, dataMode: mode };
+      setUserState(updatedState);
+
+      try {
+        await writeUserState(updatedState);
+      } catch (err: unknown) {
+        console.error("Failed to save data mode:", err);
+      }
+    },
+    [userState, documentId, writeUserState]
+  );
+
+  const saveTenantCapabilities = useCallback(
+    async (caps: TenantCapabilities) => {
+      if (!userState || !documentId) return;
+
+      const updatedState: UserState = { ...userState, tenantCapabilities: caps };
+      setUserState(updatedState);
+
+      try {
+        await writeUserState(updatedState);
+      } catch (err: unknown) {
+        console.error("Failed to save tenant capabilities:", err);
+      }
+    },
+    [userState, documentId, writeUserState]
+  );
+
   return {
     userState,
     loading,
@@ -345,5 +379,7 @@ export function useUserState(): UseUserStateResult {
     updateStreak,
     awardBadge,
     retry,
+    setDataMode,
+    saveTenantCapabilities,
   };
 }

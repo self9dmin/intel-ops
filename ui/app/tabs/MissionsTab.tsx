@@ -13,6 +13,8 @@ import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 
 import { MissionCard } from "../components/MissionCard";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
+import { DataModeToggle } from "../components/DataModeToggle";
+import { TenantCoveragePanel } from "../components/TenantCoveragePanel";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
@@ -152,6 +154,9 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           marginBottom: "32px",
         }}
       >
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+          <DataModeToggle />
+        </div>
         <PlayerStatusStrip
           playerName={displayName}
           totalXP={totalXP}
@@ -201,6 +206,13 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           }
         />
       </div>
+
+      {/* Tenant Coverage */}
+      {userState?.dataMode === "live" && userState.tenantCapabilities !== null && (
+        <div style={{ marginBottom: "24px" }}>
+          <TenantCoveragePanel capabilities={userState.tenantCapabilities} />
+        </div>
+      )}
 
       {/* Circuits */}
       <div style={{ marginBottom: "16px" }}>
