@@ -39,7 +39,7 @@ export const DataModeToggle = () => {
             onChange={handleToggle}
             disabled={scanning}
           >
-            Live Mode
+            {isLive ? "Live Mode" : "Playground"}
           </Switch>
         </Flex>
       </Tooltip>

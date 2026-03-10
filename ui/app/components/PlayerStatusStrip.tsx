@@ -7,6 +7,7 @@ interface PlayerStatusStripProps {
   missionsCompleted: number;
   streakDays: number;
   rightContent?: React.ReactNode;
+  isLive?: boolean;
 }
 
 function StatCell({ value, label }: { value: string; label: string }) {
@@ -37,6 +38,7 @@ export const PlayerStatusStrip = ({
   missionsCompleted,
   streakDays,
   rightContent,
+  isLive,
 }: PlayerStatusStripProps) => {
   return (
     <div>
@@ -69,32 +71,34 @@ export const PlayerStatusStrip = ({
             {rightContent}
           </div>
         )}
-        <div style={{ marginLeft: rightContent ? "0" : "auto", alignSelf: "flex-start", paddingTop: "3px" }}>
-          <button
-            onClick={() => window.open("https://playground.apps.dynatrace.com/", "_blank")}
-            style={{
-              padding: "4px 10px",
-              fontSize: "11px",
-              fontWeight: 500,
-              fontFamily: "inherit",
-              cursor: "pointer",
-              borderRadius: "4px",
-              border: "1px solid var(--dt-colors-border-neutral-default)",
-              background: "transparent",
-              color: "var(--dt-colors-text-neutral-subdued)",
-              whiteSpace: "nowrap",
-              transition: "background 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
-          >
-            {"Open Playground \u2197"}
-          </button>
-        </div>
+        {!isLive && (
+          <div style={{ marginLeft: rightContent ? "0" : "auto", alignSelf: "flex-start", paddingTop: "3px" }}>
+            <button
+              onClick={() => window.open("https://playground.apps.dynatrace.com/", "_blank")}
+              style={{
+                padding: "4px 10px",
+                fontSize: "11px",
+                fontWeight: 500,
+                fontFamily: "inherit",
+                cursor: "pointer",
+                borderRadius: "4px",
+                border: "1px solid var(--dt-colors-border-neutral-default)",
+                background: "transparent",
+                color: "var(--dt-colors-text-neutral-subdued)",
+                whiteSpace: "nowrap",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              {"Open Playground \u2197"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
