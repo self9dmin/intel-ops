@@ -5,7 +5,7 @@ import type { TenantCapabilities } from "../types/UserState";
 const SCAN_QUERIES: Record<keyof Omit<TenantCapabilities, "scannedAt">, string> = {
   hasProblems: `fetch events | filter event.type == "DAVIS_PROBLEM" AND davis.status == "OPEN" | limit 1 | fields timestamp`,
   hasLogs: `fetch logs | limit 1 | fields timestamp`,
-  hasMetrics: `fetch metrics | limit 1 | fields timestamp`,
+  hasMetrics: `timeseries avg(dt.host.cpu.usage), by:{dt.entity.host} | limit 1`,
   hasTraces: `fetch spans | limit 1 | fields timestamp`,
   hasSLOs: `fetch events | filter event.type == "SERVICE_LEVEL_OBJECTIVE" | limit 1 | fields timestamp`,
   hasKubernetes: `fetch dt.entity.cloud_application | limit 1 | fields entity.name`,

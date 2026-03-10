@@ -342,8 +342,14 @@ export function useUserState(): UseUserStateResult {
     async (mode: DataMode) => {
       if (!userState || !documentId) return;
 
-      const updatedState: UserState = { ...userState, dataMode: mode };
-      setUserState(updatedState);
+      let updatedState: UserState | null = null;
+      setUserState((prev) => {
+        if (!prev) return prev;
+        updatedState = { ...prev, dataMode: mode };
+        return updatedState;
+      });
+
+      if (!updatedState) return;
 
       try {
         await writeUserState(updatedState);
@@ -358,8 +364,14 @@ export function useUserState(): UseUserStateResult {
     async (caps: TenantCapabilities) => {
       if (!userState || !documentId) return;
 
-      const updatedState: UserState = { ...userState, tenantCapabilities: caps };
-      setUserState(updatedState);
+      let updatedState: UserState | null = null;
+      setUserState((prev) => {
+        if (!prev) return prev;
+        updatedState = { ...prev, tenantCapabilities: caps };
+        return updatedState;
+      });
+
+      if (!updatedState) return;
 
       try {
         await writeUserState(updatedState);

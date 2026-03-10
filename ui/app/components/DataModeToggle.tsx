@@ -18,6 +18,7 @@ export const DataModeToggle = () => {
   const handleToggle = async (checked: boolean) => {
     if (checked) {
       const caps = await scan();
+      console.log("[DataModeToggle] Scan complete, capabilities:", caps);
       await saveTenantCapabilities(caps);
       await setDataMode("live");
     } else {
