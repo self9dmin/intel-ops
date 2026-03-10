@@ -44,7 +44,7 @@ export const TenantCoveragePanel = ({ capabilities }: TenantCoveragePanelProps) 
         })}
       </Flex>
       {hasMissing && (
-        <Container variant="neutral">
+        <Container variant="default">
           <Text textStyle="small">
             Missing signals mean some missions won&apos;t be available.
             Configure monitoring to unlock them.

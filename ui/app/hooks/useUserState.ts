@@ -160,6 +160,8 @@ export function useUserState(): UseUserStateResult {
         userEmail: currentUser.email ?? "",
         onboardingComplete: true,
         createdAt: new Date().toISOString(),
+        dataMode: 'playground',
+        tenantCapabilities: null,
         ...partial,
       };
 
