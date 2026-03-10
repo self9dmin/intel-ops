@@ -164,6 +164,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           globalRank={globalRank}
           missionsCompleted={completedMissions.length}
           streakDays={userState?.streakDays ?? 0}
+          isLive={userState?.dataMode === "live"}
           rightContent={
             <div
               onClick={() => onSwitchTab?.("progress")}
