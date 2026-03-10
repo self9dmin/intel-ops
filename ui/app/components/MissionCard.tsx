@@ -50,10 +50,10 @@ export const MissionCard = ({
         opacity: hasUnmetPrereqs ? 0.85 : 1,
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
+        gap: 0,
       }}
     >
-      <Flex justifyContent="space-between" alignItems="center">
+      <Flex justifyContent="space-between" alignItems="center" style={{ marginBottom: "8px" }}>
         <Text style={{ fontWeight: 600 }}>{mission.title}</Text>
         <Chip
           color={getDifficultyColor(mission.difficulty)}
@@ -62,7 +62,7 @@ export const MissionCard = ({
           {mission.difficulty.toUpperCase()}
         </Chip>
       </Flex>
-      <Text textStyle="small" style={{ opacity: 0.7 }}>
+      <Text textStyle="small" style={{ opacity: 0.7, flex: "1 1 auto", marginBottom: "12px" }}>
         {mission.description}
       </Text>
       <Flex justifyContent="space-between" alignItems="center">
