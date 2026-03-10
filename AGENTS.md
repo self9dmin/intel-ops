@@ -2,119 +2,230 @@
 
 ## DQL - Dynatrace Query Language
 
-Before writing any DQL query, the agent must always use the knowledge base (`dql_search` tool) to search for relevant DQL documentation, syntax, and examples, whenever the tool is available.
+Before writing any DQL query, always use the knowledge base (`dql_search` tool) to search for relevant DQL documentation, syntax, and examples, whenever the tool is available.
 
 ## UI Components - Strato
 
-Before using any Strato UI component, the agent must always use the knowledge base tools to search for relevant component documentation and usage examples, whenever the tools are available:
-- Use the `strato_search` tool to search for available Strato components by name or keyword.
-- Use the `strato_get_component` tool to retrieve detailed documentation, props, and code examples for a specific component.
-- Use the `strato_get_usecase_details` tool to get code for specific component use cases and patterns.
+Before using any Strato UI component, always use the knowledge base tools to search for relevant component documentation:
+- Use `strato_search` to search by name or keyword.
+- Use `strato_get_component` to retrieve detailed documentation, props, and examples.
+- Use `strato_get_usecase_details` to get code for specific use cases.
+
+---
 
 ## Project Overview
-This repository contains a **Dynatrace App** built with the Dynatrace App Toolkit "dt-app", running on **Dynatrace AppEngine**. Use the **App Toolkit** during development and CI (`dt-app dev`, `dt-app build`, `dt-app deploy`, `dt-app publish`).
 
-## Core Concepts
-### Dynatrace Apps  
-- UI is **TypeScript/React** using **Strato Design System** components for consistent Dynatrace UX.  
-- Backend logic runs inside the **Dynatrace JavaScript runtime**. Let the app execute backend code, primarily to call external URLs (e.g., third‑party APIs) that shouldn’t be invoked directly from the browser.
-- Apps can use **Intents** for cross-app communication
-- Apps can provide **Actions** and **Widgets** to extend Dynatrace. 
+**Mission Control** is a gamified Dynatrace observability training app built on Dynatrace AppEngine. It teaches Dynatrace skills through mission-based challenges, XP tracks, and checkpoint validation.
 
-### Grail
-- **Grail** stores observability data (logs, metrics, events, traces, business events).
-- **DQL** is used to query Grail.
+- **Repo**: `github.com/self9dmin/intel-ops`
+- **Deployed at**: `https://nom24698.apps.dynatrace.com`
+- **Stack**: dt-app CLI, React, TypeScript, Strato Design System, Document Service
 
-### DQL (Dynatrace Query Language)
-DQL is a **pipeline-style query language** for Grail: you start with a data source (e.g., `fetch logs` or `timeseries` for metrics), then add pipe‑separated commands like `filter`, `summarize`, `sort`, and `makeTimeseries` to transform and aggregate results. Typical patterns include counting events, building time series, and grouping by dimensions (e.g., host or status).
+### App Identity
+- Facing name: **Mission Control** (set in `app.config.json` — do not change)
+- Nav tabs: **Race Control** (default, route `/`) | **Progress** | **Leaderboard**
+- Learning Paths → **Circuits**
+- Mission difficulty levels: `rookie` | `operator` | `elite` | `legend`
 
-### Platform Services
-A set of services are available to Dynatrace Apps to read and write data. Every service provides a typescript **client sdk** to interact with it. Common services include:
-- **Grail Query Service**: Query Dynatrace Grail data using DQL. Prefer using the `useDql` React hook from `@dynatrace-sdk/react-hooks` in UI code, but the low‑level client `@dynatrace-sdk/client-query` is also available.
-- **Document Service**: Store and retrieve json files. Used e.g. for dashboards, can be shared with other users. Use `@dynatrace-sdk/client-document` to interact with it.
-- **(User) App State Service**: Store and retrieve user‑specific or app‑specific key/value data. Used for caching or user preferences. Use `@dynatrace-sdk/client-state` to interact with it.
+### Document Types
+Do not rename or add document types without explicit instruction:
+- `intelops-score` — per-mission completion records
+- `intelops-user-state` — user profile, XP, completed missions, data mode, tenant capabilities
 
-## Strato Design System
-The **Strato Design System** is Dynatrace's official design system and component library. It provides React components, design tokens (colors, borders, shadows), and icons to build consistent UIs that align with Dynatrace's look and feel.
+---
 
-Available packages:
-- `@dynatrace/strato-components` — Stable react components. Components here include: Button, ProgressBar, ProgressCircle, Skeleton, SkeletonText, AppRoot, Container, Divider, Flex, Grid, Surface, Heading, Link, List, Paragraph, Strikethrough, Strong, Text, TextEllipsis
-- `@dynatrace/strato-components-preview` — Most components are here, including Charts (TimeseriesChart, HistogramChart, HoneycombChart, SingleValue, PieChart, ...), Content (Accordion, Chip, HealthIndicator, MessageContainer, ...), Editors (CodeEditor, DQLEditor), Filters (FilterBar, FilterField, SegmentSelector, TimeframeSelector), Forms (Checkbox, Radio, Select, Switch, TextInput, ...), Layouts (AppHeader, HelpMenu, InputGroup, Page, TitleBar), Navigation (AppLink, Breadcrumbs, Menu, Tabs), Overlays (Modal, Overlay, Sheet, Tooltip), Tables (DataTable, SimpleTable)
-- `@dynatrace/strato-design-tokens` — design tokens (colors, spacing, typography) for consistent styling.
-- `@dynatrace/strato-geo` — map visualization primitives.
-- `@dynatrace/strato-icons` — Strato icon library.
+## Hard Rules
 
-### Working with Table components
-When using table components from Strato, prefer `DataTable` from `@dynatrace/strato-components-preview/tables` for advanced features like sorting, filtering, pagination, and selection. Use `SimpleTable` for basic tabular data without interactivity, mostly used for Markdown rendering.
+1. **Never modify `app.config.json`** — version, scopes, and app ID are managed externally.
+2. **No `any` types** — all TypeScript must be properly typed.
+3. **No external UI libraries** — Strato only. No MUI, Chakra, Tailwind, etc.
+4. **Functional components and hooks only** — no class components.
+5. **Always use functional updaters on `setUserState`** — use `setUserState(prev => ({ ...prev, ... }))` to avoid stale closure bugs. Never build a new state object from the `userState` closure directly when calling write functions.
+6. **tsc must run from `ui/`** — never from the repo root. Run `cd ui && npx tsc --noEmit` to typecheck.
 
-Table API:
-- Tables require the `data` and `columns` props
-- Column definitions must include `id`, `header`, and `accessor` (string path or function)
+---
 
-### Importing Strato Components
-When importing Strato components, follow these guidelines to ensure optimal bundle size and performance:
-1. **Never** import from `@dynatrace/strato-components` or `@dynatrace/strato-components-preview` package root
-2. **Always** import from the specific category subdirectory (e.g., `/layouts`, `/typography`, `/tables`)
-3. **Wrong**: `import { Flex, Heading } from "@dynatrace/strato-components";`
-4. **Correct**: 
-   ```typescript
-   import { Flex } from "@dynatrace/strato-components/layouts";
-   import { Heading } from "@dynatrace/strato-components/typography";
-   ```
+## Architecture
 
-**TypeScript Definitions**: All Strato packages have TypeScript definitions located directly in the package root under each component folder. For example:
-- `node_modules/@dynatrace/strato-components-preview/forms/select/Select.d.ts` - Main Select component
-- `node_modules/@dynatrace/strato-components-preview/forms/select/SelectOption.d.ts` - Select.Option component
-- Pattern: `node_modules/@dynatrace/strato-components[-preview]/<category>/<component>/<Component>.d.ts`
-
-**Important**: Always check the `.d.ts` files directly in `node_modules/@dynatrace/strato-components[-preview]/` to understand component APIs. Do NOT look for a separate `types/` subdirectory.
-
-## Client SDKs
-Dynatrace provides TypeScript client SDKs to interact with platform services. Each service has its own package, for example: `@dynatrace-sdk/client-query`, `@dynatrace-sdk/client-document`, `@dynatrace-sdk/client-state`. Those packages are autogenerated from the service OpenAPI specs and have the following characteristics:
-- Exported clients to call service endpoints, eg. `queryClient` or `documentClient`.
-- Example: 
-```typescript 
-const result = await queryClient.queryExecute({ body: { query: 'fetch logs | count' }});
+### Route Map
+```
+/                   → MissionsPage (Race Control tab)
+/missions/:id       → MissionPage
+/debrief/:id        → DebriefPage
+/progress           → ProgressPage
+/onboarding         → OnboardingWizard (shown when no userState exists)
 ```
 
-**Important**: Prefer using the higher‑level React hooks from `@dynatrace-sdk/react-hooks` in UI code, as they encapsulate state management, polling, and error handling.
+### Key Files
+```
+ui/app/
+├── App.tsx                          # Router
+├── types/
+│   ├── mission.types.ts             # Mission interface
+│   └── UserState.ts                 # UserState, DataMode, TenantCapabilities, migrateUserState
+├── data/
+│   ├── missions.ts                  # All 23 missions (MISSIONS array)
+│   └── circuits.ts                  # Circuit/learning path definitions
+├── context/
+│   ├── UserStateContext.tsx         # Exposes userState, setDataMode, saveTenantCapabilities
+│   └── LeaderboardContext.tsx
+├── hooks/
+│   ├── useUserState.ts              # Document Service read/write with optimistic locking
+│   ├── useTenantScan.ts             # Runs 7 DQL capability checks against user's tenant
+│   ├── useUnlockedMissions.ts
+│   └── useFilteredMissions.ts
+├── components/
+│   ├── MissionCard.tsx              # Card with flex layout, button pinned to bottom
+│   ├── PlayerStatusStrip.tsx        # Stats bar (plain div, no Surface)
+│   ├── DataModeToggle.tsx           # Live Mode switch — triggers tenant scan on enable
+│   ├── TenantCoveragePanel.tsx      # Capability chips row (shown in live mode only)
+│   └── AppSidebar.tsx               # Status/difficulty/topic filters
+└── tabs/
+    └── MissionsTab.tsx              # Main mission grid view
+```
 
-## Other SDKs
-- React hooks — `@dynatrace-sdk/react-hooks`: React hooks for DQL (useDql), documents, app state, settings and other platform services.  Prefer using these in UI code. Request and response types match the low‑level client SDKs. Example:
-  ```typescript 
-  const { data, error, isLoading } = useDocument({ id: documentId });
-  ```
--- Common React Hooks:
---- `useDql(query: string)` - Execute DQL queries
---- `useDocument({ id: string })` - Fetch a single document
---- `useListDocuments(params)` - List all documents (requires `document:documents:read` scope)
---- `useAppState({ key: string })` and `useUserAppState({ key: string })` - Read app (user) state
---- `useSetAppState()` and `useSetUserAppState()` - Write app (user) state. Returns an execute function.
---- `useAppFunction({ name: string, data: any })` - Call backend functions
--- All update/set/POST hooks return an execute function that you can call to perform the action.
-- Units & formatting — `@dynatrace-sdk/units`: Convert values to human‑readable strings (e.g., bytes → KiB/MB) and ensure consistent unit formatting across UI and functions.
-- App Environment — `@dynatrace-sdk/app-environment`: Read app/environment context (IDs, URLs, current user) directly in the app
-- User Preferences — `@dynatrace-sdk/user-preferences`: Retrieve the logged‑in user’s theme, language, regional format, and timezone to adapt UI/formatting. Can not be used to store custom user settings. Use the App State service for that. 
+### Data Mode (Live vs Playground)
+The app supports two modes stored in `userState.dataMode`:
+- `'playground'` (default) — missions use static data from `playground.apps.dynatrace.com`
+- `'live'` — missions query the user's own tenant via DQL
+
+When `dataMode === 'live'`:
+- Playground missions are hidden
+- `TenantCoveragePanel` shows capability chips
+- Empty state is shown: "Live Mode Active — live missions coming soon"
+
+`DataModeToggle` triggers `useTenantScan` on enable, which runs 7 parallel DQL queries and saves results to `userState.tenantCapabilities`.
+
+### Tenant Scan Queries (`useTenantScan.ts`)
+These queries run against the user's own tenant. 403s are expected in local dev (missing OAuth scopes) — do not change the queries to work around this.
+```typescript
+hasProblems: `fetch events | filter event.type == "DAVIS_PROBLEM" AND davis.status == "OPEN" | limit 1 | fields timestamp`
+hasLogs:     `fetch logs | limit 1 | fields timestamp`
+hasMetrics:  `timeseries avg(dt.host.cpu.usage), by:{dt.entity.host} | limit 1`
+hasTraces:   `fetch spans | limit 1 | fields timestamp`
+hasSLOs:     `fetch events | filter event.type == "SERVICE_LEVEL_OBJECTIVE" | limit 1 | fields timestamp`
+hasKubernetes: `fetch dt.entity.cloud_application | limit 1 | fields entity.name`
+hasBizevents: `fetch bizevents | limit 1 | fields timestamp`
+```
+
+**Critical DQL rule**: `fetch metrics` is INVALID DQL and returns a 400 error. Always use `timeseries` for metrics queries.
+
+---
+
+## Strato Design System — Project-Specific Rules
+
+### Layout
+- Use **CSS grid** (`display: grid`) for mission card grids — not Strato Grid or Flex
+- Use **plain divs** for stat strips and metric displays — Surface has hardcoded 24px inset padding
+- Use **Strato Surface** only for cards that need DT card styling
+- **Never nest Surface inside Surface**
+- **Do not use `flex: 1` directly on Strato components** — wrap in a plain div instead
+- Strato `Flex` does not reliably pass through `flex: 1` to children
+
+### MissionCard Layout
+Cards use `display: flex; flex-direction: column`. The description `Text` has `flex: "1 1 auto"` so the button row stays pinned to the bottom regardless of description length.
+
+### Imports — Always Use Subpaths
+```typescript
+// Correct
+import { Flex } from "@dynatrace/strato-components/layouts";
+import { Heading, Text } from "@dynatrace/strato-components/typography";
+import { Surface } from "@dynatrace/strato-components/layouts";
+import { Button } from "@dynatrace/strato-components/buttons";
+import { DataTable, DataTableColumnDef } from "@dynatrace/strato-components-preview/tables";
+import { Chip } from "@dynatrace/strato-components-preview/content";
+import { Switch } from "@dynatrace/strato-components-preview/forms";
+import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
+
+// Wrong — never import from package root
+import { Flex, Heading } from "@dynatrace/strato-components";
+```
+
+### TypeScript Gotchas
+- `DataTableColumnDef` requires generic: `DataTableColumnDef<YourType>[]`
+- `useParams` requires generic: `useParams<{ id: string }>()`
+- Always check `.d.ts` files in `node_modules/@dynatrace/strato-components[-preview]/` for component APIs
+
+---
+
+## Document Service — Optimistic Locking Pattern
+
+User state is stored as a single document per user. Always use the optimistic locking pattern — never delete and recreate.
+```typescript
+// Writing user state — always use functional updater
+setUserState(prev => ({ ...prev, newField: value }));
+
+// The write hook retries on 409 conflict
+// Track version locally; UpdateDocumentMetadata does not expose version directly
+```
+
+Key rules:
+- Content field requires `new Blob([JSON.stringify(data)], { type: "application/json" })`
+- Use `updateDocument()` with retry-on-conflict, not delete+recreate
+- `document:documents:delete` scope is required in `app.config.json` for delete operations (already configured)
+
+---
+
+## DQL Reference
+
+### Valid Data Sources
+| Query | Table |
+|---|---|
+| `fetch events` | Davis events, problems, SLOs |
+| `fetch logs` | Log records |
+| `fetch spans` | Distributed traces |
+| `fetch bizevents` | Business events |
+| `fetch dt.entity.*` | Entity records |
+| `timeseries` | Metrics (NOT `fetch metrics`) |
+
+### Problems API (v2) — if used via REST
+- `nextPageKey` must be used alone — do not combine with `problemSelector` or `pageSize` (returns 400)
+
+### Entities API — if used via REST
+- `fields` does not accept `displayName` (returns 400)
+- Valid `fields` values: `properties`, `tags`, `managementZones`, `fromRelationships`, `toRelationships`, `firstSeenTms`, `lastSeenTms`, `icon`
+- Entity name is returned by default
+
+---
 
 ## Development Workflow
 
-### Commands (via `dt-app` CLI)
-- **Dev Server**: `npm run start` - runs with hot reload, auto-opens browser
-- **Build**: `npm run build` - outputs to `dist/` folder
-- **Deploy**: `npm run deploy` - deploys to environment in `app.config.json`
+### Branch Strategy
+```
+master                    # Auto-deploys on push via GitHub Actions
+└── feat/your-feature     # Feature branches — PR to master
+    └── claude/xxx        # Claude Code pushes here — merge into feat/ branch
+```
 
-### Configuration
-- **App Metadata**: `app.config.json` defines app name, ID, version, and required scopes
-- **Environment URL**: Set `environmentUrl` in `app.config.json` to target Dynatrace environment
-- **Scopes**: Add required permissions to `app.config.json` `scopes` array (e.g., `storage:logs:read`, `document:documents:read`, `document:documents:write`, `state:app-states:read`, `state:app-states:write`)
+### After Claude Code Session
+```bash
+git fetch origin
+git merge origin/claude/<branch-name>   # merge Claude's branch into feat/
+cd ui && npx tsc --noEmit               # always typecheck from ui/, not repo root
+npx dt-app dev                          # test locally
+git push origin feat/your-feature
+# Open PR on GitHub → typecheck runs → merge → auto-deploy
+```
 
-## Key Dependencies
-- `@dynatrace/strato-components` and `-preview`: UI component library
-- `@dynatrace/strato-design-tokens`: Design tokens (colors, borders, shadows)
-- `@dynatrace-sdk/react-hooks`: Hooks for Dynatrace APIs (`useDql`, etc.)
-- `@dynatrace-sdk/client-*`: Query API clients, every service has its own client package
+### CI/CD
+- GitHub Actions auto-deploys on master push (bumps patch version, commits with `[skip ci]`, then deploys)
+- Typecheck runs on PRs from `ui/` directory
+- OAuth secrets: `DT_APP_OAUTH_CLIENT_ID`, `DT_APP_OAUTH_CLIENT_SECRET`
 
-## Common Tasks
-- **Add Route**: Update `Routes` in [ui/app/App.tsx](ui/app/App.tsx) and add nav item to [ui/app/components/Header.tsx](ui/app/components/Header.tsx)
-- **Query Data**: Use `useDql` hook with DQL query string (Dynatrace Query Language)
-- **Style Components**: Import from `@dynatrace/strato-design-tokens/{colors,borders,box-shadows}` for design tokens
+### Local Dev Notes
+- `getCurrentUserDetails()` returns `dt.missing.user.id` / `dt.missing.user.name` locally — resolves correctly on tenant
+- All Grail table queries (logs, events, metrics, etc.) return 403 locally — expected, not a bug
+- Document Service works on localhost against real tenant data
+
+---
+
+## Environments
+
+| Environment | URL | Purpose |
+|---|---|---|
+| Trial tenant | `https://nom24698.apps.dynatrace.com` | Deployment target, user data |
+| Playground tenant | `https://playground.apps.dynatrace.com` | Playground mission data (public, no login) |
+
+Playground tenant contains: 11 open problems, 16 hosts, EKS cluster `aws-eks-3`, AKS cluster `aks-playground`, apps: easytrade, hipstershop, astroshop, unguard.
+
+Cross-tenant queries from UI code are not supported — outbound JS runtime calls are sandboxed.
