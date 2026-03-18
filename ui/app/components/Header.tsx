@@ -1,0 +1,22 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { AppHeader } from "@dynatrace/strato-components-preview/layouts";
+
+export const Header = () => {
+  return (
+    <AppHeader>
+      <AppHeader.NavItems>
+        <AppHeader.AppNavLink as={Link} to="/missions" />
+        <AppHeader.NavItem as={Link} to="/control-tower">
+          Race Control
+        </AppHeader.NavItem>
+        <AppHeader.NavItem as={Link} to="/missions">
+          Missions
+        </AppHeader.NavItem>
+        <AppHeader.NavItem as={Link} to="/progress">
+          Pace
+        </AppHeader.NavItem>
+      </AppHeader.NavItems>
+    </AppHeader>
+  );
+};
