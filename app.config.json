@@ -19,6 +19,30 @@
       {
         "name": "document:documents:delete",
         "comment": "Delete user state for onboarding reset"
+      },
+      {
+        "name": "storage:logs:read",
+        "comment": "Tenant scan — detect log ingestion"
+      },
+      {
+        "name": "storage:events:read",
+        "comment": "Tenant scan — detect problems and SLOs"
+      },
+      {
+        "name": "storage:metrics:read",
+        "comment": "Tenant scan — detect metric ingestion"
+      },
+      {
+        "name": "storage:spans:read",
+        "comment": "Tenant scan — detect trace ingestion"
+      },
+      {
+        "name": "storage:bizevents:read",
+        "comment": "Tenant scan — detect business events"
+      },
+      {
+        "name": "storage:entities:read",
+        "comment": "Tenant scan — detect Kubernetes entities"
       }
     ]
   }
