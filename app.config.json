@@ -1,0 +1,61 @@
+{
+  "$schema": "./.dt-app/app.config.schema.json",
+  "environmentUrl": "https://your-tenant.apps.dynatrace.com/",
+  "app": {
+    "name": "Mission Control",
+    "version": "0.1.56",
+    "description": "Gamified observability training. Learn Dynatrace by doing.",
+    "icon": "ui/assets/app-icon.svg",
+    "id": "my.intelops.training",
+    "scopes": [
+      {
+        "name": "document:documents:read",
+        "comment": "Read user progress and leaderboard"
+      },
+      {
+        "name": "document:documents:write",
+        "comment": "Write user scores and checkpoint state"
+      },
+      {
+        "name": "document:documents:delete",
+        "comment": "Delete user state for onboarding reset"
+      },
+      {
+        "name": "storage:logs:read",
+        "comment": "Tenant scan — detect log ingestion"
+      },
+      {
+        "name": "storage:events:read",
+        "comment": "Tenant scan — detect problems and SLOs"
+      },
+      {
+        "name": "storage:metrics:read",
+        "comment": "Tenant scan — detect metric ingestion"
+      },
+      {
+        "name": "storage:spans:read",
+        "comment": "Tenant scan — detect trace ingestion"
+      },
+      {
+        "name": "storage:bizevents:read",
+        "comment": "Tenant scan — detect business events"
+      },
+      {
+        "name": "storage:entities:read",
+        "comment": "Tenant scan — detect Kubernetes entities"
+      },
+      {
+        "name": "environment-api:problems:read",
+        "comment": "Live Mode scan — detect open problems"
+      },
+      {
+        "name": "environment-api:metrics:read",
+        "comment": "Live Mode scan — detect metric data"
+      },
+      {
+        "name": "environment-api:slo:read",
+        "comment": "Live Mode scan — detect SLOs"
+      }
+    ]
+  }
+}
