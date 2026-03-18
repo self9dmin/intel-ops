@@ -43,6 +43,18 @@
       {
         "name": "storage:entities:read",
         "comment": "Tenant scan — detect Kubernetes entities"
+      },
+      {
+        "name": "environment-api:problems:read",
+        "comment": "Live Mode scan — detect open problems"
+      },
+      {
+        "name": "environment-api:metrics:read",
+        "comment": "Live Mode scan — detect metric data"
+      },
+      {
+        "name": "environment-api:slo:read",
+        "comment": "Live Mode scan — detect SLOs"
       }
     ]
   }
