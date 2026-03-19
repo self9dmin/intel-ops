@@ -3,6 +3,7 @@ export interface Circuit {
   name: string;
   description: string;
   missionIds: string[];
+  f1TrackSvgUrl: string;
 }
 
 export const CIRCUITS: Circuit[] = [
@@ -16,6 +17,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-silent-query",
       "mission-iron-floor",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/marina-bay-street-circuit-2.svg",
   },
   {
     id: "reliability-run",
@@ -25,6 +27,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-golden-signal",
       "operation-silent-rollout",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/silverstone-circuit-7.svg",
   },
   {
     id: "cluster-control",
@@ -34,6 +37,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "operation-k8s-meltdown",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/suzuka-circuit-3.svg",
   },
   {
     id: "signal-hunt",
@@ -44,6 +48,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-follow-the-wire",
       "mission-stone-wall",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-jose-carlos-pace-2.svg",
   },
   {
     id: "root-cause-run",
@@ -54,6 +59,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "operation-ghost-in-the-trace",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-nazionale-monza-2.svg",
   },
   {
     id: "terrain-recon",
@@ -64,6 +70,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "mission-follow-the-wire",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-monaco-6.svg",
   },
   {
     id: "operator-readiness",
@@ -74,6 +81,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-your-answers",
       "mission-orient-platform",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/bahrain-international-circuit-2.svg",
   },
   {
     id: "ground-zero",
@@ -84,6 +92,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "mission-iron-floor",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/melbourne-grand-prix-circuit-2.svg",
   },
   {
     id: "insight",
@@ -94,5 +103,6 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-the-log",
       "mission-golden-signal",
     ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-spa-francorchamps-3.svg",
   },
 ];

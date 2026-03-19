@@ -13,6 +13,7 @@ import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 
 import { MissionCard } from "../components/MissionCard";
+import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
 import { DataModeToggle } from "../components/DataModeToggle";
 import { TenantCoveragePanel } from "../components/TenantCoveragePanel";
@@ -109,6 +110,10 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const completedSet = useMemo(() => new Set(completedMissions), [completedMissions]);
   const earnedBadges = useMemo(() => new Set(userState?.badges ?? []), [userState?.badges]);
   const unlockedSet = useUnlockedMissions(completedMissions);
+  const selectedCircuit = useMemo(
+    () => CIRCUITS.find((c) => c.id === selectedPath) ?? null,
+    [selectedPath]
+  );
   const filteredMissions = useMemo(
     () => applyFilters(MISSIONS, filters, selectedPath, unlockedSet, completedSet),
     [filters, selectedPath, unlockedSet, completedSet]
@@ -255,28 +260,53 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           {/* Mission Grid */}
           <div style={{ marginTop: "8px" }}>
             <Heading level={5}>
-              All Missions{" "}
+              {selectedCircuit ? selectedCircuit.name : "All Missions"}{" "}
               <Text textStyle="small" style={{ opacity: 0.6 }}>
                 ({filteredMissions.length})
               </Text>
             </Heading>
+
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                gap: "12px",
+                display: "flex",
+                gap: "24px",
+                alignItems: "flex-start",
                 marginTop: "8px",
               }}
             >
-              {filteredMissions.map((mission) => (
-                <MissionCard
-                  key={mission.id}
-                  mission={mission}
-                  isUnlocked={unlockedSet.has(mission.id)}
-                  isCompleted={completedSet.has(mission.id)}
-                  prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-                />
-              ))}
+              <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: "12px",
+                  }}
+                >
+                  {filteredMissions.map((mission) => (
+                    <MissionCard
+                      key={mission.id}
+                      mission={mission}
+                      isUnlocked={unlockedSet.has(mission.id)}
+                      isCompleted={completedSet.has(mission.id)}
+                      prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                    />
+                  ))}
+                  {filteredMissions.length === 0 && (
+                    <Text textStyle="small" style={{ opacity: 0.6 }}>
+                      No missions match your filters.
+                    </Text>
+                  )}
+                </div>
+              </div>
+
+              {selectedCircuit !== null && (
+                <div style={{ flex: "0 0 300px", position: "sticky", top: 0 }}>
+                  <CircuitPanel
+                    circuit={selectedCircuit}
+                    completedMissionIds={completedSet}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </>
