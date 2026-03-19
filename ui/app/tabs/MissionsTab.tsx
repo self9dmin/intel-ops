@@ -96,9 +96,8 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
     (currentUser.email && !currentUser.email.includes("dt.missing") && currentUser.email) ||
     currentUser.id;
 
-  const [selectedPath, setSelectedPath] = useState<string | null>(
-    searchParams.get("path")
-  );
+  const initPath = searchParams.get("path") ?? userState?.startingCircuit ?? null;
+  const [selectedPath, setSelectedPath] = useState<string | null>(initPath);
 
   useEffect(() => {
     if (scores.length === 0 && !leaderboardLoading) {
@@ -234,13 +233,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           <div style={{ marginBottom: "16px" }}>
             <Heading level={5}>Circuits</Heading>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-              <Chip
-                color={selectedPath === null ? "primary" : "neutral"}
-                variant={selectedPath === null ? "emphasized" : undefined}
-                onClick={() => handlePathSelect(null)}
-              >
-                All
-              </Chip>
               {CIRCUITS.map((path) => (
                 <Tooltip key={path.id} text={path.description}>
                   <Chip
@@ -254,6 +246,13 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
                   </Chip>
                 </Tooltip>
               ))}
+              <Chip
+                color={selectedPath === null ? "primary" : "neutral"}
+                variant={selectedPath === null ? "emphasized" : undefined}
+                onClick={() => handlePathSelect(null)}
+              >
+                All
+              </Chip>
             </div>
           </div>
 
