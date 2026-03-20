@@ -3,7 +3,7 @@
   "environmentUrl": "https://your-tenant.apps.dynatrace.com/",
   "app": {
     "name": "Mission Control",
-    "version": "0.1.61",
+    "version": "0.1.62",
     "description": "Gamified observability training. Learn Dynatrace by doing.",
     "icon": "ui/assets/app-icon.svg",
     "id": "my.intelops.training",
