@@ -49,13 +49,13 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
       }}
     >
       {circuit.f1TrackSvgUrl && (
-        <div style={{ height: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <img
             src={circuit.f1TrackSvgUrl}
             alt={circuit.name}
             style={{
-              maxHeight: "160px",
-              maxWidth: "100%",
+              height: "200px",
+              width: "100%",
               objectFit: "contain",
               opacity: 0.35,
               filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)",
