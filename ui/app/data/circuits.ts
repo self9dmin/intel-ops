@@ -18,7 +18,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-silent-query",
       "mission-iron-floor",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/marina-bay-street-circuit-2.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/marina-bay.svg",
     countryCode: "sg",
   },
   {
@@ -29,7 +29,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-golden-signal",
       "operation-silent-rollout",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/silverstone-circuit-7.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
     countryCode: "gb",
   },
   {
@@ -40,7 +40,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "operation-k8s-meltdown",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/suzuka-circuit-3.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/suzuka.svg",
     countryCode: "jp",
   },
   {
@@ -52,7 +52,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-follow-the-wire",
       "mission-stone-wall",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-jose-carlos-pace-2.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/interlagos.svg",
     countryCode: "br",
   },
   {
@@ -64,7 +64,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "operation-ghost-in-the-trace",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-nazionale-monza-2.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
     countryCode: "it",
   },
   {
@@ -76,7 +76,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "mission-follow-the-wire",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-monaco-6.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
     countryCode: "mc",
   },
   {
@@ -88,7 +88,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-your-answers",
       "mission-orient-platform",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/bahrain-international-circuit-2.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
     countryCode: "bh",
   },
   {
@@ -100,7 +100,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "mission-iron-floor",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/melbourne-grand-prix-circuit-2.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
     countryCode: "au",
   },
   {
@@ -112,7 +112,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-the-log",
       "mission-golden-signal",
     ],
-    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-spa-francorchamps-3.svg",
+    f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
     countryCode: "be",
   },
 ];
