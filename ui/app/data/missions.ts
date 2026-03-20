@@ -2143,6 +2143,105 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-first-alert",
+    title: "Your First Alert",
+    codename: "SIGNAL FIRE",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Dynatrace detects problems automatically. But without notifications, nobody hears the alarm.",
+    briefing:
+      "Davis AI detects anomalies and opens problems without any configuration — but getting those problems in front of the right people requires alerting setup. This mission walks you through where alerting lives in Dynatrace, how the trigger-to-notification chain works, and what your options are for getting alerted when something breaks. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-orient-platform"],
+    disciplines: [
+      { track: "platform-engineer", xp: 75 },
+      { track: "incident-commander", xp: 75 },
+    ],
+    topics: ["problems", "settings"],
+    category: "configuration",
+    apps: ["Settings"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Alerting Section in Settings",
+        instruction:
+          "Open the Settings app in the Playground. What is the name of the section that contains alerting and notification configuration?",
+        hint: "Open Apps → search 'Settings' → open the Settings app. Look at the left sidebar — the alerting section is not the first category. Scan down for a section related to analysis and alerts.",
+        type: "multiple-choice",
+        choices: [
+          "Analyze and alert",
+          "Collect and capture",
+          "Environment segmentation",
+          "Dynatrace Intelligence",
+        ],
+        correctChoice: "Analyze and alert",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Settings Sidebar Order",
+        instruction:
+          "In the Settings app, what is the first category listed in the left sidebar?",
+        hint: "When you first open the Settings app, the left sidebar shows all configuration categories. The first one is selected by default.",
+        type: "multiple-choice",
+        choices: [
+          "Collect and capture",
+          "Analyze and alert",
+          "General",
+          "Environment segmentation",
+        ],
+        correctChoice: "Collect and capture",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "The Notification Chain",
+        instruction:
+          "In Dynatrace, what is the correct order of the alerting chain when a problem is detected?",
+        hint: "Think about the sequence: Davis detects an anomaly and opens a problem. Then something filters which problems are worth alerting on. Then something defines where to send the notification.",
+        type: "multiple-choice",
+        choices: [
+          "Problem detected → Alerting profile filters it → Notification integration sends it",
+          "Notification sent → Alerting profile created → Problem detected",
+          "Alerting profile created → Problem detected → Davis AI notified",
+          "Problem detected → Notification sent → Alerting profile logs it",
+        ],
+        correctChoice:
+          "Problem detected → Alerting profile filters it → Notification integration sends it",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Notification Integration Options",
+        instruction:
+          "Navigate to Settings → Analyze and alert → Notifications. How many notification configuration options are listed?",
+        hint: "Open the Settings app, go to Analyze and alert in the left sidebar, then click Notifications. Count every item listed — each represents a different integration or channel type.",
+        type: "multiple-choice",
+        choices: ["3", "4", "5", "6 or more"],
+        correctChoice: "5",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "Where Problems Are Created",
+        instruction:
+          "Which Dynatrace component is responsible for automatically detecting anomalies and opening problems — without any manual configuration?",
+        hint: "This is the AI engine at the core of Dynatrace. It uses causal AI to determine root cause and opens problems automatically based on what it detects.",
+        type: "multiple-choice",
+        choices: [
+          "Davis AI",
+          "Alerting profiles",
+          "Synthetic monitors",
+          "OneAgent",
+        ],
+        correctChoice: "Davis AI",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
