@@ -1,0 +1,118 @@
+export interface Circuit {
+  id: string;
+  name: string;
+  description: string;
+  missionIds: string[];
+  f1TrackSvgUrl: string;
+  countryCode: string;
+}
+
+export const CIRCUITS: Circuit[] = [
+  {
+    id: "first-response",
+    name: "First Response",
+    description: "Triage and resolve active incidents under pressure",
+    missionIds: [
+      "operation-3am-database-spike",
+      "operation-flatline",
+      "mission-silent-query",
+      "mission-iron-floor",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/marina-bay-street-circuit-2.svg",
+    countryCode: "sg",
+  },
+  {
+    id: "reliability-run",
+    name: "Reliability Run",
+    description: "Build SRE fundamentals — SLOs, deployments, and service health",
+    missionIds: [
+      "mission-golden-signal",
+      "operation-silent-rollout",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/silverstone-circuit-7.svg",
+    countryCode: "gb",
+  },
+  {
+    id: "cluster-control",
+    name: "Cluster Control",
+    description: "Navigate Kubernetes complexity and infrastructure failures",
+    missionIds: [
+      "mission-grid-search",
+      "operation-k8s-meltdown",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/suzuka-circuit-3.svg",
+    countryCode: "jp",
+  },
+  {
+    id: "signal-hunt",
+    name: "Signal Hunt",
+    description: "Trace through distributed systems to pinpoint root cause",
+    missionIds: [
+      "operation-ghost-in-the-trace",
+      "mission-follow-the-wire",
+      "mission-stone-wall",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-jose-carlos-pace-2.svg",
+    countryCode: "br",
+  },
+  {
+    id: "root-cause-run",
+    name: "Root Cause Run",
+    description: "Work backwards from symptoms to find what actually broke",
+    missionIds: [
+      "operation-3am-database-spike",
+      "mission-what-are-you",
+      "operation-ghost-in-the-trace",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-nazionale-monza-2.svg",
+    countryCode: "it",
+  },
+  {
+    id: "terrain-recon",
+    name: "Terrain Recon",
+    description: "Map the platform and understand entity relationships",
+    missionIds: [
+      "mission-what-are-you",
+      "mission-grid-search",
+      "mission-follow-the-wire",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-monaco-6.svg",
+    countryCode: "mc",
+  },
+  {
+    id: "operator-readiness",
+    name: "Operator Readiness",
+    description: "Get comfortable with core Dynatrace tools and navigation",
+    missionIds: [
+      "mission-ask-the-ai",
+      "mission-find-your-answers",
+      "mission-orient-platform",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/bahrain-international-circuit-2.svg",
+    countryCode: "bh",
+  },
+  {
+    id: "ground-zero",
+    name: "Ground Zero",
+    description: "Orient yourself — first steps for anyone new to Dynatrace",
+    missionIds: [
+      "mission-orient-platform",
+      "mission-what-are-you",
+      "mission-iron-floor",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/melbourne-grand-prix-circuit-2.svg",
+    countryCode: "au",
+  },
+  {
+    id: "insight",
+    name: "Insight",
+    description: "Read the data — dashboards, logs, and observability signals",
+    missionIds: [
+      "mission-read-dashboard",
+      "mission-find-the-log",
+      "mission-golden-signal",
+    ],
+    f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-spa-francorchamps-3.svg",
+    countryCode: "be",
+  },
+];
