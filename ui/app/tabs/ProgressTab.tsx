@@ -175,12 +175,15 @@ function SkillRow({
 
 function getBadgeEmoji(icon: string): string {
   const map: Record<string, string> = {
-    rocket: "\u{1F680}",
-    flame: "\u{1F525}",
-    lightning: "\u26A1",
-    graduation: "\u{1F393}",
-    star: "\u2B50",
-    shield: "\u{1F6E1}\uFE0F",
+    "lights-out": "\u{1F6A6}",
+    "in-the-window": "\u{1F50B}",
+    "boost-mode": "\u26A1",
+    "in-the-points": "\u{1F3C6}",
+    "graduated-q2": "\u23F1\uFE0F",
+    "race-winner": "\u{1F3C1}",
+    "understeer-proof": "\u{1F3AF}",
+    "grand-slam": "\u{1F4A5}",
+    "overtake-mode": "\u{1F680}",
   };
   return map[icon] ?? "\u{1F3C6}";
 }

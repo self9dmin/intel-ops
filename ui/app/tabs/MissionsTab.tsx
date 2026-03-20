@@ -13,6 +13,7 @@ import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 
 import { MissionCard } from "../components/MissionCard";
+import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
 import { DataModeToggle } from "../components/DataModeToggle";
 import { TenantCoveragePanel } from "../components/TenantCoveragePanel";
@@ -23,12 +24,15 @@ import type { Mission } from "../types/mission.types";
 
 function getBadgeEmoji(icon: string): string {
   const map: Record<string, string> = {
-    rocket: "\u{1F680}",
-    flame: "\u{1F525}",
-    lightning: "\u26A1",
-    graduation: "\u{1F393}",
-    star: "\u2B50",
-    shield: "\u{1F6E1}\uFE0F",
+    "lights-out": "\u{1F6A6}",
+    "in-the-window": "\u{1F50B}",
+    "boost-mode": "\u26A1",
+    "in-the-points": "\u{1F3C6}",
+    "graduated-q2": "\u23F1\uFE0F",
+    "race-winner": "\u{1F3C1}",
+    "understeer-proof": "\u{1F3AF}",
+    "grand-slam": "\u{1F4A5}",
+    "overtake-mode": "\u{1F680}",
   };
   return map[icon] ?? "\u{1F3C6}";
 }
@@ -95,9 +99,8 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
     (currentUser.email && !currentUser.email.includes("dt.missing") && currentUser.email) ||
     currentUser.id;
 
-  const [selectedPath, setSelectedPath] = useState<string | null>(
-    searchParams.get("path")
-  );
+  const initPath = searchParams.get("path") ?? userState?.startingCircuit ?? null;
+  const [selectedPath, setSelectedPath] = useState<string | null>(initPath);
 
   useEffect(() => {
     if (scores.length === 0 && !leaderboardLoading) {
@@ -109,6 +112,10 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   const completedSet = useMemo(() => new Set(completedMissions), [completedMissions]);
   const earnedBadges = useMemo(() => new Set(userState?.badges ?? []), [userState?.badges]);
   const unlockedSet = useUnlockedMissions(completedMissions);
+  const selectedCircuit = useMemo(
+    () => CIRCUITS.find((c) => c.id === selectedPath) ?? null,
+    [selectedPath]
+  );
   const filteredMissions = useMemo(
     () => applyFilters(MISSIONS, filters, selectedPath, unlockedSet, completedSet),
     [filters, selectedPath, unlockedSet, completedSet]
@@ -229,13 +236,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           <div style={{ marginBottom: "16px" }}>
             <Heading level={5}>Circuits</Heading>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-              <Chip
-                color={selectedPath === null ? "primary" : "neutral"}
-                variant={selectedPath === null ? "emphasized" : undefined}
-                onClick={() => handlePathSelect(null)}
-              >
-                All
-              </Chip>
               {CIRCUITS.map((path) => (
                 <Tooltip key={path.id} text={path.description}>
                   <Chip
@@ -249,34 +249,66 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
                   </Chip>
                 </Tooltip>
               ))}
+              <Chip
+                color={selectedPath === null ? "primary" : "neutral"}
+                variant={selectedPath === null ? "emphasized" : undefined}
+                onClick={() => handlePathSelect(null)}
+              >
+                All
+              </Chip>
             </div>
           </div>
 
           {/* Mission Grid */}
           <div style={{ marginTop: "8px" }}>
             <Heading level={5}>
-              All Missions{" "}
+              {selectedCircuit ? selectedCircuit.name : "All Missions"}{" "}
               <Text textStyle="small" style={{ opacity: 0.6 }}>
                 ({filteredMissions.length})
               </Text>
             </Heading>
+
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                gap: "12px",
+                display: "flex",
+                gap: "24px",
+                alignItems: "flex-start",
                 marginTop: "8px",
               }}
             >
-              {filteredMissions.map((mission) => (
-                <MissionCard
-                  key={mission.id}
-                  mission={mission}
-                  isUnlocked={unlockedSet.has(mission.id)}
-                  isCompleted={completedSet.has(mission.id)}
-                  prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-                />
-              ))}
+              <div style={{ flex: "1 1 0", minWidth: 0 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: "12px",
+                  }}
+                >
+                  {filteredMissions.map((mission) => (
+                    <MissionCard
+                      key={mission.id}
+                      mission={mission}
+                      isUnlocked={unlockedSet.has(mission.id)}
+                      isCompleted={completedSet.has(mission.id)}
+                      prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                    />
+                  ))}
+                  {filteredMissions.length === 0 && (
+                    <Text textStyle="small" style={{ opacity: 0.6 }}>
+                      No missions match your filters.
+                    </Text>
+                  )}
+                </div>
+              </div>
+
+              {selectedCircuit !== null && (
+                <div style={{ flex: "0 0 380px", minWidth: "380px", position: "sticky", top: 0 }}>
+                  <CircuitPanel
+                    circuit={selectedCircuit}
+                    completedMissionIds={completedSet}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </>
