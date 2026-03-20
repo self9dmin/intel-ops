@@ -2040,6 +2040,109 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-organize-fleet",
+    title: "Organize Your Fleet",
+    codename: "GRID ORDER",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Ungrouped hosts are unmanageable at scale. Learn how host groups work before your fleet grows past the point of control.",
+    briefing:
+      "When you have 10 hosts, naming them well is enough. When you have 1,000, you need structure. Host groups let you apply settings, alerting thresholds, and OneAgent update policies to entire fleets at once — instead of host by host. This mission teaches you how host groups work in Dynatrace using the Playground, and how to assign them at install time in your own environment. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-deploy-agent"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["infrastructure", "settings"],
+    category: "configuration",
+    apps: ["Infrastructure & Operations", "Deployment Status"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find Host Groups in Infrastructure & Operations",
+        instruction:
+          "Open the Infrastructure & Operations app in the Playground. In the left sidebar, what are the five entity types listed?",
+        hint: "Open Apps → Infrastructure Observability → Infrastructure & Operations. Look at the left sidebar — it lists the entity types you can navigate to. Count all five.",
+        type: "multiple-choice",
+        choices: [
+          "Hosts, Processes, Network, Containers, Technologies",
+          "Hosts, Network devices, Other, VMware, Cloud",
+          "Hosts, Kubernetes, Services, Databases, Network",
+          "Hosts, Processes, Services, Applications, Cloud",
+        ],
+        correctChoice: "Hosts, Network devices, Other, VMware, Cloud",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "What Host Groups Do",
+        instruction:
+          "Which of these is something you can configure at the host group level in Dynatrace?",
+        hint: "Think about what makes host groups useful for fleet management — the point is to apply a setting once and have it apply to all hosts in the group, rather than configuring each host individually.",
+        type: "multiple-choice",
+        choices: [
+          "OneAgent update settings and anomaly detection thresholds",
+          "DQL query execution permissions",
+          "Dashboard visibility and sharing",
+          "User access and role assignments",
+        ],
+        correctChoice: "OneAgent update settings and anomaly detection thresholds",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Assign a Host Group at Install Time",
+        instruction:
+          "When installing OneAgent on Linux, what is the correct syntax to assign a host to a group called 'production-web' at install time?",
+        hint: "The parameter is passed to the installer script. You've seen this parameter in a previous mission — it uses double dashes and the set- prefix.",
+        type: "multiple-choice",
+        choices: [
+          "./Dynatrace-OneAgent.sh --set-host-group=production-web",
+          "./Dynatrace-OneAgent.sh --host-group=production-web",
+          "./Dynatrace-OneAgent.sh --group=production-web",
+          "./Dynatrace-OneAgent.sh --set-group=production-web",
+        ],
+        correctChoice: "./Dynatrace-OneAgent.sh --set-host-group=production-web",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Change a Host Group After Install",
+        instruction:
+          "If you need to move a host to a different host group after OneAgent is already installed, which tool do you use?",
+        hint: "After installation, OneAgent configuration changes are made using a command-line tool that ships with the agent. Check docs.dynatrace.com and search for 'change host group after installation'.",
+        type: "multiple-choice",
+        choices: [
+          "oneagentctl --set-host-group=",
+          "dt-agent --move-group=",
+          "Dynatrace Settings UI only — cannot be changed via CLI",
+          "Reinstall OneAgent with the new parameter",
+        ],
+        correctChoice: "oneagentctl --set-host-group=",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "How Many Host Groups Can a Host Belong To",
+        instruction:
+          "How many host groups can a single OneAgent-monitored host belong to at one time?",
+        hint: "Host groups are statically assigned — this is by design to keep configuration predictable. Think about what 'group' means structurally.",
+        type: "multiple-choice",
+        choices: [
+          "Exactly one",
+          "Up to three",
+          "Unlimited",
+          "Two — one primary, one secondary",
+        ],
+        correctChoice: "Exactly one",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {

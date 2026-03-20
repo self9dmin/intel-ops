@@ -83,6 +83,7 @@ export const CIRCUITS: Circuit[] = [
     missionIds: [
       "mission-the-dock",
       "mission-deploy-agent",
+      "mission-organize-fleet",
       "mission-what-are-you",
       "mission-iron-floor",
     ],
