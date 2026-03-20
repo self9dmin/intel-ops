@@ -7,7 +7,6 @@ interface PlayerStatusStripProps {
   missionsCompleted: number;
   streakDays: number;
   rightContent?: React.ReactNode;
-  isLive?: boolean;
 }
 
 function StatCell({ value, label }: { value: string; label: string }) {
@@ -38,67 +37,50 @@ export const PlayerStatusStrip = ({
   missionsCompleted,
   streakDays,
   rightContent,
-  isLive,
 }: PlayerStatusStripProps) => {
   return (
     <div>
       <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>
         {playerName}
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "16px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "32px",
-          }}
-        >
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "16px", rowGap: "12px" }}>
+        <div style={{ display: "flex", gap: "32px" }}>
           <StatCell value={String(totalXP)} label="XP" />
-          <StatCell
-            value={globalRank !== null ? `#${globalRank}` : "\u2014"}
-            label="Rank"
-          />
+          <StatCell value={globalRank !== null ? `#${globalRank}` : "\u2014"} label="Rank" />
           <StatCell value={String(missionsCompleted)} label="Missions" />
           <StatCell value={String(streakDays)} label="Streak" />
         </div>
         {rightContent && (
-          <div style={{ marginLeft: "auto", alignSelf: "flex-start", paddingTop: "3px" }}>
+          <div style={{ marginLeft: "auto" }}>
             {rightContent}
           </div>
         )}
-        {!isLive && (
-          <div style={{ marginLeft: rightContent ? "0" : "auto", alignSelf: "flex-start", paddingTop: "3px" }}>
-            <button
-              onClick={() => window.open("https://playground.apps.dynatrace.com/", "_blank")}
-              style={{
-                padding: "4px 10px",
-                fontSize: "11px",
-                fontWeight: 500,
-                fontFamily: "inherit",
-                cursor: "pointer",
-                borderRadius: "4px",
-                border: "1px solid var(--dt-colors-border-neutral-default)",
-                background: "transparent",
-                color: "var(--dt-colors-text-neutral-subdued)",
-                whiteSpace: "nowrap",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              {"Open Playground \u2197"}
-            </button>
-          </div>
-        )}
+        <div style={{ marginLeft: rightContent ? "0" : "auto" }}>
+          <button
+            onClick={() => window.open("https://playground.apps.dynatrace.com/", "_blank")}
+            style={{
+              padding: "4px 10px",
+              fontSize: "11px",
+              fontWeight: 500,
+              fontFamily: "inherit",
+              cursor: "pointer",
+              borderRadius: "4px",
+              border: "1px solid var(--dt-colors-border-neutral-default)",
+              background: "transparent",
+              color: "var(--dt-colors-text-neutral-subdued)",
+              whiteSpace: "nowrap",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            {"Open Playground \u2197"}
+          </button>
+        </div>
       </div>
     </div>
   );
