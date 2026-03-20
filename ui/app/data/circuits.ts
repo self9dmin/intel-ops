@@ -3,6 +3,8 @@ export interface Circuit {
   name: string;
   description: string;
   missionIds: string[];
+  f1TrackSvgUrl: string;
+  countryCode: string;
 }
 
 export const CIRCUITS: Circuit[] = [
@@ -16,6 +18,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-silent-query",
       "mission-iron-floor",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/marina-bay.svg",
+    countryCode: "sg",
   },
   {
     id: "reliability-run",
@@ -25,6 +29,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-golden-signal",
       "operation-silent-rollout",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
+    countryCode: "gb",
   },
   {
     id: "cluster-control",
@@ -34,6 +40,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "operation-k8s-meltdown",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/suzuka.svg",
+    countryCode: "jp",
   },
   {
     id: "signal-hunt",
@@ -44,6 +52,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-follow-the-wire",
       "mission-stone-wall",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/interlagos.svg",
+    countryCode: "br",
   },
   {
     id: "root-cause-run",
@@ -54,6 +64,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "operation-ghost-in-the-trace",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
+    countryCode: "it",
   },
   {
     id: "terrain-recon",
@@ -64,6 +76,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-grid-search",
       "mission-follow-the-wire",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
+    countryCode: "mc",
   },
   {
     id: "operator-readiness",
@@ -74,6 +88,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-your-answers",
       "mission-orient-platform",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
+    countryCode: "bh",
   },
   {
     id: "ground-zero",
@@ -84,6 +100,8 @@ export const CIRCUITS: Circuit[] = [
       "mission-what-are-you",
       "mission-iron-floor",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
+    countryCode: "au",
   },
   {
     id: "insight",
@@ -94,5 +112,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-find-the-log",
       "mission-golden-signal",
     ],
+    f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
+    countryCode: "be",
   },
 ];
