@@ -81,7 +81,20 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
         </span>
       </div>
 
-      <Heading level={3}>{circuit.name}</Heading>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <img
+          src={`/ui/assets/flags/${circuit.countryCode}.png`}
+          alt={circuit.countryCode}
+          style={{
+            width: "28px",
+            height: "auto",
+            borderRadius: "2px",
+            opacity: 0.9,
+            flexShrink: 0,
+          }}
+        />
+        <Heading level={3}>{circuit.name}</Heading>
+      </div>
 
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {circuit.description}

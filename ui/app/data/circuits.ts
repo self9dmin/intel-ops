@@ -4,6 +4,7 @@ export interface Circuit {
   description: string;
   missionIds: string[];
   f1TrackSvgUrl: string;
+  countryCode: string;
 }
 
 export const CIRCUITS: Circuit[] = [
@@ -18,6 +19,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-iron-floor",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/marina-bay-street-circuit-2.svg",
+    countryCode: "sg",
   },
   {
     id: "reliability-run",
@@ -28,6 +30,7 @@ export const CIRCUITS: Circuit[] = [
       "operation-silent-rollout",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/silverstone-circuit-7.svg",
+    countryCode: "gb",
   },
   {
     id: "cluster-control",
@@ -38,6 +41,7 @@ export const CIRCUITS: Circuit[] = [
       "operation-k8s-meltdown",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/suzuka-circuit-3.svg",
+    countryCode: "jp",
   },
   {
     id: "signal-hunt",
@@ -49,6 +53,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-stone-wall",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-jose-carlos-pace-2.svg",
+    countryCode: "br",
   },
   {
     id: "root-cause-run",
@@ -60,6 +65,7 @@ export const CIRCUITS: Circuit[] = [
       "operation-ghost-in-the-trace",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/autodromo-nazionale-monza-2.svg",
+    countryCode: "it",
   },
   {
     id: "terrain-recon",
@@ -71,6 +77,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-follow-the-wire",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-monaco-6.svg",
+    countryCode: "mc",
   },
   {
     id: "operator-readiness",
@@ -82,6 +89,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-orient-platform",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/bahrain-international-circuit-2.svg",
+    countryCode: "bh",
   },
   {
     id: "ground-zero",
@@ -93,6 +101,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-iron-floor",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/melbourne-grand-prix-circuit-2.svg",
+    countryCode: "au",
   },
   {
     id: "insight",
@@ -104,5 +113,6 @@ export const CIRCUITS: Circuit[] = [
       "mission-golden-signal",
     ],
     f1TrackSvgUrl: "https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/black-outline/circuit-de-spa-francorchamps-3.svg",
+    countryCode: "be",
   },
 ];
