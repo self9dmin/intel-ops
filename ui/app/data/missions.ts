@@ -1942,6 +1942,104 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-deploy-agent",
+    title: "Deploy Your First Agent",
+    codename: "FIRST CONTACT",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "No data without an agent. Learn where OneAgent lives in Dynatrace and how to get it onto your infrastructure.",
+    briefing:
+      "Everything in Dynatrace starts with data — and data starts with OneAgent. Before you can monitor anything in your own environment, you need to know how to deploy the agent, what it does when it lands, and where to track your deployments. This mission uses the Playground to show you what a healthy deployment looks like, then sends you to the docs to learn how to do it yourself. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-orient-platform"],
+    disciplines: [
+      { track: "platform-engineer", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["infrastructure", "settings"],
+    category: "configuration",
+    apps: ["Deployment Status"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find Deployment Status",
+        instruction:
+          "Open the Deployment Status app in the Playground (Apps → Manage → Deployment Status). How many OneAgent-monitored hosts are listed?",
+        hint: "Deployment Status is under Apps → Manage. The page header shows the total host count — look for 'Showing X hosts' or similar text at the top of the table.",
+        type: "multiple-choice",
+        choices: ["8", "12", "16", "20 or more"],
+        correctChoice: "16",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Read an Agent Entry",
+        instruction:
+          "Look at the first host in the Deployment Status list. What are the three column headers shown in the table?",
+        hint: "Look at the table header row across the top of the OneAgents list. There are three column headers.",
+        type: "multiple-choice",
+        choices: [
+          "OS, Host name, Version",
+          "Host, Status, Last Seen",
+          "Name, IP Address, Version",
+          "Host, Agent, Monitoring Mode",
+        ],
+        correctChoice: "OS, Host name, Version",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "Understand Monitoring Modes",
+        instruction:
+          "In Deployment Status, click into any host entry. What monitoring mode is shown for hosts in the Playground?",
+        hint: "Click a host row to expand its details. Look for the 'Monitoring mode' field — the Playground runs agents in the most comprehensive mode available.",
+        type: "multiple-choice",
+        choices: [
+          "Full stack",
+          "Infrastructure only",
+          "Application only",
+          "Discovery only",
+        ],
+        correctChoice: "Full stack",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Find the OneAgent Installation Page",
+        instruction:
+          "In your own Dynatrace tenant (not the Playground), where do you go to download the OneAgent installer?",
+        hint: "In any Dynatrace environment, open the Apps menu and look under Manage. The deployment and installation page is where you generate installer scripts with your environment's token pre-filled.",
+        type: "multiple-choice",
+        choices: [
+          "Apps → Manage → Deployment Status → OneAgent installation",
+          "Settings → Infrastructure → OneAgent",
+          "Apps → Infrastructure → Hosts → Install",
+          "Account Management → Downloads",
+        ],
+        correctChoice: "Apps → Manage → Deployment Status → OneAgent installation",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "The Host Group Parameter",
+        instruction:
+          "When installing OneAgent on Linux, which command-line parameter assigns the host to a host group at install time?",
+        hint: "Navigate to docs.dynatrace.com and search for 'OneAgent host group'. The parameter is passed to the installer script and uses double dashes.",
+        type: "multiple-choice",
+        choices: [
+          "--set-host-group=",
+          "--host-group=",
+          "--group=",
+          "--set-group=",
+        ],
+        correctChoice: "--set-host-group=",
+        points: 200,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {

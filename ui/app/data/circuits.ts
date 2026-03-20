@@ -82,6 +82,7 @@ export const CIRCUITS: Circuit[] = [
     description: "Orient yourself — first steps for anyone new to Dynatrace",
     missionIds: [
       "mission-the-dock",
+      "mission-deploy-agent",
       "mission-what-are-you",
       "mission-iron-floor",
     ],
