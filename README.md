@@ -1,53 +1,190 @@
-# Intel Ops
+# Mission Control
 
-Gamified observability training built on Dynatrace AppEngine.  
-**Learn by doing. Compete to win.**
+**Gamified Dynatrace observability training. Built on Dynatrace AppEngine.**
+
+> Train Here. Perform Everywhere.
 
 ---
 
 ## What Is This
 
-Intel Ops is a scenario-based training app that runs natively inside the Dynatrace platform. Instead of reading documentation, users complete real observability missions — navigating the actual Dynatrace UI, querying Grail, and investigating live problems — then get scored and ranked on a leaderboard.
+Mission Control is a scenario-based training app that runs natively inside the Dynatrace platform. Instead of reading documentation, users complete real observability missions — navigating the actual Dynatrace UI, querying Grail, and investigating real problems — then earn XP, unlock achievements, and compete on a leaderboard.
 
-**The core loop:** Scenario → Real DT Action → Checkpoint Validation → Score → Leaderboard
+The app is designed around a single belief: **you learn Dynatrace by doing Dynatrace**. Every mission puts you inside the real platform, completing real tasks, against a clock.
 
-Built with React + TypeScript on Dynatrace AppEngine using the Strato design system.
+**The core loop:**
+
+```
+Mission Briefing → Real Dynatrace Action → Checkpoint Validation → Score + XP → Leaderboard
+```
 
 ---
 
-## Current Status — Phase 1
+## How the Game Works
 
-| Feature | Status |
+### Missions
+
+Each mission is a scenario — a problem that needs solving in Dynatrace. You get a briefing, a timer, and a set of checkpoints. Checkpoints are either multiple-choice (find the answer in the UI) or action-based (do the thing, confirm you did it).
+
+- **Hints** are available but cost you points
+- **Time bonus** rewards speed — faster completions score higher
+- Wrong answers on multiple-choice deduct points
+
+### Difficulty Tiers
+
+| Tier | Who it's for |
 |---|---|
-| Mission board with topic track filtering | ✅ |
-| Mission flow with timer, checkpoints, and scoring | ✅ |
-| Score persistence via Document Service | ✅ |
-| Live leaderboard from stored scores | ✅ |
-| Onboarding wizard with responsibility area selection | ✅ |
-| XP progression across 18 topic tracks | ✅ |
-| Pace tab with track-level XP bars | ✅ |
-| Circuits (curated mission sequences) | 🔄 In progress |
-| Real DQL validation against tenant data | 🔒 Phase 3 |
-| Synthetic scenario data injection via Grail bizevents | 🔒 Phase 3 |
+| **Rookie** | New to Dynatrace — learn navigation, concepts, and core apps |
+| **Operator** | Comfortable with the basics — investigate real problems under pressure |
+| **Elite** | No hints, tight timers, complex scenarios |
+| **Legend** | Reserved for missions that require mastery across multiple domains |
+
+### XP and Progression
+
+Completing missions awards XP across two axes:
+
+- **Discipline tracks** — SRE, Developer, Incident Commander, Platform Engineer
+- **Topic tracks** — Kubernetes, Logs, Traces, DQL, SLOs, and more
+
+Each track has 5 levels: Recruit → Analyst → Specialist → Expert → Elite.
+
+### Circuits
+
+Circuits are curated mission sequences — like a racing season. Each circuit has an F1 track assigned to it (Monaco for Terrain Recon, Monza for Root Cause Run, etc.) and a tier that reflects the experience level required.
+
+| Tier | What it means |
+|---|---|
+| **Pre-Season Testing** | Orientation — learn the platform, navigation, and core concepts |
+| **Qualifying** | Mixed difficulty — start applying skills under real conditions |
+| **Race Day** | Expert-level — no hand-holding, full investigation sequences |
+
+Circuits are your guided path through the content. You can also filter the full mission board by circuit to see what's in each one.
+
+### Achievements
+
+F1-themed badges you earn by hitting milestones:
+
+| Badge | How to earn |
+|---|---|
+| 🚦 Lights Out | Complete your first mission |
+| 🔋 In the Window | 3-day activity streak |
+| ⚡ Boost Mode | 7-day activity streak |
+| 🏆 In the Points | Complete 3 missions |
+| ⏱️ Graduated to Q2 | Complete all Rookie missions |
+| 🏁 Race Winner | Complete 5 missions |
+| 🎯 Understeer-Proof | Reach Analyst level in 3+ disciplines |
+| 💥 Grand Slam | Complete every mission in a circuit |
+| 🚀 Overtake Mode | Break into the top 10 on the leaderboard |
 
 ---
 
-## Missions
+## Mission Design Philosophy
 
-| Mission | Difficulty | Topic Tracks |
+### Standard User Perspective
+
+Missions are designed for a **standard Dynatrace user** — not an admin. Nothing requires elevated permissions. Everything can be validated in the Dynatrace Playground, which any user can access at `playground.apps.dynatrace.com`.
+
+### Playground-First, Docs-Second
+
+The Dynatrace Playground is a shared, public sandbox with real applications running on Kubernetes (EKS and AKS), generating real telemetry, real problems, and real traces. It's the perfect teaching environment because the data is consistent and the apps are always running.
+
+However, some concepts — OneAgent deployment, host groups, alerting profile configuration — can only be *read* in the Playground, not practiced. For these, missions use a two-mode pattern:
+
+- **Playground checkpoints** — find this, read this, understand what it means inside a real environment
+- **Docs/Community links** — when you're in your own tenant, here's the documentation for actually doing it
+
+This is intentional. Mission Control teaches you to *navigate and recognize* so that when you're in your own environment under pressure, you already know where to look.
+
+### Mission Structure
+
+Every mission has:
+- A **codename** (legacy field, being phased out in favor of circuit context)
+- A **role** — the job function the scenario puts you in
+- A **briefing** — the scenario setup, written like an ops situation, not a tutorial
+- **Checkpoints** — ordered tasks, each with an instruction, a hint (costs points), and a correct answer
+- **XP grants** — per discipline and topic track, based on what the mission actually covers
+
+---
+
+## Mission Inventory
+
+### Pre-Season Testing — Orientation
+
+| Mission | Difficulty | What You Learn |
 |---|---|---|
-| 3AM Database Spike | Rookie | Problems, Intelligence, Metrics |
-| What Are You | Rookie | Infrastructure, Problems |
-| Iron Floor | Rookie | Infrastructure, Problems |
-| Silent Query | Rookie | Problems, Infrastructure |
-| Golden Signal | Rookie | SLOs, Services, Synthetics |
-| Silent Rollout | Operator | Infrastructure, Metrics |
-| Ghost in the Trace | Operator | Traces, DQL, Services |
-| Flatline | Elite | Problems, Intelligence, Metrics |
-| K8s Meltdown | Operator | Kubernetes, Infrastructure, Metrics |
-| Grid Search | Operator | Kubernetes, Infrastructure |
-| Follow the Wire | Operator | Traces, DQL, Services |
-| Stone Wall | Operator | Infrastructure, Problems, DQL |
+| Orient the Platform | Rookie | Apps menu, Infrastructure & Operations, Discovery & Coverage, Settings |
+| Ask the AI | Rookie | Davis CoPilot — finding it, asking questions, getting data inline |
+| Find Your Answers | Rookie | Community, Dynatrace University, documentation, support |
+| Read the Dashboard | Rookie | Ready-made dashboards, timeframes, tile types |
+
+### Qualifying — First Skills
+
+| Mission | Difficulty | What You Learn |
+|---|---|---|
+| Find the Log | Rookie | Logs app, filtering by level, reading log entries |
+| What Are You | Rookie | Entity types — Host, Process Group, Custom Device |
+| Iron Floor | Rookie | Host metrics, disk space, infrastructure problems |
+| Find the Failing SLO | Rookie | SLOs app, targets, warning thresholds |
+| Identify the Signal | Rookie | Problems app, alert types, affected entities |
+| Investigate the Database Failure | Rookie | Problems, database entities, entity IDs |
+| 3AM Database Spike | Rookie | Root cause investigation, metrics, problems |
+| Silent Rollout | Operator | Deployment events, metric impact, service health |
+| Map the Kubernetes Cluster | Operator | Kubernetes app, cluster structure, namespaces |
+| K8s Meltdown | Operator | Crash loops, pod failure, remediation path |
+| Find the Failing SLO | Rookie | SLOs across multiple services |
+
+### Race Day — Full Investigation
+
+| Mission | Difficulty | What You Learn |
+|---|---|---|
+| Ghost in the Trace | Operator | Distributed tracing, DQL, service dependencies |
+| Follow the Wire | Operator | Trace analysis, span filtering, root cause |
+| Stone Wall | Operator | Infrastructure investigation, DQL queries |
+| Follow the Error | Operator | RUM, Error Inspector, frontend-to-backend trace |
+| Map the Topology | Rookie | Services app, dependency mapping |
+| Extract the Host Evidence | Operator | Infrastructure deep-dive, DQL, host properties |
+| Trigger the Workflow | Operator | Workflows app, trigger types, automation |
+| Find the Business Event | Rookie | Bizevents, DQL, event schema |
+| Three Services Down | Elite | Cascade failure, blast radius, incident command |
+| Silent Disk Drain | Rookie | Slow-burn infrastructure degradation |
+
+---
+
+## Roadmap
+
+### ✅ Shipped
+
+- Mission board with circuit filtering and split-panel circuit view
+- F1 track SVG artwork per circuit with country flags
+- Mission flow — timer, checkpoints, scoring, hints, time bonus
+- XP progression across 4 discipline tracks and 18 topic tracks
+- Leaderboard with per-mission and per-difficulty filtering
+- Achievements system — 9 F1-themed badges
+- Onboarding wizard — role selection, starting circuit assignment
+- Progress tab — skill tracks, history, achievements
+- Playground-only mode (Live Mode removed pending Phase 3)
+
+### 🔄 In Progress
+
+- Mission page redesign — F1 circuit context in the briefing view (A/B testing two approaches)
+- Circuit audit — difficulty balancing across tiers
+- Setup track missions — The Dock, Deploy Your First Agent, Organize Your Fleet, Your First Alert, Get Notified, Your First DQL
+
+### 🔒 Planned
+
+**Phase 2 — Content depth**
+- DTU course links per mission — static links to relevant university content
+- Post-mission "learn more" CTA
+- Mission re-validation against latest Playground data
+
+**Phase 3 — Live validation**
+- DQL checkpoint validation against synthetic Grail bizevents (`intel-ops.training.*` event prefix)
+- Live Mode re-introduction — missions that query the user's own tenant
+- Tenant scan on mission start — surface which signals are available
+
+**Phase 4 — Scale**
+- Global leaderboard via external backend (Cloudflare Worker + D1) — removes Document Service scaling limits
+- Cross-tenant support for Dynatrace partners and MSPs
 
 ---
 
@@ -59,8 +196,8 @@ Built with React + TypeScript on Dynatrace AppEngine using the Strato design sys
 | Frontend | React 18 + TypeScript |
 | UI | Strato Design System (`@dynatrace/strato-components`) |
 | Persistence | Document Service (Grail-backed key-value) |
-| Query | DQL via Grail |
 | Tooling | Dynatrace App Toolkit (`dt-app`) |
+| CI/CD | GitHub Actions — typecheck on PRs, auto-deploy on master merge |
 
 ---
 
@@ -69,7 +206,7 @@ Built with React + TypeScript on Dynatrace AppEngine using the Strato design sys
 ### Prerequisites
 
 - Node.js v22
-- Access to a Dynatrace SaaS tenant
+- Access to a Dynatrace SaaS tenant with AppEngine enabled
 - Ports 3000–3005 available locally
 
 ### Install & Run
@@ -79,25 +216,22 @@ npm install
 npx dt-app dev
 ```
 
-The dev server opens a browser window authenticated against your configured tenant. The app runs at `http://localhost:3000/ui` and live inside your tenant at the URL shown in the terminal.
+The dev server opens a browser window authenticated against your configured tenant. The app runs at `http://localhost:3000/ui`.
 
-> **Note:** `getCurrentUserDetails()` returns placeholder values on localhost. Document Service reads and writes against real tenant data.
+> `getCurrentUserDetails()` returns placeholder values on localhost — resolves correctly on tenant. Document Service works on localhost against real tenant data.
 
 ### Configuration
 
-`app.config.json` controls your environment URL, app ID, and permission scopes. **Do not edit this file manually** — it is managed by the deploy pipeline.
+`app.config.json` controls the environment URL, app ID, and permission scopes. **Do not edit this file manually** — version bumps and deployments are handled by the CI/CD pipeline.
 
----
+### Deploy
 
-## Commands
+Merging to `master` automatically bumps the patch version and deploys to the configured tenant via GitHub Actions.
 
-| Command | Description |
-|---|---|
-| `npx dt-app dev` | Start local dev server with hot reload |
-| `npx dt-app build` | Build for production |
-| `npx dt-app deploy` | Build and deploy to configured tenant |
-| `npx dt-app uninstall` | Remove app from tenant |
-| `npx dt-app update` | Update DT packages to latest |
+```bash
+# Manual deploy if needed — bump version in app.config.json first
+npx dt-app deploy
+```
 
 ---
 
@@ -105,42 +239,21 @@ The dev server opens a browser window authenticated against your configured tena
 
 ```
 intel-ops/
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml        # Auto-deploy on merge to master
-│       └── typecheck.yml     # tsc --noEmit on PRs
 ├── ui/
 │   └── app/
-│       ├── components/       # Shared UI components
-│       ├── context/          # React context (UserState, Leaderboard)
-│       ├── data/             # Static mission and badge data
-│       ├── hooks/            # Custom hooks (filters, unlocks, XP)
-│       ├── pages/            # Route-level pages
-│       ├── tabs/             # Tab-level views
-│       ├── types/            # TypeScript interfaces and constants
+│       ├── components/       # Shared UI components (MissionCard, CircuitPanel, PlayerStatusStrip...)
+│       ├── context/          # React context — UserState, Leaderboard
+│       ├── data/             # Static data — missions, circuits, badges
+│       ├── hooks/            # Custom hooks — filters, unlocks, XP, recommendations
+│       ├── pages/            # Route-level pages — Mission, Debrief, OnboardingWizard
+│       ├── tabs/             # Tab-level views — MissionsTab, ProgressTab, LeaderboardTab
+│       ├── types/            # TypeScript interfaces — Mission, UserState, ScoreRecord
 │       └── App.tsx           # Root component and routing
+├── ui/assets/
+│   ├── circuits/             # F1 track SVGs (local, sourced from julesr0y/f1-circuits-svg, MIT)
+│   └── flags/                # Country flag PNGs (local, sourced from flagcdn.com)
 ├── app.config.json           # App manifest — DO NOT edit manually
 └── README.md
-```
-
----
-
-## Deployment
-
-Merging to `master` automatically bumps the patch version and deploys to the configured Dynatrace tenant via GitHub Actions.
-
-For manual deploys, bump the version in `app.config.json` first, then:
-
-```bash
-npx dt-app deploy
-```
-
-### Branch Strategy
-
-```
-master                  # Auto-deploys on push
-└── feat/your-feature   # Feature branches — PR to master
-    └── claude/xxx      # Claude Code sub-branches — merge into feat/ locally
 ```
 
 ---
@@ -148,6 +261,12 @@ master                  # Auto-deploys on push
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add missions, run locally, and submit PRs.
+
+Key rules:
+- Never modify `app.config.json` directly
+- Run `cd ui && npx tsc --noEmit` before every PR — typecheck must pass
+- No external UI libraries — Strato only
+- No `any` types
 
 ---
 
@@ -157,4 +276,5 @@ MIT — see [LICENSE](./LICENSE)
 
 ---
 
-Built by Dan Quintero
+Built by Dan Quintero.  
+Deployed at `https://nom24698.apps.dynatrace.com`
