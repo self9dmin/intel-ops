@@ -84,9 +84,10 @@ export const CIRCUITS: Circuit[] = [
     name: "Operator Readiness",
     description: "Get comfortable with core Dynatrace tools and navigation",
     missionIds: [
+      "mission-the-dock",
+      "mission-orient-platform",
       "mission-ask-the-ai",
       "mission-find-your-answers",
-      "mission-orient-platform",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
     countryCode: "bh",
@@ -96,7 +97,7 @@ export const CIRCUITS: Circuit[] = [
     name: "Ground Zero",
     description: "Orient yourself — first steps for anyone new to Dynatrace",
     missionIds: [
-      "mission-orient-platform",
+      "mission-the-dock",
       "mission-what-are-you",
       "mission-iron-floor",
     ],
