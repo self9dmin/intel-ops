@@ -302,7 +302,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
               </div>
 
               {selectedCircuit !== null && (
-                <div style={{ flex: "0 0 300px", position: "sticky", top: 0 }}>
+                <div style={{ flex: "0 0 380px", minWidth: "380px", position: "sticky", top: 0 }}>
                   <CircuitPanel
                     circuit={selectedCircuit}
                     completedMissionIds={completedSet}
