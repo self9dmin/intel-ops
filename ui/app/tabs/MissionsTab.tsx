@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
-import { Flex } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 
 import { Chip } from "@dynatrace/strato-components-preview/content";
@@ -15,8 +14,6 @@ import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
-import { DataModeToggle } from "../components/DataModeToggle";
-import { TenantCoveragePanel } from "../components/TenantCoveragePanel";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
@@ -162,16 +159,12 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
           marginBottom: "32px",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
-          <DataModeToggle />
-        </div>
         <PlayerStatusStrip
           playerName={displayName}
           totalXP={totalXP}
           globalRank={globalRank}
           missionsCompleted={completedMissions.length}
           streakDays={userState?.streakDays ?? 0}
-          isLive={userState?.dataMode === "live"}
           rightContent={
             <div
               onClick={() => onSwitchTab?.("progress")}
@@ -216,23 +209,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
         />
       </div>
 
-      {/* Tenant Coverage */}
-      {userState?.dataMode === "live" && userState.tenantCapabilities !== null && (
-        <div style={{ marginBottom: "24px" }}>
-          <TenantCoveragePanel capabilities={userState.tenantCapabilities} />
-        </div>
-      )}
-
-      {userState?.dataMode === "live" ? (
-        <Flex flexDirection="column" alignItems="center" justifyContent="center" style={{ padding: '48px 24px', gap: '16px' }}>
-          <Heading level={3}>Live Mode Active</Heading>
-          <Text textStyle="base" style={{ opacity: 0.7, textAlign: 'center', maxWidth: '480px' }}>
-            Your tenant is connected. Live missions use real data from your environment and are coming soon. Switch back to Playground to access training missions.
-          </Text>
-        </Flex>
-      ) : (
-        <>
-          {/* Circuits */}
+      {/* Circuits */}
           <div style={{ marginBottom: "16px" }}>
             <Heading level={5}>Circuits</Heading>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
@@ -311,8 +288,6 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
               )}
             </div>
           </div>
-        </>
-      )}
     </div>
   );
 };
