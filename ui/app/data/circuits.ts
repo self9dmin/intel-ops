@@ -74,6 +74,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-orient-platform",
       "mission-ask-the-ai",
       "mission-find-your-answers",
+      "mission-first-alert",
     ],
   },
   {
