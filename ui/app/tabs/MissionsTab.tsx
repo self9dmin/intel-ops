@@ -7,6 +7,7 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
+import { TOPIC_META } from "../types/UserState";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -237,24 +238,54 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             ({filteredMissions.length})
           </Text>
         </Heading>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: "12px",
-            marginTop: "8px",
-          }}
-        >
-          {filteredMissions.map((mission) => (
-            <MissionCard
-              key={mission.id}
-              mission={mission}
-              isUnlocked={unlockedSet.has(mission.id)}
-              isCompleted={completedSet.has(mission.id)}
-              prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-            />
-          ))}
-        </div>
+        {filteredMissions.length === 0 && selectedPath && filters.topic ? (
+          <div
+            style={{
+              marginTop: "24px",
+              padding: "24px",
+              textAlign: "center",
+              borderRadius: "8px",
+              background: "var(--dt-colors-background-container-neutral-subdued)",
+              border: "1px solid var(--dt-colors-border-neutral-disabled)",
+            }}
+          >
+            <Text style={{ opacity: 0.7 }}>
+              No missions in{" "}
+              <strong>{CIRCUITS.find((c) => c.id === selectedPath)?.name ?? selectedPath}</strong>
+              {" "}match the{" "}
+              <strong>{TOPIC_META[filters.topic as keyof typeof TOPIC_META]?.label ?? filters.topic}</strong>
+              {" "}skill track.
+            </Text>
+            <div style={{ marginTop: "12px" }}>
+              <Chip
+                color="primary"
+                variant="emphasized"
+                onClick={() => handlePathSelect(null)}
+              >
+                View All Missions
+              </Chip>
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: "12px",
+              marginTop: "8px",
+            }}
+          >
+            {filteredMissions.map((mission) => (
+              <MissionCard
+                key={mission.id}
+                mission={mission}
+                isUnlocked={unlockedSet.has(mission.id)}
+                isCompleted={completedSet.has(mission.id)}
+                prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
