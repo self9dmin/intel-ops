@@ -53,18 +53,18 @@ export const TOPIC_META: Record<TopicId, TopicMeta> = {
   metrics: { id: "metrics", label: "Metrics", icon: "BarChartIcon", active: true },
   logs: { id: "logs", label: "Logs", icon: "LogsIcon", active: true },
   kubernetes: { id: "kubernetes", label: "Kubernetes", icon: "ContainerIcon", active: true },
-  synthetics: { id: "synthetics", label: "Synthetics", icon: "HttpIcon", active: true },
+  synthetics: { id: "synthetics", label: "Synthetics", icon: "HttpIcon", active: false },
   dashboards: { id: "dashboards", label: "Dashboards", icon: "DashboardIcon", active: true },
-  services: { id: "services", label: "Services & APM", icon: "ServiceIcon", active: false },
+  services: { id: "services", label: "Services & APM", icon: "ServiceIcon", active: true },
   smartscape: { id: "smartscape", label: "Smartscape", icon: "SmartscapeIcon", active: false },
   notebooks: { id: "notebooks", label: "Notebooks", icon: "NotebookIcon", active: true },
-  slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon", active: false },
+  slo: { id: "slo", label: "SLOs", icon: "ServiceLevelObjectivesIcon", active: true },
   settings: { id: "settings", label: "Settings & Admin", icon: "SettingsIcon", active: true },
   automation: { id: "automation", label: "Automation", icon: "WorkflowsIcon", active: true },
-  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: true },
+  security: { id: "security", label: "Security", icon: "ApplicationSecurityIcon", active: false },
   bizevents: { id: "bizevents", label: "Biz Events", icon: "EventIcon", active: true },
   dem: { id: "dem", label: "Digital Experience", icon: "UserSessionsIcon", active: true },
-  community: { id: "community", label: "Community & Support", icon: "GroupIcon", active: false },
+  community: { id: "community", label: "Community & Support", icon: "GroupIcon", active: true },
 };
 
 export const TOPIC_META_ORDERED: TopicMeta[] = [

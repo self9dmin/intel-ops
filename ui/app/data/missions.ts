@@ -1942,6 +1942,306 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-deploy-agent",
+    title: "Deploy Your First Agent",
+    codename: "FIRST CONTACT",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "No data without an agent. Learn where OneAgent lives in Dynatrace and how to get it onto your infrastructure.",
+    briefing:
+      "Everything in Dynatrace starts with data — and data starts with OneAgent. Before you can monitor anything in your own environment, you need to know how to deploy the agent, what it does when it lands, and where to track your deployments. This mission uses the Playground to show you what a healthy deployment looks like, then sends you to the docs to learn how to do it yourself. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-orient-platform"],
+    disciplines: [
+      { track: "platform-engineer", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["infrastructure", "settings"],
+    category: "configuration",
+    apps: ["Deployment Status"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find Deployment Status",
+        instruction:
+          "Open the Deployment Status app in the Playground (Apps → Manage → Deployment Status). How many OneAgent-monitored hosts are listed?",
+        hint: "Deployment Status is under Apps → Manage. The page header shows the total host count — look for 'Showing X hosts' or similar text at the top of the table.",
+        type: "multiple-choice",
+        choices: ["8", "12", "16", "20 or more"],
+        correctChoice: "16",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Read an Agent Entry",
+        instruction:
+          "Look at the first host in the Deployment Status list. What are the three column headers shown in the table?",
+        hint: "Look at the table header row across the top of the OneAgents list. There are three column headers.",
+        type: "multiple-choice",
+        choices: [
+          "OS, Host name, Version",
+          "Host, Status, Last Seen",
+          "Name, IP Address, Version",
+          "Host, Agent, Monitoring Mode",
+        ],
+        correctChoice: "OS, Host name, Version",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "Understand Monitoring Modes",
+        instruction:
+          "In Deployment Status, click into any host entry. What monitoring mode is shown for hosts in the Playground?",
+        hint: "Click a host row to expand its details. Look for the 'Monitoring mode' field — the Playground runs agents in the most comprehensive mode available.",
+        type: "multiple-choice",
+        choices: [
+          "Full stack",
+          "Infrastructure only",
+          "Application only",
+          "Discovery only",
+        ],
+        correctChoice: "Full stack",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Find the OneAgent Installation Page",
+        instruction:
+          "In your own Dynatrace tenant (not the Playground), where do you go to download the OneAgent installer?",
+        hint: "In any Dynatrace environment, open the Apps menu and look under Manage. The deployment and installation page is where you generate installer scripts with your environment's token pre-filled.",
+        type: "multiple-choice",
+        choices: [
+          "Apps → Manage → Deployment Status → OneAgent installation",
+          "Settings → Infrastructure → OneAgent",
+          "Apps → Infrastructure → Hosts → Install",
+          "Account Management → Downloads",
+        ],
+        correctChoice: "Apps → Manage → Deployment Status → OneAgent installation",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "The Host Group Parameter",
+        instruction:
+          "When installing OneAgent on Linux, which command-line parameter assigns the host to a host group at install time?",
+        hint: "Navigate to docs.dynatrace.com and search for 'OneAgent host group'. The parameter is passed to the installer script and uses double dashes.",
+        type: "multiple-choice",
+        choices: [
+          "--set-host-group=",
+          "--host-group=",
+          "--group=",
+          "--set-group=",
+        ],
+        correctChoice: "--set-host-group=",
+        points: 200,
+      },
+    ],
+  },
+  {
+    id: "mission-organize-fleet",
+    title: "Organize Your Fleet",
+    codename: "GRID ORDER",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Ungrouped hosts are unmanageable at scale. Learn how host groups work before your fleet grows past the point of control.",
+    briefing:
+      "When you have 10 hosts, naming them well is enough. When you have 1,000, you need structure. Host groups let you apply settings, alerting thresholds, and OneAgent update policies to entire fleets at once — instead of host by host. This mission teaches you how host groups work in Dynatrace using the Playground, and how to assign them at install time in your own environment. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-deploy-agent"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["infrastructure", "settings"],
+    category: "configuration",
+    apps: ["Infrastructure & Operations", "Deployment Status"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find Host Groups in Infrastructure & Operations",
+        instruction:
+          "Open the Infrastructure & Operations app in the Playground. In the left sidebar, what are the five entity types listed?",
+        hint: "Open Apps → Infrastructure Observability → Infrastructure & Operations. Look at the left sidebar — it lists the entity types you can navigate to. Count all five.",
+        type: "multiple-choice",
+        choices: [
+          "Hosts, Processes, Network, Containers, Technologies",
+          "Hosts, Network devices, Other, VMware, Cloud",
+          "Hosts, Kubernetes, Services, Databases, Network",
+          "Hosts, Processes, Services, Applications, Cloud",
+        ],
+        correctChoice: "Hosts, Network devices, Other, VMware, Cloud",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "What Host Groups Do",
+        instruction:
+          "Which of these is something you can configure at the host group level in Dynatrace?",
+        hint: "Think about what makes host groups useful for fleet management — the point is to apply a setting once and have it apply to all hosts in the group, rather than configuring each host individually.",
+        type: "multiple-choice",
+        choices: [
+          "OneAgent update settings and anomaly detection thresholds",
+          "DQL query execution permissions",
+          "Dashboard visibility and sharing",
+          "User access and role assignments",
+        ],
+        correctChoice: "OneAgent update settings and anomaly detection thresholds",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Assign a Host Group at Install Time",
+        instruction:
+          "When installing OneAgent on Linux, what is the correct syntax to assign a host to a group called 'production-web' at install time?",
+        hint: "The parameter is passed to the installer script. You've seen this parameter in a previous mission — it uses double dashes and the set- prefix.",
+        type: "multiple-choice",
+        choices: [
+          "./Dynatrace-OneAgent.sh --set-host-group=production-web",
+          "./Dynatrace-OneAgent.sh --host-group=production-web",
+          "./Dynatrace-OneAgent.sh --group=production-web",
+          "./Dynatrace-OneAgent.sh --set-group=production-web",
+        ],
+        correctChoice: "./Dynatrace-OneAgent.sh --set-host-group=production-web",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Change a Host Group After Install",
+        instruction:
+          "If you need to move a host to a different host group after OneAgent is already installed, which tool do you use?",
+        hint: "After installation, OneAgent configuration changes are made using a command-line tool that ships with the agent. Check docs.dynatrace.com and search for 'change host group after installation'.",
+        type: "multiple-choice",
+        choices: [
+          "oneagentctl --set-host-group=",
+          "dt-agent --move-group=",
+          "Dynatrace Settings UI only — cannot be changed via CLI",
+          "Reinstall OneAgent with the new parameter",
+        ],
+        correctChoice: "oneagentctl --set-host-group=",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "How Many Host Groups Can a Host Belong To",
+        instruction:
+          "How many host groups can a single OneAgent-monitored host belong to at one time?",
+        hint: "Host groups are statically assigned — this is by design to keep configuration predictable. Think about what 'group' means structurally.",
+        type: "multiple-choice",
+        choices: [
+          "Exactly one",
+          "Up to three",
+          "Unlimited",
+          "Two — one primary, one secondary",
+        ],
+        correctChoice: "Exactly one",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-first-alert",
+    title: "Your First Alert",
+    codename: "SIGNAL FIRE",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Dynatrace detects problems automatically. But without notifications, nobody hears the alarm.",
+    briefing:
+      "Davis AI detects anomalies and opens problems without any configuration — but getting those problems in front of the right people requires alerting setup. This mission walks you through where alerting lives in Dynatrace, how the trigger-to-notification chain works, and what your options are for getting alerted when something breaks. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-orient-platform"],
+    disciplines: [
+      { track: "platform-engineer", xp: 75 },
+      { track: "incident-commander", xp: 75 },
+    ],
+    topics: ["problems", "settings"],
+    category: "configuration",
+    apps: ["Settings"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find the Alerting Section in Settings",
+        instruction:
+          "Open the Settings app in the Playground. What is the name of the section that contains alerting and notification configuration?",
+        hint: "Open Apps → search 'Settings' → open the Settings app. Look at the left sidebar — the alerting section is not the first category. Scan down for a section related to analysis and alerts.",
+        type: "multiple-choice",
+        choices: [
+          "Analyze and alert",
+          "Collect and capture",
+          "Environment segmentation",
+          "Dynatrace Intelligence",
+        ],
+        correctChoice: "Analyze and alert",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Settings Sidebar Order",
+        instruction:
+          "In the Settings app, what is the first category listed in the left sidebar?",
+        hint: "When you first open the Settings app, the left sidebar shows all configuration categories. The first one is selected by default.",
+        type: "multiple-choice",
+        choices: [
+          "Collect and capture",
+          "Analyze and alert",
+          "General",
+          "Environment segmentation",
+        ],
+        correctChoice: "Collect and capture",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "The Notification Chain",
+        instruction:
+          "In Dynatrace, what is the correct order of the alerting chain when a problem is detected?",
+        hint: "Think about the sequence: Davis detects an anomaly and opens a problem. Then something filters which problems are worth alerting on. Then something defines where to send the notification.",
+        type: "multiple-choice",
+        choices: [
+          "Problem detected → Alerting profile filters it → Notification integration sends it",
+          "Notification sent → Alerting profile created → Problem detected",
+          "Alerting profile created → Problem detected → Davis AI notified",
+          "Problem detected → Notification sent → Alerting profile logs it",
+        ],
+        correctChoice:
+          "Problem detected → Alerting profile filters it → Notification integration sends it",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Notification Integration Options",
+        instruction:
+          "Navigate to Settings → Analyze and alert → Notifications. How many notification configuration options are listed?",
+        hint: "Open the Settings app, go to Analyze and alert in the left sidebar, then click Notifications. Count every item listed — each represents a different integration or channel type.",
+        type: "multiple-choice",
+        choices: ["3", "4", "5", "6 or more"],
+        correctChoice: "5",
+        points: 150,
+      },
+      {
+        id: "cp5",
+        title: "Where Problems Are Created",
+        instruction:
+          "Which Dynatrace component is responsible for automatically detecting anomalies and opening problems — without any manual configuration?",
+        hint: "This is the AI engine at the core of Dynatrace. It uses causal AI to determine root cause and opens problems automatically based on what it detects.",
+        type: "multiple-choice",
+        choices: [
+          "Davis AI",
+          "Alerting profiles",
+          "Synthetic monitors",
+          "OneAgent",
+        ],
+        correctChoice: "Davis AI",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
