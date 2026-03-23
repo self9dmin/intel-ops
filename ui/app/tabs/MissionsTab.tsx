@@ -7,6 +7,7 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
+import { TOPIC_META } from "../types/UserState";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -236,58 +237,63 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             </div>
           </div>
 
-          {/* Mission Grid */}
-          <div style={{ marginTop: "8px" }}>
-            <Heading level={5}>
-              {selectedCircuit ? selectedCircuit.name : "All Missions"}{" "}
-              <Text textStyle="small" style={{ opacity: 0.6 }}>
-                ({filteredMissions.length})
-              </Text>
-            </Heading>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "24px",
-                alignItems: "flex-start",
-                marginTop: "8px",
-              }}
-            >
-              <div style={{ flex: "1 1 0", minWidth: 0 }}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                    gap: "12px",
-                  }}
-                >
-                  {filteredMissions.map((mission) => (
-                    <MissionCard
-                      key={mission.id}
-                      mission={mission}
-                      isUnlocked={unlockedSet.has(mission.id)}
-                      isCompleted={completedSet.has(mission.id)}
-                      prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-                    />
-                  ))}
-                  {filteredMissions.length === 0 && (
-                    <Text textStyle="small" style={{ opacity: 0.6 }}>
-                      No missions match your filters.
-                    </Text>
-                  )}
-                </div>
-              </div>
-
-              {selectedCircuit !== null && (
-                <div style={{ flex: "0 0 380px", minWidth: "380px", position: "sticky", top: 0 }}>
-                  <CircuitPanel
-                    circuit={selectedCircuit}
-                    completedMissionIds={completedSet}
-                  />
-                </div>
-              )}
+      {/* Mission Grid */}
+      <div style={{ marginTop: "8px" }}>
+        <Heading level={5}>
+          All Missions{" "}
+          <Text textStyle="small" style={{ opacity: 0.6 }}>
+            ({filteredMissions.length})
+          </Text>
+        </Heading>
+        {filteredMissions.length === 0 && selectedPath && filters.topic ? (
+          <div
+            style={{
+              marginTop: "24px",
+              padding: "24px",
+              textAlign: "center",
+              borderRadius: "8px",
+              background: "var(--dt-colors-background-container-neutral-subdued)",
+              border: "1px solid var(--dt-colors-border-neutral-disabled)",
+            }}
+          >
+            <Text style={{ opacity: 0.7 }}>
+              No missions in{" "}
+              <strong>{CIRCUITS.find((c) => c.id === selectedPath)?.name ?? selectedPath}</strong>
+              {" "}match the{" "}
+              <strong>{TOPIC_META[filters.topic as keyof typeof TOPIC_META]?.label ?? filters.topic}</strong>
+              {" "}skill track.
+            </Text>
+            <div style={{ marginTop: "12px" }}>
+              <Chip
+                color="primary"
+                variant="emphasized"
+                onClick={() => handlePathSelect(null)}
+              >
+                View All Missions
+              </Chip>
             </div>
           </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: "12px",
+              marginTop: "8px",
+            }}
+          >
+            {filteredMissions.map((mission) => (
+              <MissionCard
+                key={mission.id}
+                mission={mission}
+                isUnlocked={unlockedSet.has(mission.id)}
+                isCompleted={completedSet.has(mission.id)}
+                prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
