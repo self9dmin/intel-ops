@@ -4,8 +4,33 @@ import { Flex } from "@dynatrace/strato-components/layouts";
 import { Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
-import type { Mission } from "../types/mission.types";
+import {
+  HostsIcon,
+  WarningIcon,
+  AiIcon,
+  AnalyticsIcon,
+  TracesIcon,
+  BarChartIcon,
+  LogsIcon,
+  ContainerIcon,
+  HttpIcon,
+  GridIcon,
+  ServicesIcon,
+  SmartscapeIcon,
+  DocumentIcon,
+  ServiceLevelObjectivesIcon,
+  SettingIcon,
+  AutomationEngineIcon,
+  ApplicationSecurityIcon,
+  EventIcon,
+  UserSessionsIcon,
+  GroupIcon,
+  type SvgIconProps,
+} from "@dynatrace/strato-icons";
+import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { TOPIC_META } from "../types/UserState";
+import type { TopicId } from "../types/UserState";
+import type { Mission } from "../types/mission.types";
 
 function getDifficultyColor(
   difficulty: Mission["difficulty"]
@@ -23,6 +48,68 @@ function getDifficultyColor(
 
 function formatMinutes(seconds: number): string {
   return `~${Math.round(seconds / 60)} min`;
+}
+
+const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
+  infrastructure: HostsIcon,
+  problems: WarningIcon,
+  "dt-intelligence": AiIcon,
+  dql: AnalyticsIcon,
+  traces: TracesIcon,
+  metrics: BarChartIcon,
+  logs: LogsIcon,
+  kubernetes: ContainerIcon,
+  synthetics: HttpIcon,
+  dashboards: GridIcon,
+  services: ServicesIcon,
+  smartscape: SmartscapeIcon,
+  notebooks: DocumentIcon,
+  slo: ServiceLevelObjectivesIcon,
+  settings: SettingIcon,
+  automation: AutomationEngineIcon,
+  security: ApplicationSecurityIcon,
+  bizevents: EventIcon,
+  dem: UserSessionsIcon,
+  community: GroupIcon,
+};
+
+function TopicIcons({ topics }: { topics: string[] }) {
+  if (!topics || topics.length === 0) return null;
+  const visible = topics.slice(0, 4);
+  const overflow = topics.length - 4;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "10px" }}>
+      {visible.map((topicId) => {
+        const IconComponent = TOPIC_ICON_MAP[topicId as TopicId];
+        const label = TOPIC_META[topicId as TopicId]?.label ?? topicId;
+        if (!IconComponent) return null;
+        return (
+          <Tooltip key={topicId} text={label}>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "20px",
+                height: "20px",
+                borderRadius: "4px",
+                background: "var(--dt-colors-background-container-neutral-default)",
+                color: "var(--dt-colors-text-neutral-subdued)",
+                flexShrink: 0,
+              }}
+            >
+              <IconComponent size="small" style={{ width: 12, height: 12 }} />
+            </span>
+          </Tooltip>
+        );
+      })}
+      {overflow > 0 && (
+        <span style={{ fontSize: "10px", opacity: 0.5, marginLeft: "2px" }}>
+          +{overflow}
+        </span>
+      )}
+    </div>
+  );
 }
 
 interface MissionCardProps {
@@ -66,23 +153,7 @@ export const MissionCard = ({
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>
-      {mission.topics.length > 0 && (
-        <Flex gap={4} style={{ flexWrap: "wrap" }}>
-          {mission.topics.slice(0, 3).map((t) => {
-            const meta = TOPIC_META[t as keyof typeof TOPIC_META];
-            return (
-              <Chip key={t} color="neutral">
-                {meta?.label ?? t}
-              </Chip>
-            );
-          })}
-          {mission.topics.length > 3 && (
-            <Text textStyle="small" style={{ opacity: 0.5, alignSelf: "center" }}>
-              +{mission.topics.length - 3}
-            </Text>
-          )}
-        </Flex>
-      )}
+      <TopicIcons topics={mission.topics ?? []} />
       <Flex justifyContent="space-between" alignItems="center">
         {isCompleted ? (
           <Flex gap={8} alignItems="center">
