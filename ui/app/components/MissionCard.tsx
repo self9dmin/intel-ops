@@ -5,6 +5,7 @@ import { Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import type { Mission } from "../types/mission.types";
+import { TOPIC_META } from "../types/UserState";
 
 function getDifficultyColor(
   difficulty: Mission["difficulty"]
@@ -65,6 +66,23 @@ export const MissionCard = ({
       <Text textStyle="small" style={{ opacity: 0.7 }}>
         {mission.description}
       </Text>
+      {mission.topics.length > 0 && (
+        <Flex gap={4} style={{ flexWrap: "wrap" }}>
+          {mission.topics.slice(0, 3).map((t) => {
+            const meta = TOPIC_META[t as keyof typeof TOPIC_META];
+            return (
+              <Chip key={t} color="neutral">
+                {meta?.label ?? t}
+              </Chip>
+            );
+          })}
+          {mission.topics.length > 3 && (
+            <Text textStyle="small" style={{ opacity: 0.5, alignSelf: "center" }}>
+              +{mission.topics.length - 3}
+            </Text>
+          )}
+        </Flex>
+      )}
       <Flex justifyContent="space-between" alignItems="center">
         {isCompleted ? (
           <Flex gap={8} alignItems="center">
