@@ -22,6 +22,7 @@ export interface OnboardingPartial {
   selectedAreas: string[];
   topicTrackPriority: TopicId[];
   experienceLevel: ExperienceLevel;
+  country?: string;
   selectedRole?: string;
   selectedSubNeed?: string;
   startingCircuit?: string;
@@ -45,6 +46,35 @@ const EXPERIENCE_OPTIONS: ExperienceOption[] = [
 
 const PRE_SEASON_IDS = ["ground-zero", "operator-readiness", "terrain-recon"];
 
+const COUNTRY_OPTIONS: { id: string; label: string }[] = [
+  { id: "gb", label: "🇬🇧 United Kingdom" },
+  { id: "us", label: "🇺🇸 United States" },
+  { id: "de", label: "🇩🇪 Germany" },
+  { id: "br", label: "🇧🇷 Brazil" },
+  { id: "nl", label: "🇳🇱 Netherlands" },
+  { id: "it", label: "🇮🇹 Italy" },
+  { id: "au", label: "🇦🇺 Australia" },
+  { id: "in", label: "🇮🇳 India" },
+  { id: "ca", label: "🇨🇦 Canada" },
+  { id: "fr", label: "🇫🇷 France" },
+  { id: "es", label: "🇪🇸 Spain" },
+  { id: "mx", label: "🇲🇽 Mexico" },
+  { id: "cn", label: "🇨🇳 China" },
+  { id: "be", label: "🇧🇪 Belgium" },
+  { id: "at", label: "🇦🇹 Austria" },
+  { id: "jp", label: "🇯🇵 Japan" },
+  { id: "ae", label: "🇦🇪 UAE" },
+  { id: "sa", label: "🇸🇦 Saudi Arabia" },
+  { id: "za", label: "🇿🇦 South Africa" },
+  { id: "ar", label: "🇦🇷 Argentina" },
+  { id: "co", label: "🇨🇴 Colombia" },
+  { id: "sg", label: "🇸🇬 Singapore" },
+  { id: "mc", label: "🇲🇨 Monaco" },
+  { id: "pt", label: "🇵🇹 Portugal" },
+  { id: "pl", label: "🇵🇱 Poland" },
+  { id: "other", label: "🌍 Other" },
+];
+
 const EXPERIENCE_TO_DEFAULT_CIRCUIT: Record<string, string> = {
   new: "ground-zero",
   learning: "ground-zero",
@@ -63,7 +93,7 @@ function getCircuitTier(circuitId: string): string {
 }
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
-  const steps = [1, 2, 3];
+  const steps = [1, 2, 3, 4];
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "32px" }}>
       {steps.map((s) => {
@@ -102,14 +132,15 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [step, setStep] = useState(0);
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
   const [selectedCircuit, setSelectedCircuit] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [lightsOn, setLightsOn] = useState([false, false, false, false, false]);
   const [lightsExiting, setLightsExiting] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Entry: illuminate lights left-to-right when arriving at step 3
+  // Entry: illuminate lights left-to-right when arriving at step 4
   useEffect(() => {
-    if (step !== 3) return;
+    if (step !== 4) return;
     setLightsOn([false, false, false, false, false]);
     setLightsExiting(false);
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -213,6 +244,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         selectedAreas: [],
         topicTrackPriority: topicPriority,
         experienceLevel: (selectedExperience as ExperienceLevel) ?? "new",
+        country: selectedCountry ?? undefined,
         selectedRole: undefined,
         selectedSubNeed: undefined,
         startingCircuit: selectedCircuit ?? undefined,
@@ -260,7 +292,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         gap={12}
         style={{ maxWidth: "640px", width: "100%" }}
       >
-        {step >= 1 && step < 3 && <StepIndicator currentStep={step} />}
+        {step >= 1 && step < 4 && <StepIndicator currentStep={step} />}
 
         {/* Screen 1 — Welcome (pre-step) */}
         {step === 0 && (
@@ -492,8 +524,65 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 4 — Starting path (step 3 of 3) */}
-        {step === 3 && startingCircuit && (
+        {/* Screen 4 — Country picker (step 3 of 4) */}
+        {step === 3 && (
+          <Flex flexDirection="column" gap={24}>
+            <Flex flexDirection="column" alignItems="center" gap={8}>
+              <Heading level={2}>Which country are you representing?</Heading>
+              <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
+                Your flag will appear on the leaderboard.
+              </Text>
+            </Flex>
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "8px",
+            }}>
+              {COUNTRY_OPTIONS.map((opt) => {
+                const isSelected = selectedCountry === opt.id;
+                return (
+                  <div
+                    key={opt.id}
+                    onClick={() => setSelectedCountry(opt.id)}
+                    style={{
+                      padding: "10px 8px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      textAlign: "center",
+                      fontSize: "13px",
+                      border: isSelected
+                        ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                        : "1px solid var(--dt-colors-border-neutral-default)",
+                      background: isSelected
+                        ? "var(--dt-colors-background-container-neutral-default)"
+                        : "transparent",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => handleHover(e, isSelected, true)}
+                    onMouseLeave={(e) => handleHover(e, isSelected, false)}
+                  >
+                    {opt.label}
+                  </div>
+                );
+              })}
+            </div>
+
+            <Flex justifyContent="center" gap={12}>
+              <Button onClick={() => setStep(2)}>Back</Button>
+              <Button
+                variant="emphasized"
+                disabled={selectedCountry === null}
+                onClick={() => setStep(4)}
+              >
+                Continue
+              </Button>
+            </Flex>
+          </Flex>
+        )}
+
+        {/* Screen 5 — Starting path (step 4 of 4) */}
+        {step === 4 && startingCircuit && (
           <Flex flexDirection="column" gap={24}>
             {/* Formation lights replace step indicator */}
             <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "8px" }}>
@@ -582,7 +671,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
             )}
 
             <Flex justifyContent="center" gap={12}>
-              <Button onClick={() => setStep(2)}>Back</Button>
+              <Button onClick={() => setStep(3)}>Back</Button>
               <Button
                 variant="emphasized"
                 disabled={lightsExiting || saving}
