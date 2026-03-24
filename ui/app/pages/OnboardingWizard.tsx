@@ -46,33 +46,33 @@ const EXPERIENCE_OPTIONS: ExperienceOption[] = [
 
 const PRE_SEASON_IDS = ["ground-zero", "operator-readiness", "terrain-recon"];
 
-const COUNTRY_OPTIONS: { id: string; label: string }[] = [
-  { id: "gb", label: "🇬🇧 United Kingdom" },
-  { id: "us", label: "🇺🇸 United States" },
-  { id: "de", label: "🇩🇪 Germany" },
-  { id: "br", label: "🇧🇷 Brazil" },
-  { id: "nl", label: "🇳🇱 Netherlands" },
-  { id: "it", label: "🇮🇹 Italy" },
-  { id: "au", label: "🇦🇺 Australia" },
-  { id: "in", label: "🇮🇳 India" },
-  { id: "ca", label: "🇨🇦 Canada" },
-  { id: "fr", label: "🇫🇷 France" },
-  { id: "es", label: "🇪🇸 Spain" },
-  { id: "mx", label: "🇲🇽 Mexico" },
-  { id: "cn", label: "🇨🇳 China" },
-  { id: "be", label: "🇧🇪 Belgium" },
-  { id: "at", label: "🇦🇹 Austria" },
-  { id: "jp", label: "🇯🇵 Japan" },
-  { id: "ae", label: "🇦🇪 UAE" },
-  { id: "sa", label: "🇸🇦 Saudi Arabia" },
-  { id: "za", label: "🇿🇦 South Africa" },
-  { id: "ar", label: "🇦🇷 Argentina" },
-  { id: "co", label: "🇨🇴 Colombia" },
-  { id: "sg", label: "🇸🇬 Singapore" },
-  { id: "mc", label: "🇲🇨 Monaco" },
-  { id: "pt", label: "🇵🇹 Portugal" },
-  { id: "pl", label: "🇵🇱 Poland" },
-  { id: "other", label: "🌍 Other" },
+const COUNTRY_OPTIONS: { id: string; label: string; code: string | null }[] = [
+  { id: "gb", label: "United Kingdom", code: "gb" },
+  { id: "us", label: "United States", code: "us" },
+  { id: "de", label: "Germany", code: "de" },
+  { id: "br", label: "Brazil", code: "br" },
+  { id: "nl", label: "Netherlands", code: "nl" },
+  { id: "it", label: "Italy", code: "it" },
+  { id: "au", label: "Australia", code: "au" },
+  { id: "in", label: "India", code: "in" },
+  { id: "ca", label: "Canada", code: "ca" },
+  { id: "fr", label: "France", code: "fr" },
+  { id: "es", label: "Spain", code: "es" },
+  { id: "mx", label: "Mexico", code: "mx" },
+  { id: "cn", label: "China", code: "cn" },
+  { id: "be", label: "Belgium", code: "be" },
+  { id: "at", label: "Austria", code: "at" },
+  { id: "jp", label: "Japan", code: "jp" },
+  { id: "ae", label: "UAE", code: "ae" },
+  { id: "sa", label: "Saudi Arabia", code: "sa" },
+  { id: "za", label: "South Africa", code: "za" },
+  { id: "ar", label: "Argentina", code: "ar" },
+  { id: "co", label: "Colombia", code: "co" },
+  { id: "sg", label: "Singapore", code: "sg" },
+  { id: "mc", label: "Monaco", code: "mc" },
+  { id: "pt", label: "Portugal", code: "pt" },
+  { id: "pl", label: "Poland", code: "pl" },
+  { id: "other", label: "Other", code: null },
 ];
 
 const EXPERIENCE_TO_DEFAULT_CIRCUIT: Record<string, string> = {
@@ -550,7 +550,10 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                       borderRadius: "8px",
                       cursor: "pointer",
                       textAlign: "center",
-                      fontSize: "13px",
+                      fontSize: "11px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
                       border: isSelected
                         ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
                         : "1px solid var(--dt-colors-border-neutral-default)",
@@ -562,6 +565,15 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                     onMouseEnter={(e) => handleHover(e, isSelected, true)}
                     onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
+                    {opt.code ? (
+                      <img
+                        src={`https://flagcdn.com/32x24/${opt.code}.png`}
+                        alt=""
+                        style={{ width: "32px", height: "24px", borderRadius: "2px", display: "block", margin: "0 auto 6px" }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: "20px", display: "block", textAlign: "center", marginBottom: "6px" }}>🌍</span>
+                    )}
                     {opt.label}
                   </div>
                 );
