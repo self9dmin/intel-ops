@@ -105,7 +105,7 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
           <img
             src={circuit.f1TrackSvgUrl}
             alt={circuit.name}
-            style={{ width: "100%", height: "auto", display: "block", filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)" }}
+            style={{ width: "70%", height: "auto", display: "block", filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)" }}
           />
         </div>
       )}
