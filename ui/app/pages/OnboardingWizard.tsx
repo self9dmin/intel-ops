@@ -6,19 +6,8 @@ import { Surface } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
-import {
-  WarningIcon,
-  HostsIcon,
-  CodeIcon,
-  ApplicationSecurityIcon,
-  SettingIcon,
-  AnalyticsIcon,
-  AiIcon,
-  GuideIcon,
-} from "@dynatrace/strato-icons";
-import type { SvgIconProps } from "@dynatrace/strato-icons";
 import type { Discipline, DisciplineProgress, TopicId, ExperienceLevel } from "../types/UserState";
-import { createDefaultDisciplines, TOPIC_META } from "../types/UserState";
+import { createDefaultDisciplines } from "../types/UserState";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
 
@@ -42,56 +31,24 @@ interface OnboardingWizardProps {
   onComplete: (partial: OnboardingPartial) => Promise<void>;
 }
 
-interface RoleOption {
-  id: string;
-  label: string;
-  icon: React.ComponentType<SvgIconProps>;
-}
-
-const ROLE_OPTIONS: RoleOption[] = [
-  { id: "incident-responder", label: "Incident Response & Triage", icon: WarningIcon },
-  { id: "platform-engineer", label: "Infrastructure & Platform Engineering", icon: HostsIcon },
-  { id: "developer", label: "Software Development & Delivery", icon: CodeIcon },
-  { id: "secops", label: "Security Operations", icon: ApplicationSecurityIcon },
-  { id: "it-ops", label: "Platform Administration", icon: SettingIcon },
-  { id: "business-analyst", label: "Observability & Analytics", icon: AnalyticsIcon },
-  { id: "ai-engineer", label: "AI & Automation Engineering", icon: AiIcon },
-  { id: "new-to-dt", label: "New to Dynatrace", icon: GuideIcon },
-];
-
-interface GapOption {
+interface ExperienceOption {
   id: string;
   label: string;
   subtext: string;
 }
 
-const GAP_OPTIONS: GapOption[] = [
-  { id: "investigation", label: "Investigation & Root Cause", subtext: "Finding what broke and why" },
-  { id: "monitoring", label: "Monitoring & Alerting Setup", subtext: "Getting signal from the noise" },
-  { id: "dql", label: "Querying & DQL", subtext: "Getting answers from Grail" },
-  { id: "ai-copilot", label: "AI & Davis CoPilot", subtext: "Using Dynatrace AI effectively" },
+const EXPERIENCE_OPTIONS: ExperienceOption[] = [
+  { id: "new", label: "New to Dynatrace", subtext: "I'm just getting started" },
+  { id: "learning", label: "Some Experience", subtext: "I've used it but want to go deeper" },
+  { id: "experienced", label: "Daily User", subtext: "I use Dynatrace regularly at work" },
 ];
 
-const ROLE_TO_CIRCUIT: Record<string, string> = {
-  "incident-responder": "first-response",
-  "platform-engineer": "cluster-control",
-  developer: "signal-hunt",
-  secops: "first-response",
-  "it-ops": "ground-zero",
-  "business-analyst": "insight",
-  "ai-engineer": "signal-hunt",
-  "new-to-dt": "terrain-recon",
-};
+const PRE_SEASON_IDS = ["ground-zero", "operator-readiness", "terrain-recon"];
 
-const ROLE_TO_DISCIPLINE: Record<string, Discipline> = {
-  "incident-responder": "incident-commander",
-  "platform-engineer": "platform-engineer",
-  developer: "developer",
-  secops: "sre",
-  "it-ops": "platform-engineer",
-  "business-analyst": "sre",
-  "ai-engineer": "developer",
-  "new-to-dt": "sre",
+const EXPERIENCE_TO_DEFAULT_CIRCUIT: Record<string, string> = {
+  new: "ground-zero",
+  learning: "ground-zero",
+  experienced: "terrain-recon",
 };
 
 function getCircuitTier(circuitId: string): string {
@@ -106,7 +63,7 @@ function getCircuitTier(circuitId: string): string {
 }
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2, 3];
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "32px" }}>
       {steps.map((s) => {
@@ -143,8 +100,8 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [selectedGap, setSelectedGap] = useState<string | null>(null);
+  const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
+  const [selectedCircuit, setSelectedCircuit] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [lightsOn, setLightsOn] = useState([false, false, false, false, false]);
   const [lightsExiting, setLightsExiting] = useState(false);
@@ -199,13 +156,17 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     currentUser.name?.split(" ")[0] ?? currentUser.email?.split("@")[0] ?? "Operator";
   const fullName = currentUser.name ?? currentUser.email ?? "Operator";
 
-  const startingCircuitId = selectedRole ? ROLE_TO_CIRCUIT[selectedRole] : undefined;
   const startingCircuit = useMemo(
-    () => CIRCUITS.find((c) => c.id === startingCircuitId),
-    [startingCircuitId]
+    () => CIRCUITS.find((c) => c.id === selectedCircuit),
+    [selectedCircuit]
   );
   const operatorReadiness = useMemo(
     () => CIRCUITS.find((c) => c.id === "operator-readiness"),
+    []
+  );
+
+  const preSeasonCircuits = useMemo(
+    () => PRE_SEASON_IDS.map((id) => CIRCUITS.find((c) => c.id === id)).filter((c): c is NonNullable<typeof c> => c !== undefined),
     []
   );
 
@@ -229,17 +190,20 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .map(([topic]) => topic);
   }, [circuitMissions]);
 
+  // Auto-select default circuit when arriving at step 2
+  const goToStep2 = useCallback(() => {
+    if (selectedExperience && !selectedCircuit) {
+      setSelectedCircuit(EXPERIENCE_TO_DEFAULT_CIRCUIT[selectedExperience] ?? "ground-zero");
+    }
+    setStep(2);
+  }, [selectedExperience, selectedCircuit]);
+
   // Keep ref in sync so the lights-exit callback always calls the latest version
   async function handleFinish() {
-    const startingDiscipline: Discipline = selectedRole
-      ? ROLE_TO_DISCIPLINE[selectedRole]
-      : "sre";
-    const experienceLevel: ExperienceLevel = selectedRole === "new-to-dt" ? "new" : "experienced";
-
     setSaving(true);
     try {
       await onComplete({
-        startingDiscipline,
+        startingDiscipline: "sre",
         disciplines: createDefaultDisciplines(),
         topicXP: {},
         completedMissions: [],
@@ -248,10 +212,10 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         badges: [],
         selectedAreas: [],
         topicTrackPriority: topicPriority,
-        experienceLevel,
-        selectedRole: selectedRole ?? undefined,
-        selectedSubNeed: selectedGap ?? undefined,
-        startingCircuit: startingCircuitId,
+        experienceLevel: (selectedExperience as ExperienceLevel) ?? "new",
+        selectedRole: undefined,
+        selectedSubNeed: undefined,
+        startingCircuit: selectedCircuit ?? undefined,
       });
       navigate("/");
     } catch (err: unknown) {
@@ -261,27 +225,18 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   }
   handleFinishRef.current = handleFinish;
 
-  const cardBase: React.CSSProperties = {
-    padding: "16px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "all 0.15s",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "10px",
-    textAlign: "center",
-  };
-
   function cardStyle(isSelected: boolean): React.CSSProperties {
     return {
-      ...cardBase,
+      padding: "16px 20px",
+      borderRadius: "8px",
+      cursor: "pointer",
       border: isSelected
         ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
         : "1px solid var(--dt-colors-border-neutral-default)",
       background: isSelected
         ? "var(--dt-colors-background-container-neutral-default)"
         : "transparent",
+      transition: "all 0.15s",
     };
   }
 
@@ -409,46 +364,44 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </>
         )}
 
-        {/* Screen 2 — Role picker (step 1 of 4) */}
+        {/* Screen 2 — Experience level selector (step 1 of 3) */}
         {step === 1 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>What best describes your role?</Heading>
+              <Heading level={2}>What&apos;s your experience with Dynatrace?</Heading>
               <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
-                This shapes your starting missions and recommended path.
+                We&apos;ll set your starting position on the grid.
               </Text>
             </Flex>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-              {ROLE_OPTIONS.map((role) => {
-                const isSelected = selectedRole === role.id;
-                const IconComponent = role.icon;
+            <Flex flexDirection="column" gap={12}>
+              {EXPERIENCE_OPTIONS.map((opt) => {
+                const isSelected = selectedExperience === opt.id;
                 return (
                   <div
-                    key={role.id}
-                    onClick={() => {
-                      setSelectedRole(role.id);
-                      setSelectedGap(null);
-                    }}
+                    key={opt.id}
+                    onClick={() => setSelectedExperience(opt.id)}
                     style={cardStyle(isSelected)}
                     onMouseEnter={(e) => handleHover(e, isSelected, true)}
                     onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
-                    <IconComponent size="small" />
-                    <span style={{ fontSize: "13px", fontWeight: isSelected ? 600 : 400, lineHeight: "1.3" }}>
-                      {role.label}
-                    </span>
+                    <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
+                      {opt.label}
+                    </div>
+                    <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
+                      {opt.subtext}
+                    </div>
                   </div>
                 );
               })}
-            </div>
+            </Flex>
 
             <Flex justifyContent="center" gap={12}>
               <Button onClick={() => setStep(0)}>Back</Button>
               <Button
                 variant="emphasized"
-                disabled={selectedRole === null}
-                onClick={() => setStep(2)}
+                disabled={selectedExperience === null}
+                onClick={goToStep2}
               >
                 Continue
               </Button>
@@ -456,40 +409,36 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 3 — Biggest gap (step 2 of 4) */}
+        {/* Screen 3 — Pre-Season circuit picker (step 2 of 3) */}
         {step === 2 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>What&apos;s your biggest gap right now?</Heading>
+              <Heading level={2}>Pick your starting circuit.</Heading>
+              <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
+                You can switch circuits at any time.
+              </Text>
             </Flex>
 
             <Flex flexDirection="column" gap={12}>
-              {GAP_OPTIONS.map((gap) => {
-                const isSelected = selectedGap === gap.id;
+              {preSeasonCircuits.map((circuit) => {
+                const isSelected = selectedCircuit === circuit.id;
+                const missionCount = circuit.missionIds.length;
                 return (
                   <div
-                    key={gap.id}
-                    onClick={() => setSelectedGap(gap.id)}
-                    style={{
-                      padding: "16px 20px",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      border: isSelected
-                        ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
-                        : "1px solid var(--dt-colors-border-neutral-default)",
-                      background: isSelected
-                        ? "var(--dt-colors-background-container-neutral-default)"
-                        : "transparent",
-                      transition: "all 0.15s",
-                    }}
+                    key={circuit.id}
+                    onClick={() => setSelectedCircuit(circuit.id)}
+                    style={cardStyle(isSelected)}
                     onMouseEnter={(e) => handleHover(e, isSelected, true)}
                     onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
                     <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                      {gap.label}
+                      {circuit.name}
                     </div>
                     <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
-                      {gap.subtext}
+                      {circuit.description}
+                    </div>
+                    <div style={{ fontSize: "11px", opacity: 0.45, marginTop: "4px" }}>
+                      {missionCount} {missionCount === 1 ? "mission" : "missions"}
                     </div>
                   </div>
                 );
@@ -500,7 +449,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               <Button onClick={() => setStep(1)}>Back</Button>
               <Button
                 variant="emphasized"
-                disabled={selectedGap === null}
+                disabled={selectedCircuit === null}
                 onClick={() => setStep(3)}
               >
                 Continue
@@ -509,7 +458,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 4 — Starting path (step 3 of 4) */}
+        {/* Screen 4 — Starting path (step 3 of 3) */}
         {step === 3 && startingCircuit && (
           <Flex flexDirection="column" gap={24}>
             {/* Formation lights replace step indicator */}
