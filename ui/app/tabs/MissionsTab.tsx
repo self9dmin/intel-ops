@@ -155,7 +155,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
         style={{
           display: "flex",
           flexDirection: "column",
-          padding: "16px 0",
+          padding: "12px 0",
           borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
           marginBottom: "32px",
         }}
