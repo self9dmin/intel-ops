@@ -336,7 +336,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 src="/ui/assets/ft-car.png"
                 alt="Mission Control F1 Car"
                 style={{
-                  width: "400px",
+                  width: "100%",
+                  maxWidth: "360px",
                   height: "auto",
                   display: "block",
                   margin: "0 auto",
