@@ -149,170 +149,172 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: selectedPath !== null ? "3fr 2fr" : "1fr",
-        gap: "24px",
-      }}
-    >
-      {/* Left column */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {/* Player Stats Strip */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: "16px 0",
-            borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
-            marginBottom: "32px",
-          }}
-        >
-          <PlayerStatusStrip
-            playerName={displayName}
-            totalXP={totalXP}
-            globalRank={globalRank}
-            missionsCompleted={completedMissions.length}
-            streakDays={userState?.streakDays ?? 0}
-            rightContent={
-              <div
-                onClick={() => onSwitchTab?.("progress")}
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* Player Stats Strip */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px 0",
+          borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
+          marginBottom: "32px",
+        }}
+      >
+        <PlayerStatusStrip
+          playerName={displayName}
+          totalXP={totalXP}
+          globalRank={globalRank}
+          missionsCompleted={completedMissions.length}
+          streakDays={userState?.streakDays ?? 0}
+          rightContent={
+            <div
+              onClick={() => onSwitchTab?.("progress")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+              }}
+            >
+              <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  cursor: "pointer",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                  color: "var(--dt-colors-text-neutral-disabled)",
+                  marginRight: "4px",
                 }}
               >
-                <span
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                    color: "var(--dt-colors-text-neutral-disabled)",
-                    marginRight: "4px",
-                  }}
-                >
-                  ACHIEVEMENTS
-                </span>
-                {ALL_BADGES.map((badge) => {
-                  const isEarned = earnedBadges.has(badge.id);
-                  return (
-                    <span
-                      key={badge.id}
-                      title={badge.name}
-                      style={{
-                        fontSize: "18px",
-                        opacity: isEarned ? 1 : 0.3,
-                        filter: isEarned ? "none" : "grayscale(1)",
-                        transition: "opacity 0.2s",
-                      }}
-                    >
-                      {getBadgeEmoji(badge.icon)}
-                    </span>
-                  );
-                })}
-              </div>
-            }
-          />
-        </div>
-
-        {/* Circuits */}
-            <div style={{ marginBottom: "16px" }}>
-              <Heading level={5}>Circuits</Heading>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-                {CIRCUITS.map((path) => (
-                  <Tooltip key={path.id} text={path.description}>
-                    <Chip
-                      color={selectedPath === path.id ? "primary" : "neutral"}
-                      variant={selectedPath === path.id ? "emphasized" : undefined}
-                      onClick={() =>
-                        handlePathSelect(selectedPath === path.id ? null : path.id)
-                      }
-                    >
-                      {path.name}
-                    </Chip>
-                  </Tooltip>
-                ))}
-                <Chip
-                  color={selectedPath === null ? "primary" : "neutral"}
-                  variant={selectedPath === null ? "emphasized" : undefined}
-                  onClick={() => handlePathSelect(null)}
-                >
-                  All
-                </Chip>
-              </div>
+                ACHIEVEMENTS
+              </span>
+              {ALL_BADGES.map((badge) => {
+                const isEarned = earnedBadges.has(badge.id);
+                return (
+                  <span
+                    key={badge.id}
+                    title={badge.name}
+                    style={{
+                      fontSize: "18px",
+                      opacity: isEarned ? 1 : 0.3,
+                      filter: isEarned ? "none" : "grayscale(1)",
+                      transition: "opacity 0.2s",
+                    }}
+                  >
+                    {getBadgeEmoji(badge.icon)}
+                  </span>
+                );
+              })}
             </div>
-
-        {/* Mission Grid */}
-        <div style={{ marginTop: "8px" }}>
-          <Heading level={5}>
-            All Missions{" "}
-            <Text textStyle="small" style={{ opacity: 0.6 }}>
-              ({filteredMissions.length})
-            </Text>
-          </Heading>
-          {filteredMissions.length === 0 && selectedPath && filters.topic ? (
-            <div
-              style={{
-                marginTop: "24px",
-                padding: "24px",
-                textAlign: "center",
-                borderRadius: "8px",
-                background: "var(--dt-colors-background-container-neutral-subdued)",
-                border: "1px solid var(--dt-colors-border-neutral-disabled)",
-              }}
-            >
-              <Text style={{ opacity: 0.7 }}>
-                No missions in{" "}
-                <strong>{CIRCUITS.find((c) => c.id === selectedPath)?.name ?? selectedPath}</strong>
-                {" "}match the{" "}
-                <strong>{TOPIC_META[filters.topic as keyof typeof TOPIC_META]?.label ?? filters.topic}</strong>
-                {" "}skill track.
-              </Text>
-              <div style={{ marginTop: "12px" }}>
-                <Chip
-                  color="primary"
-                  variant="emphasized"
-                  onClick={() => handlePathSelect(null)}
-                >
-                  View All Missions
-                </Chip>
-              </div>
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                gap: "12px",
-                marginTop: "8px",
-              }}
-            >
-              {filteredMissions.map((mission) => (
-                <MissionCard
-                  key={mission.id}
-                  mission={mission}
-                  isUnlocked={unlockedSet.has(mission.id)}
-                  isCompleted={completedSet.has(mission.id)}
-                  prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          }
+        />
       </div>
 
-      {/* Right column — CircuitPanel */}
-      {selectedPath !== null && selectedCircuit && (
-        <div>
-          <CircuitPanel
-            circuit={selectedCircuit}
-            completedMissionIds={completedSet}
-          />
+      {/* Grid: left column (chips + missions) / right column (CircuitPanel) */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: selectedPath !== null ? "3fr 2fr" : "1fr",
+          gap: "24px",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {/* Circuits */}
+          <div style={{ marginBottom: "16px" }}>
+            <Heading level={5}>Circuits</Heading>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+              {CIRCUITS.map((path) => (
+                <Tooltip key={path.id} text={path.description}>
+                  <Chip
+                    color={selectedPath === path.id ? "primary" : "neutral"}
+                    variant={selectedPath === path.id ? "emphasized" : undefined}
+                    onClick={() =>
+                      handlePathSelect(selectedPath === path.id ? null : path.id)
+                    }
+                  >
+                    {path.name}
+                  </Chip>
+                </Tooltip>
+              ))}
+              <Chip
+                color={selectedPath === null ? "primary" : "neutral"}
+                variant={selectedPath === null ? "emphasized" : undefined}
+                onClick={() => handlePathSelect(null)}
+              >
+                All
+              </Chip>
+            </div>
+          </div>
+
+          {/* Mission Grid */}
+          <div style={{ marginTop: "8px" }}>
+            <Heading level={5}>
+              All Missions{" "}
+              <Text textStyle="small" style={{ opacity: 0.6 }}>
+                ({filteredMissions.length})
+              </Text>
+            </Heading>
+            {filteredMissions.length === 0 && selectedPath && filters.topic ? (
+              <div
+                style={{
+                  marginTop: "24px",
+                  padding: "24px",
+                  textAlign: "center",
+                  borderRadius: "8px",
+                  background: "var(--dt-colors-background-container-neutral-subdued)",
+                  border: "1px solid var(--dt-colors-border-neutral-disabled)",
+                }}
+              >
+                <Text style={{ opacity: 0.7 }}>
+                  No missions in{" "}
+                  <strong>{CIRCUITS.find((c) => c.id === selectedPath)?.name ?? selectedPath}</strong>
+                  {" "}match the{" "}
+                  <strong>{TOPIC_META[filters.topic as keyof typeof TOPIC_META]?.label ?? filters.topic}</strong>
+                  {" "}skill track.
+                </Text>
+                <div style={{ marginTop: "12px" }}>
+                  <Chip
+                    color="primary"
+                    variant="emphasized"
+                    onClick={() => handlePathSelect(null)}
+                  >
+                    View All Missions
+                  </Chip>
+                </div>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                  gap: "12px",
+                  marginTop: "8px",
+                }}
+              >
+                {filteredMissions.map((mission) => (
+                  <MissionCard
+                    key={mission.id}
+                    mission={mission}
+                    isUnlocked={unlockedSet.has(mission.id)}
+                    isCompleted={completedSet.has(mission.id)}
+                    prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+
+        {/* Right column — CircuitPanel */}
+        {selectedPath !== null && selectedCircuit && (
+          <div>
+            <CircuitPanel
+              circuit={selectedCircuit}
+              completedMissionIds={completedSet}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
