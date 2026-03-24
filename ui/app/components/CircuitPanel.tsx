@@ -47,27 +47,8 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
         display: "flex",
         flexDirection: "column",
         gap: "16px",
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "320px",
       }}
     >
-      {circuit.f1TrackSvgUrl && (
-        <div style={{ position: "absolute", bottom: "0", left: "0", width: "60%", opacity: 0.12, pointerEvents: "none", zIndex: 0 }}>
-          <img
-            src={circuit.f1TrackSvgUrl}
-            alt={circuit.name}
-            style={{
-              width: "100%",
-              height: "auto",
-              display: "block",
-              filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)",
-            }}
-          />
-        </div>
-      )}
-
-      <div style={{ position: "relative", zIndex: 1 }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <span
           style={{
@@ -118,7 +99,16 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
           <span style={{ fontSize: "11px", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.5px" }}>Completed</span>
         </div>
       </div>
-      </div>
+
+      {circuit.f1TrackSvgUrl && (
+        <div style={{ marginTop: "16px", opacity: 0.15 }}>
+          <img
+            src={circuit.f1TrackSvgUrl}
+            alt={circuit.name}
+            style={{ width: "100%", height: "auto", display: "block", filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)" }}
+          />
+        </div>
+      )}
     </div>
   );
 }
