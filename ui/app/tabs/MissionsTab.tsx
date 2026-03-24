@@ -152,7 +152,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: selectedPath !== null ? "1fr 320px" : "1fr",
+        gridTemplateColumns: selectedPath !== null ? "3fr 2fr" : "1fr",
         gap: "24px",
       }}
     >
