@@ -332,6 +332,18 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 ))}
               </div>
 
+              <img
+                src="/ui/assets/ft-car.png"
+                alt="Mission Control F1 Car"
+                style={{
+                  width: "280px",
+                  height: "auto",
+                  display: "block",
+                  margin: "0 auto",
+                  opacity: 0.92,
+                }}
+              />
+
               {/* Name treatment */}
               <div style={{ textAlign: "center" }}>
                 <span style={{
