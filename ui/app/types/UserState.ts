@@ -176,6 +176,7 @@ export interface UserState {
   selectedAreas: string[];
   topicTrackPriority: TopicId[];
   experienceLevel: ExperienceLevel;
+  country?: string;
   selectedRole?: string;
   selectedSubNeed?: string;
   startingCircuit?: string;
@@ -200,6 +201,7 @@ export function migrateUserState(loaded: Record<string, unknown>): UserState {
     selectedAreas: (loaded.selectedAreas as string[] | undefined) ?? [],
     topicTrackPriority: (loaded.topicTrackPriority as TopicId[] | undefined) ?? [],
     experienceLevel: (loaded.experienceLevel as ExperienceLevel | undefined) ?? "new",
+    country: (loaded.country as string | undefined) ?? undefined,
     selectedRole: (loaded.selectedRole as string | undefined) ?? undefined,
     selectedSubNeed: (loaded.selectedSubNeed as string | undefined) ?? undefined,
     startingCircuit: (loaded.startingCircuit as string | undefined) ?? undefined,
