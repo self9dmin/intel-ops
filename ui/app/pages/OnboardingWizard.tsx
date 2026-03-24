@@ -567,7 +567,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                   >
                     {opt.code ? (
                       <img
-                        src={`https://flagcdn.com/32x24/${opt.code}.png`}
+                        src={`/ui/assets/flags/${opt.code}.png`}
                         alt=""
                         style={{ width: "32px", height: "24px", borderRadius: "2px", display: "block", margin: "0 auto 6px" }}
                       />
