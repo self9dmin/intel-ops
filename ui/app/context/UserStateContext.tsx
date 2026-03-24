@@ -10,6 +10,7 @@ export interface UserStateContextValue {
   error: string | null;
   saveUserState: (partial: OnboardingPartial) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
+  completeMissionWithXP: (missionId: string, xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;
   updateStreak: () => void;

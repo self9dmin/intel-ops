@@ -42,7 +42,7 @@ export const Debrief = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "failed"
   >("idle");
-  const { awardXP, completeMission, updateStreak, userState } = useUserStateContext();
+  const { completeMissionWithXP, userState } = useUserStateContext();
   const { markStale } = useLeaderboardContext();
 
   const state = location.state as DebriefState | undefined;
@@ -74,11 +74,7 @@ export const Debrief = () => {
       completedAt: new Date().toISOString(),
     });
 
-    // Step 1: Update user state (completeMission + streak + XP)
-    completeMission(id);
-    updateStreak();
-
-    // Step 2: Build XP grants from mission data
+    // Step 1: Build XP grants from mission data
     const xpGrants: XPGrant[] = [];
     for (const disc of mission.disciplines) {
       xpGrants.push({ discipline: disc.track, amount: disc.xp });
@@ -87,9 +83,9 @@ export const Debrief = () => {
       xpGrants.push({ topic, amount: 25 });
     }
 
-    // Step 3: Award XP (writes user state)
-    awardXP(xpGrants).catch((xpError: unknown) => {
-      console.error("Failed to award XP for mission", id, xpError);
+    // Step 2: Complete mission + streak + XP in a single atomic write
+    completeMissionWithXP(id, xpGrants).catch((err: unknown) => {
+      console.error("Failed to save mission completion:", err);
     });
 
     // Step 4: Save score document (fire once, no retry on timeout)
@@ -126,7 +122,7 @@ export const Debrief = () => {
       }
     };
     void saveScore().catch(() => { /* single attempt, no retry */ });
-  }, [state, id, mission, awardXP, completeMission, updateStreak, markStale]);
+  }, [state, id, mission, completeMissionWithXP, markStale]);
 
   if (!state || !id) {
     return (

@@ -13,6 +13,7 @@ interface UseUserStateResult {
   error: string | null;
   saveUserState: (partial: OnboardingPartial) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
+  completeMissionWithXP: (missionId: string, xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;
   updateStreak: () => void;
@@ -234,6 +235,92 @@ export function useUserState(): UseUserStateResult {
     [userState, documentId, writeUserState]
   );
 
+  const completeMissionWithXP = useCallback(
+    async (missionId: string, xpGrants: XPGrant[]): Promise<void> => {
+      if (!userState || !documentId) return;
+      if (userState.completedMissions.includes(missionId)) return;
+
+      const now = new Date();
+      const today = now.toISOString().split("T")[0];
+
+      // Streak calculation
+      let newStreak = userState.streakDays;
+      const lastActive = userState.lastActiveDate;
+      if (lastActive) {
+        const lastDate = new Date(lastActive);
+        const diffDays = Math.floor(
+          (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else if (diffDays > 1) {
+          newStreak = 1;
+        }
+      } else {
+        newStreak = 1;
+      }
+
+      // Completed missions
+      const newCompleted = [...userState.completedMissions, missionId];
+
+      // XP grants
+      const updatedDisciplines = { ...userState.disciplines };
+      const updatedTopicXP = { ...userState.topicXP };
+
+      for (const grant of xpGrants) {
+        if (grant.discipline) {
+          const disc = { ...updatedDisciplines[grant.discipline] };
+          const newXP = disc.xp + grant.amount;
+          const { level, levelName } = calculateLevel(newXP);
+          disc.xp = newXP;
+          disc.level = level;
+          disc.levelName = levelName;
+          updatedDisciplines[grant.discipline] = disc;
+        }
+        if (grant.topic) {
+          updatedTopicXP[grant.topic] = (updatedTopicXP[grant.topic] ?? 0) + grant.amount;
+        }
+      }
+
+      // Badge evaluation
+      const newBadges = [...userState.badges];
+      for (const badgeDef of ALL_BADGES) {
+        if (!newBadges.includes(badgeDef.id)) {
+          if (
+            badgeDef.predicate({
+              completedMissions: newCompleted,
+              streakDays: newStreak,
+              disciplines: updatedDisciplines,
+              topicXP: updatedTopicXP,
+              totalXP: computeTotalXP(updatedDisciplines),
+            })
+          ) {
+            newBadges.push(badgeDef.id);
+          }
+        }
+      }
+
+      const updatedState: UserState = {
+        ...userState,
+        completedMissions: newCompleted,
+        streakDays: newStreak,
+        lastActiveDate: today,
+        disciplines: updatedDisciplines,
+        topicXP: updatedTopicXP,
+        badges: newBadges,
+      };
+
+      setUserState(updatedState);
+
+      try {
+        await writeUserState(updatedState);
+      } catch (err: unknown) {
+        console.error("Failed to save mission completion with XP:", err);
+      }
+    },
+    [userState, documentId, writeUserState]
+  );
+
   const completeMission = useCallback(
     (missionId: string) => {
       if (!userState) return;
@@ -388,6 +475,7 @@ export function useUserState(): UseUserStateResult {
     error,
     saveUserState,
     awardXP,
+    completeMissionWithXP,
     resetUserState,
     completeMission,
     updateStreak,
