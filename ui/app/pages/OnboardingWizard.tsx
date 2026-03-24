@@ -427,19 +427,38 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                   <div
                     key={circuit.id}
                     onClick={() => setSelectedCircuit(circuit.id)}
-                    style={cardStyle(isSelected)}
+                    style={{
+                      ...cardStyle(isSelected),
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
                     onMouseEnter={(e) => handleHover(e, isSelected, true)}
                     onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
-                    <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                      {circuit.name}
+                    <div>
+                      <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
+                        {circuit.name}
+                      </div>
+                      <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
+                        {circuit.description}
+                      </div>
+                      <div style={{ fontSize: "11px", opacity: 0.45, marginTop: "4px" }}>
+                        {missionCount} {missionCount === 1 ? "mission" : "missions"}
+                      </div>
                     </div>
-                    <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
-                      {circuit.description}
-                    </div>
-                    <div style={{ fontSize: "11px", opacity: 0.45, marginTop: "4px" }}>
-                      {missionCount} {missionCount === 1 ? "mission" : "missions"}
-                    </div>
+                    <img
+                      src={circuit.f1TrackSvgUrl}
+                      alt=""
+                      style={{
+                        width: "120px",
+                        height: "80px",
+                        objectFit: "contain",
+                        opacity: isSelected ? 0.85 : 0.4,
+                        filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)",
+                        pointerEvents: "none",
+                      }}
+                    />
                   </div>
                 );
               })}
