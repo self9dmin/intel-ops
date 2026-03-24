@@ -253,11 +253,11 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      style={{ minHeight: "100vh", padding: "48px 24px" }}
+      style={{ minHeight: "100vh", padding: "24px 24px" }}
     >
       <Flex
         flexDirection="column"
-        gap={32}
+        gap={16}
         style={{ maxWidth: "640px", width: "100%" }}
       >
         {step >= 1 && step < 3 && <StepIndicator currentStep={step} />}
@@ -272,7 +272,6 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               }
             `}</style>
             <div style={{
-              borderTop: "3px solid var(--dt-colors-charts-blue-default, #1496ff)",
               borderRadius: "8px",
               background: "radial-gradient(ellipse at center, rgba(26, 154, 224, 0.05) 0%, transparent 70%)",
               padding: "48px 24px",
@@ -336,7 +335,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 src="/ui/assets/ft-car.png"
                 alt="Mission Control F1 Car"
                 style={{
-                  width: "280px",
+                  width: "320px",
                   height: "auto",
                   display: "block",
                   margin: "0 auto",
@@ -345,7 +344,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               />
 
               {/* Name treatment */}
-              <div style={{ textAlign: "center" }}>
+              <div style={{ borderTop: "3px solid var(--dt-colors-charts-blue-default, #1496ff)", textAlign: "center" }}>
                 <span style={{
                   fontSize: "48px",
                   fontWeight: 700,
