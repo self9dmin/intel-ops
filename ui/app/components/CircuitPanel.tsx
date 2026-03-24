@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { MISSIONS } from "../data/missions";
 import type { Circuit } from "../data/circuits";
+import { CIRCUIT_TRACK_SVGS, CIRCUIT_FLAGS } from "../data/circuitAssets";
 
 interface CircuitPanelProps {
   circuit: Circuit;
@@ -48,10 +49,10 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
         gap: "16px",
       }}
     >
-      {circuit.f1TrackSvgUrl && (
+      {CIRCUIT_TRACK_SVGS[circuit.id] && (
         <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <img
-            src={circuit.f1TrackSvgUrl}
+            src={CIRCUIT_TRACK_SVGS[circuit.id]}
             alt={circuit.name}
             style={{
               height: "200px",
@@ -83,7 +84,7 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <img
-          src={`/ui/assets/flags/${circuit.countryCode}.png`}
+          src={CIRCUIT_FLAGS[circuit.id]}
           alt={circuit.countryCode}
           style={{
             width: "28px",
