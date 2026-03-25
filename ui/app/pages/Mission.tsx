@@ -332,7 +332,7 @@ export const Mission = () => {
   return roomShell(
     <>
       {/* ═══ LEFT screen — MatrixBackground + Timer + Abandon ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "5%", width: "24%", height: "56%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "5%", width: "24%", height: "64%" }}>
         <div style={scanLineStyle} />
         {/* Matrix canvas wrapper */}
         <div style={{ flex: 1, position: "relative" }}>
@@ -431,7 +431,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ CENTER screen — Checkpoint ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "30%", width: "38%", height: "56%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+      <div style={{ ...screenBase, top: "7%", left: "30%", width: "38%", height: "64%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
         <div style={scanLineStyle} />
         {/* Top bar */}
         <div
@@ -675,7 +675,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "69%", width: "23%", height: "56%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "69%", width: "21%", height: "64%" }}>
         <div style={scanLineStyle} />
         <div
           style={{
@@ -700,7 +700,7 @@ export const Mission = () => {
           </div>
 
           {/* Mission title */}
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#eef4fc" }}>{mission.title}</div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: "#eef4fc" }}>{mission.title}</div>
 
           {/* Tags */}
           <div style={{ display: "flex", gap: 6 }}>
