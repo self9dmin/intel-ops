@@ -332,7 +332,7 @@ export const Mission = () => {
   return roomShell(
     <>
       {/* ═══ LEFT screen — MatrixBackground + Timer + Abandon ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "6.5%", width: "22%", height: "64%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "6.5%", width: "22%", height: "58%" }}>
         <div style={scanLineStyle} />
         {/* Matrix canvas wrapper */}
         <div style={{ flex: 1, position: "relative" }}>
@@ -345,13 +345,14 @@ export const Mission = () => {
             bottom: 0,
             left: 0,
             right: 0,
-            padding: 12,
+            padding: 8,
             background: "rgba(2,4,12,0.85)",
             borderTop: "1px solid rgba(255,255,255,0.08)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             gap: 8,
+            overflow: "hidden",
           }}
         >
           <div
@@ -431,7 +432,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ CENTER screen — Checkpoint ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "29.5%", width: "38%", height: "64%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+      <div style={{ ...screenBase, top: "7%", left: "29.5%", width: "38%", height: "58%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
         <div style={scanLineStyle} />
         {/* Top bar */}
         <div
@@ -675,7 +676,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "68.5%", width: "22%", height: "64%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "68.5%", width: "19%", height: "58%" }}>
         <div style={scanLineStyle} />
         <div
           style={{
@@ -700,7 +701,7 @@ export const Mission = () => {
           </div>
 
           {/* Mission title */}
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#eef4fc" }}>{mission.title}</div>
+          <div style={{ fontSize: "22px", fontWeight: 700, color: "#eef4fc", lineHeight: 1.2 }}>{mission.title}</div>
 
           {/* Tags */}
           <div style={{ display: "flex", gap: 6 }}>
