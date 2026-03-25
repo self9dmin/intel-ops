@@ -69,7 +69,8 @@ const screenBase: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.07)",
   overflow: "hidden",
   position: "relative",
-  background: "rgba(2,4,10,0.97)",
+  background: "rgba(2,4,12,0.82)",
+  backdropFilter: "blur(2px)",
 };
 
 export const Mission = () => {
@@ -268,7 +269,7 @@ export const Mission = () => {
           backgroundImage: `url(${roomBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center 15%",
-          filter: "brightness(0.25) saturate(0.7)",
+          filter: "brightness(0.35) saturate(0.7)",
           zIndex: 0,
         }}
       />
@@ -434,7 +435,7 @@ export const Mission = () => {
         </div>
 
         {/* ═══ CENTER screen — Checkpoint ═══ */}
-        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
+        <div style={{ ...screenBase, border: "1px solid rgba(20,150,255,0.25)", display: "flex", flexDirection: "column" }}>
           <div style={scanLineStyle} />
           {/* Top bar */}
           <div
