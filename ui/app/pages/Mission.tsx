@@ -70,7 +70,7 @@ const screenBase: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.07)",
   overflow: "hidden",
   position: "relative",
-  background: "rgba(4,6,14,0.88)",
+  background: "rgba(4,6,14,0.92)",
 };
 
 export const Mission = () => {
@@ -268,7 +268,7 @@ export const Mission = () => {
           backgroundImage: `url(${roomBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center 15%",
-          filter: "brightness(0.38) saturate(0.75)",
+          filter: "brightness(0.28) saturate(0.75)",
           zIndex: 0,
         }}
       />
@@ -369,7 +369,7 @@ export const Mission = () => {
           fontSize: 10,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
-          color: "rgba(180,200,220,0.4)",
+          color: "rgba(180,200,220,0.75)",
         }}
       >
         {/* Pulsing red dot */}
@@ -543,7 +543,7 @@ export const Mission = () => {
                 </div>
 
                 {/* Question text */}
-                <div style={{ fontSize: 12, color: "#c0cce0", lineHeight: 1.55 }}>
+                <div style={{ fontSize: 12, color: "#e0eaf8", lineHeight: 1.55 }}>
                   {renderInstruction(checkpoint.instruction)}
                 </div>
 
@@ -579,7 +579,7 @@ export const Mission = () => {
                               ? "1px solid rgba(20,150,255,0.45)"
                               : "1px solid rgba(255,255,255,0.07)",
                             fontSize: 11,
-                            color: isSelected ? "#c8d4e8" : "rgba(180,200,220,0.6)",
+                            color: isSelected ? "#c8d4e8" : "rgba(210,225,240,0.85)",
                             background: isSelected
                               ? "rgba(20,150,255,0.1)"
                               : "rgba(255,255,255,0.025)",
@@ -625,7 +625,7 @@ export const Mission = () => {
                   <div>
                     {hintAvailable && !hintRevealed && (
                       <span
-                        onClick={() => handleRequestHint(checkpoint.id)}
+                        onClick={() => handleRequestHint(mission.checkpoints[currentCheckpoint].id)}
                         style={{
                           fontSize: 10,
                           textTransform: "uppercase",
@@ -693,7 +693,7 @@ export const Mission = () => {
             </div>
 
             {/* Mission title */}
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#d8e4f0" }}>{mission.title}</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#eef4fc" }}>{mission.title}</div>
 
             {/* Tags */}
             <div style={{ display: "flex", gap: 6 }}>
@@ -730,7 +730,7 @@ export const Mission = () => {
             <div
               style={{
                 fontSize: 10,
-                color: "rgba(140,160,185,0.5)",
+                color: "rgba(170,190,210,0.75)",
                 lineHeight: 1.65,
                 flex: 1,
                 overflow: "hidden",
