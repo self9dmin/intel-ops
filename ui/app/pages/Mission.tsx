@@ -332,7 +332,7 @@ export const Mission = () => {
   return roomShell(
     <>
       {/* ═══ LEFT screen — MatrixBackground + Timer + Abandon ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "6.5%", width: "22%", height: "58%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "1%", width: "27%", height: "65%" }}>
         <div style={scanLineStyle} />
         {/* Matrix canvas wrapper */}
         <div style={{ flex: 1, position: "relative" }}>
@@ -432,7 +432,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ CENTER screen — Checkpoint ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "29.5%", width: "38%", height: "58%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+      <div style={{ ...screenBase, top: "7%", left: "29%", width: "38%", height: "65%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
         <div style={scanLineStyle} />
         {/* Top bar */}
         <div
@@ -676,7 +676,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "68.5%", width: "19%", height: "58%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "68%", width: "20%", height: "65%" }}>
         <div style={scanLineStyle} />
         <div
           style={{
