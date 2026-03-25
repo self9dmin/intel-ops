@@ -295,6 +295,7 @@ export const Mission = () => {
           background:
             "linear-gradient(to top, rgba(10,5,2,0.96) 0%, rgba(10,5,2,0.55) 60%, transparent 100%)",
           zIndex: 3,
+          pointerEvents: "none",
         }}
       />
       {/* UI layer */}
