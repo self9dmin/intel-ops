@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import { getMissionById } from "../data/missions";
 import { MatrixBackground } from "../components/MatrixBackground";
-import roomBg from "../assets/room-bg.jpg";
+const roomBg = "/ui/assets/room-bg.jpg";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
