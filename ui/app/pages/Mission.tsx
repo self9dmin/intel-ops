@@ -331,36 +331,107 @@ export const Mission = () => {
 
   return roomShell(
     <>
-      {/* ═══ LEFT screen — Tenant Signal / MatrixBackground ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "5%", width: "25%", height: "52%" }}>
+      {/* ═══ LEFT screen — MatrixBackground + Timer + Abandon ═══ */}
+      <div style={{ ...screenBase, top: "7%", left: "5%", width: "24%", height: "56%" }}>
         <div style={scanLineStyle} />
-        {/* Header strip */}
-        <div
-          style={{
-            padding: "6px 10px",
-            borderBottom: "1px solid rgba(0,200,50,0.1)",
-            background: "rgba(0,200,50,0.04)",
-            fontSize: 9,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "rgba(0,200,50,0.4)",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(0,200,50,0.6)" }} />
-          Tenant Signal
-        </div>
         {/* Matrix canvas wrapper */}
         <div style={{ flex: 1, position: "relative" }}>
           <MatrixBackground colorTier={colorTier} />
         </div>
+        {/* Bottom dock: timer + abandon */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: 12,
+            background: "rgba(2,4,12,0.85)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 9,
+              color: "rgba(150,170,200,0.28)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+            }}
+          >
+            Time Remaining
+          </div>
+          <div
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: timerIsLow ? "#e74c3c" : "#1496ff",
+              fontFamily: "monospace",
+            }}
+          >
+            {formatTime(displaySeconds)}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 4 }}>
+            {!abandonConfirm ? (
+              <span
+                onClick={() => setAbandonConfirm(true)}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  color: "rgba(220,80,80,0.9)",
+                  cursor: "pointer",
+                  letterSpacing: "0.08em",
+                  border: "1px solid rgba(220,80,80,0.4)",
+                  padding: "6px 12px",
+                  borderRadius: 3,
+                  background: "rgba(220,80,80,0.1)",
+                }}
+              >
+                Abandon Mission
+              </span>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 9, color: "rgba(150,170,200,0.4)" }}>
+                  This will end your mission.
+                </span>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <span
+                    onClick={() => navigate("/missions")}
+                    style={{
+                      fontSize: 9,
+                      textTransform: "uppercase",
+                      color: "rgba(231,76,60,0.7)",
+                      cursor: "pointer",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    Confirm
+                  </span>
+                  <span
+                    onClick={() => setAbandonConfirm(false)}
+                    style={{
+                      fontSize: 9,
+                      textTransform: "uppercase",
+                      color: "rgba(150,170,200,0.4)",
+                      cursor: "pointer",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    Cancel
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* ═══ CENTER screen — Checkpoint ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "30.5%", width: "37%", height: "52%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+      <div style={{ ...screenBase, top: "7%", left: "30%", width: "38%", height: "56%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
         <div style={scanLineStyle} />
         {/* Top bar */}
         <div
@@ -604,7 +675,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "68%", width: "24%", height: "52%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "69%", width: "23%", height: "56%" }}>
         <div style={scanLineStyle} />
         <div
           style={{
@@ -669,98 +740,10 @@ export const Mission = () => {
               color: "rgba(170,190,210,0.75)",
               lineHeight: 1.65,
               flex: 1,
-              overflow: "hidden",
+              overflow: "auto",
             }}
           >
             {mission.briefing}
-          </div>
-
-          {/* Timer widget */}
-          <div
-            style={{
-              border: "1px solid rgba(20,150,255,0.12)",
-              borderRadius: 4,
-              background: "rgba(20,150,255,0.035)",
-              padding: 9,
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 9,
-                color: "rgba(150,170,200,0.28)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: 4,
-              }}
-            >
-              Time Remaining
-            </div>
-            <div
-              style={{
-                fontSize: 24,
-                fontWeight: 700,
-                color: timerIsLow ? "#e74c3c" : "#1496ff",
-                fontFamily: "monospace",
-              }}
-            >
-              {formatTime(displaySeconds)}
-            </div>
-          </div>
-
-          {/* Abandon section */}
-          <div style={{ textAlign: "center" }}>
-            {!abandonConfirm ? (
-              <span
-                onClick={() => setAbandonConfirm(true)}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  color: "rgba(220,80,80,0.9)",
-                  cursor: "pointer",
-                  letterSpacing: "0.08em",
-                  border: "1px solid rgba(220,80,80,0.4)",
-                  padding: "6px 12px",
-                  borderRadius: 3,
-                  background: "rgba(220,80,80,0.1)",
-                }}
-              >
-                Abandon Mission
-              </span>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 9, color: "rgba(150,170,200,0.4)" }}>
-                  This will end your mission.
-                </span>
-                <div style={{ display: "flex", gap: 12 }}>
-                  <span
-                    onClick={() => navigate("/missions")}
-                    style={{
-                      fontSize: 9,
-                      textTransform: "uppercase",
-                      color: "rgba(231,76,60,0.7)",
-                      cursor: "pointer",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    Confirm
-                  </span>
-                  <span
-                    onClick={() => setAbandonConfirm(false)}
-                    style={{
-                      fontSize: 9,
-                      textTransform: "uppercase",
-                      color: "rgba(150,170,200,0.4)",
-                      cursor: "pointer",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    Cancel
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
