@@ -450,6 +450,7 @@ export const Mission = () => {
             style={{
               color: "rgba(20,150,255,0.6)",
               fontSize: 9,
+              fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.13em",
             }}
@@ -533,6 +534,7 @@ export const Mission = () => {
               <div
                 style={{
                   fontSize: 9,
+                  fontWeight: 700,
                   textTransform: "uppercase",
                   color: "rgba(150,170,200,0.4)",
                   letterSpacing: "0.08em",
@@ -692,6 +694,7 @@ export const Mission = () => {
           <div
             style={{
               fontSize: 9,
+              fontWeight: 700,
               textTransform: "uppercase",
               color: "rgba(150,170,200,0.28)",
               letterSpacing: "0.14em",
