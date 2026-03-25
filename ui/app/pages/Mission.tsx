@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import { getMissionById } from "../data/missions";
 import { MatrixBackground } from "../components/MatrixBackground";
+const roomBg = "/ui/assets/room-bg.jpg";
 type CheckpointStatus = "locked" | "active" | "completed";
 
 const TIME_BONUS_PER_SECOND = 0.5;
@@ -68,7 +69,7 @@ const screenBase: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.07)",
   overflow: "hidden",
   position: "relative",
-  background: "rgba(4,6,14,0.92)",
+  background: "rgba(2,4,10,0.97)",
 };
 
 export const Mission = () => {
@@ -259,6 +260,18 @@ export const Mission = () => {
   // ── Room wrapper (shared by all states) ──
   const roomWrapper = (children: React.ReactNode) => (
     <div style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#060810" }}>
+      {/* Room photo */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `url(${roomBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 15%",
+          filter: "brightness(0.15) saturate(0.7)",
+          zIndex: 0,
+        }}
+      />
       {/* Vignette overlay */}
       <div
         style={{
