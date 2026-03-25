@@ -271,7 +271,7 @@ export const Mission = () => {
           backgroundImage: `url(${roomBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
-          filter: "brightness(0.55) saturate(0.8)",
+          filter: "brightness(0.85) saturate(0.95)",
           zIndex: 0,
         }}
       />
@@ -332,7 +332,7 @@ export const Mission = () => {
   return roomShell(
     <>
       {/* ═══ LEFT screen — Tenant Signal / MatrixBackground ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "5%", width: "25%", height: "44%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "5%", width: "25%", height: "52%" }}>
         <div style={scanLineStyle} />
         {/* Header strip */}
         <div
@@ -360,7 +360,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ CENTER screen — Checkpoint ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "30.5%", width: "37%", height: "44%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+      <div style={{ ...screenBase, top: "7%", left: "30.5%", width: "37%", height: "52%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
         <div style={scanLineStyle} />
         {/* Top bar */}
         <div
@@ -557,11 +557,16 @@ export const Mission = () => {
                     <span
                       onClick={() => handleRequestHint(mission.checkpoints[currentCheckpoint].id)}
                       style={{
-                        fontSize: 10,
+                        fontSize: 11,
+                        fontWeight: 600,
                         textTransform: "uppercase",
-                        color: "rgba(150,170,200,0.32)",
+                        color: "rgba(255,255,255,0.8)",
                         cursor: "pointer",
                         letterSpacing: "0.08em",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        padding: "6px 12px",
+                        borderRadius: 3,
+                        background: "rgba(255,255,255,0.08)",
                       }}
                     >
                       ⊹ Request intel (−{HINT_PENALTY} pts)
@@ -573,12 +578,13 @@ export const Mission = () => {
                   onClick={() => handleValidate(currentCheckpoint)}
                   disabled={isValidating || (isMultipleChoice && !selectedAnswer)}
                   style={{
-                    fontSize: 10,
-                    padding: "5px 14px",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: "8px 20px",
                     borderRadius: 3,
-                    background: "rgba(20,150,255,0.1)",
-                    border: "1px solid rgba(20,150,255,0.28)",
-                    color: "#1496ff",
+                    background: "rgba(20,150,255,0.35)",
+                    border: "1px solid rgba(20,150,255,0.8)",
+                    color: "#ffffff",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     cursor:
@@ -598,7 +604,7 @@ export const Mission = () => {
       </div>
 
       {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-      <div style={{ ...screenBase, top: "7%", left: "68%", width: "24%", height: "44%" }}>
+      <div style={{ ...screenBase, top: "7%", left: "68%", width: "24%", height: "52%" }}>
         <div style={scanLineStyle} />
         <div
           style={{
@@ -708,11 +714,16 @@ export const Mission = () => {
               <span
                 onClick={() => setAbandonConfirm(true)}
                 style={{
-                  fontSize: 9,
+                  fontSize: 11,
+                  fontWeight: 600,
                   textTransform: "uppercase",
-                  color: "rgba(200,80,80,0.35)",
+                  color: "rgba(220,80,80,0.9)",
                   cursor: "pointer",
                   letterSpacing: "0.08em",
+                  border: "1px solid rgba(220,80,80,0.4)",
+                  padding: "6px 12px",
+                  borderRadius: 3,
+                  background: "rgba(220,80,80,0.1)",
                 }}
               >
                 Abandon Mission
