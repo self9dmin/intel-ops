@@ -180,6 +180,7 @@ export const Mission = () => {
 
   const handleValidate = useCallback(
     (index: number) => {
+      console.log("handleValidate called, index:", index, "selectedAnswer:", selectedAnswer, "isValidating:", isValidating);
       if (isValidating || !mission) return;
 
       const checkpoint = mission.checkpoints[index];
@@ -571,7 +572,10 @@ export const Mission = () => {
                       return (
                         <div
                           key={option}
-                          onClick={() => setSelectedAnswer(option)}
+                          onClick={() => {
+                            console.log("choice clicked:", option);
+                            setSelectedAnswer(option);
+                          }}
                           style={{
                             padding: "6px 10px",
                             borderRadius: 4,
