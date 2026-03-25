@@ -268,7 +268,7 @@ export const Mission = () => {
           backgroundImage: `url(${roomBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center 15%",
-          filter: "brightness(0.15) saturate(0.7)",
+          filter: "brightness(0.25) saturate(0.7)",
           zIndex: 0,
         }}
       />
