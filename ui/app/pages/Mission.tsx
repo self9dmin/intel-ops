@@ -1,22 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Flex } from "@dynatrace/strato-components/layouts";
-import { Surface } from "@dynatrace/strato-components/layouts";
-import {
-  Heading,
-  Paragraph,
-  Strong,
-  Text,
-} from "@dynatrace/strato-components/typography";
-import { Button } from "@dynatrace/strato-components/buttons";
-import { Chip } from "@dynatrace/strato-components-preview/content";
-import {
-  RadioGroup,
-  Radio,
-} from "@dynatrace/strato-components-preview/forms";
-import { SuccessIcon } from "@dynatrace/strato-icons";
 import { getMissionById } from "../data/missions";
 import { MatrixBackground } from "../components/MatrixBackground";
+import roomBg from "../assets/room-bg.jpg";
 
 type CheckpointStatus = "locked" | "active" | "completed";
 
@@ -24,11 +10,68 @@ const TIME_BONUS_PER_SECOND = 0.5;
 const HINT_PENALTY = 50;
 const WRONG_ANSWER_PENALTY = 100;
 
+const CHOICE_KEYS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
 function formatTime(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
+
+/** Renders checkpoint instruction text, styling backtick-wrapped DQL as inline code */
+function renderInstruction(text: string): React.ReactNode {
+  const parts = text.split(/(`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={i}
+          style={{
+            color: "#1dbb7e",
+            fontFamily: "monospace",
+            background: "rgba(29,187,126,0.08)",
+            padding: "1px 4px",
+            borderRadius: 3,
+          }}
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+const DIFFICULTY_COLORS: Record<string, string> = {
+  rookie: "rgba(29,187,126,0.7)",
+  operator: "rgba(255,191,0,0.7)",
+  elite: "rgba(231,76,60,0.7)",
+  legend: "rgba(231,76,60,0.7)",
+};
+
+const DIFFICULTY_BG: Record<string, string> = {
+  rookie: "rgba(29,187,126,0.1)",
+  operator: "rgba(255,191,0,0.1)",
+  elite: "rgba(231,76,60,0.1)",
+  legend: "rgba(231,76,60,0.1)",
+};
+
+const scanLineStyle: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  background:
+    "repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px)",
+  pointerEvents: "none",
+  zIndex: 10,
+};
+
+const screenBase: React.CSSProperties = {
+  borderRadius: 5,
+  border: "1px solid rgba(255,255,255,0.07)",
+  overflow: "hidden",
+  position: "relative",
+  background: "rgba(4,6,14,0.88)",
+};
 
 export const Mission = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,9 +79,7 @@ export const Mission = () => {
   const mission = id ? getMissionById(id) : undefined;
 
   const [currentCheckpoint, setCurrentCheckpoint] = useState(0);
-  const [completedCheckpoints, setCompletedCheckpoints] = useState<number[]>(
-    []
-  );
+  const [completedCheckpoints, setCompletedCheckpoints] = useState<number[]>([]);
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -49,6 +90,20 @@ export const Mission = () => {
   const [hintsRevealed, setHintsRevealed] = useState<string[]>([]);
   const [abandonConfirm, setAbandonConfirm] = useState(false);
   const hasTimedOutRef = useRef(false);
+
+  // Inject keyframes
+  useEffect(() => {
+    const styleId = "mission-war-room-keyframes";
+    if (document.getElementById(styleId)) return;
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `@keyframes missionLiveDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }`;
+    document.head.appendChild(style);
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
+  }, []);
 
   // Initialize timer when mission loads
   useEffect(() => {
@@ -202,313 +257,573 @@ export const Mission = () => {
     });
   }, [mission, timerSeconds, baseScore, hintsUsed, navigate]);
 
-  // Mission not found
+  // ── Room wrapper (shared by all states) ──
+  const roomWrapper = (children: React.ReactNode) => (
+    <div style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#060810" }}>
+      {/* Room photo */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `url(${roomBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 15%",
+          filter: "brightness(0.38) saturate(0.75)",
+          zIndex: 0,
+        }}
+      />
+      {/* Vignette overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 50% 120%, rgba(8,4,2,0.9) 0%, transparent 55%), linear-gradient(to bottom, rgba(4,6,14,0.25) 0%, transparent 30%, transparent 55%, rgba(4,6,14,0.7) 100%)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+      {/* Desk foreground */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 50,
+          background:
+            "linear-gradient(to top, rgba(10,5,2,0.96) 0%, rgba(10,5,2,0.55) 60%, transparent 100%)",
+          zIndex: 3,
+        }}
+      />
+      {/* UI layer */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px 18px 12px",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+
+  // ── Mission not found ──
   if (!mission) {
-    return (
-      <Flex flexDirection="column" gap={32} padding={32} alignItems="center">
-        <Surface>
-          <Flex flexDirection="column" padding={48} gap={16} alignItems="center">
-            <Heading level={2}>Mission Not Found</Heading>
-            <Paragraph>
-              The requested mission does not exist or has been decommissioned.
-            </Paragraph>
-            <Button variant="emphasized" onClick={() => navigate("/missions")}>
-              Back to Missions
-            </Button>
-          </Flex>
-        </Surface>
-      </Flex>
+    return roomWrapper(
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 16,
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 600, color: "#d8e4f0" }}>Mission Not Found</div>
+        <div style={{ fontSize: 11, color: "rgba(150,170,200,0.5)" }}>
+          The requested mission does not exist or has been decommissioned.
+        </div>
+        <button
+          onClick={() => navigate("/missions")}
+          style={{
+            fontSize: 10,
+            padding: "5px 14px",
+            borderRadius: 3,
+            background: "rgba(20,150,255,0.1)",
+            border: "1px solid rgba(20,150,255,0.28)",
+            color: "#1496ff",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+          }}
+        >
+          Back to Missions
+        </button>
+      </div>
     );
   }
 
   const displaySeconds = timerSeconds ?? mission.timerSeconds;
   const timerIsLow = displaySeconds < 60;
+  const checkpoint = mission.checkpoints[currentCheckpoint];
+  const cpStatus = getCheckpointStatus(currentCheckpoint);
+  const isMultipleChoice = checkpoint?.type === "multiple-choice";
+  const hintAvailable = checkpoint ? checkpoint.hint.length > 0 : false;
+  const hintRevealed = checkpoint ? hintsRevealed.includes(checkpoint.id) : false;
 
-  return (
-    <div style={{ position: "relative", minHeight: "100vh" }}>
-      <MatrixBackground colorTier={colorTier} />
-    <Flex gap={24} padding={24} style={{ alignItems: "flex-start", position: "relative", zIndex: 1 }}>
-      {/* Left column — Briefing panel */}
-      <Flex
-        flexDirection="column"
-        gap={8}
-        style={{ flex: "0 0 40%", minWidth: 300 }}
+  return roomWrapper(
+    <>
+      {/* ── Status bar ── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: 10,
+          fontSize: 10,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "rgba(180,200,220,0.4)",
+        }}
       >
-        <Heading level={3}>Mission</Heading>
-        <Surface>
-          <Flex flexDirection="column" padding={20} gap={12}>
-            {/* Title + codename */}
-            <Text textStyle="small">
-              <span style={{ fontFamily: "monospace", opacity: 0.6 }}>
-                {mission.codename}
-              </span>
-            </Text>
-            <Heading level={2}>{mission.title}</Heading>
+        {/* Pulsing red dot */}
+        <div
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: "#e74c3c",
+            animation: "missionLiveDot 2s infinite",
+          }}
+        />
+        <span>Mission Control</span>
+        {/* Separator */}
+        <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+        <span style={{ color: "rgba(20,150,255,0.65)" }}>
+          {mission.codename} / {mission.title}
+        </span>
+        <div style={{ flex: 0, width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
+        <span style={{ color: "rgba(29,187,126,0.6)" }}>Operator Active</span>
+        <div style={{ flex: 0, width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
+        <span>Playground Env</span>
+      </div>
 
-            {/* Role + difficulty badges */}
-            <Flex gap={8}>
-              <Chip color="neutral">{mission.role}</Chip>
-              <Chip
-                color={
-                  mission.difficulty === "rookie"
-                    ? "success"
-                    : mission.difficulty === "operator"
-                      ? "warning"
-                      : "critical"
-                }
-                variant="emphasized"
-              >
-                {mission.difficulty.toUpperCase()}
-              </Chip>
-            </Flex>
-
-            {/* Briefing */}
-            <Paragraph>{mission.briefing}</Paragraph>
-
-            {/* Timer */}
-            <Surface>
-              <Flex flexDirection="column" alignItems="center" padding={16} gap={4}>
-                <Text textStyle="small">Time Remaining</Text>
-                <Heading level={1}>
-                  <span
-                    style={{
-                      fontFamily: "monospace",
-                      color: timerIsLow ? "var(--dt-colors-text-critical-default, #e74c3c)" : undefined,
-                    }}
-                  >
-                    {formatTime(displaySeconds)}
-                  </span>
-                </Heading>
-              </Flex>
-            </Surface>
-
-            {/* Hint cost notice */}
-            <Text textStyle="small" style={{ opacity: 0.6 }}>
-              Intel requested: -{HINT_PENALTY} pts per hint used
-            </Text>
-
-          </Flex>
-        </Surface>
-
-        {/* Abandon Mission */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
-          {!abandonConfirm ? (
-            <button
-              onClick={() => setAbandonConfirm(true)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--dt-colors-text-neutral-default)",
-                fontSize: "20px",
-                fontWeight: "600",
-                cursor: "pointer",
-                letterSpacing: "0.3px",
-                padding: "0",
-              }}
-            >
-              Abandon Mission
-            </button>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "10px",
-                color: "var(--dt-colors-text-neutral-default)",
-                fontSize: "13px",
-                marginTop: "32px",
-              }}
-            >
-              <span>This will end your mission.</span>
-              <div style={{ display: "flex", gap: "24px" }}>
-                <button
-                  onClick={() => navigate("/missions")}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--dt-colors-text-critical-default)",
-                    fontSize: "20px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    letterSpacing: "0.3px",
-                    padding: "0",
-                  }}
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => setAbandonConfirm(false)}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--dt-colors-text-neutral-default)",
-                    fontSize: "20px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    letterSpacing: "0.3px",
-                    padding: "0",
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
+      {/* ── Screen wall ── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1.75fr 1fr",
+          gap: 8,
+          flex: 1,
+          minHeight: 0,
+        }}
+      >
+        {/* ═══ LEFT screen — Tenant Signal / MatrixBackground ═══ */}
+        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
+          <div style={scanLineStyle} />
+          {/* Header strip */}
+          <div
+            style={{
+              padding: "6px 10px",
+              borderBottom: "1px solid rgba(0,200,50,0.1)",
+              background: "rgba(0,200,50,0.04)",
+              fontSize: 9,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "rgba(0,200,50,0.4)",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(0,200,50,0.6)" }} />
+            Tenant Signal
+          </div>
+          {/* Matrix canvas wrapper */}
+          <div style={{ flex: 1, position: "relative" }}>
+            <MatrixBackground colorTier={colorTier} />
+          </div>
         </div>
-      </Flex>
 
-      {/* Right column — Checkpoints */}
-      <Flex
-        flexDirection="column"
-        gap={8}
-        style={{ flex: "1 1 60%" }}
-      >
-        <Heading level={3}>Checkpoints</Heading>
+        {/* ═══ CENTER screen — Checkpoint ═══ */}
+        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
+          <div style={scanLineStyle} />
+          {/* Top bar */}
+          <div
+            style={{
+              padding: "7px 14px",
+              borderBottom: "1px solid rgba(20,150,255,0.1)",
+              background: "rgba(20,150,255,0.05)",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                color: "rgba(20,150,255,0.6)",
+                fontSize: 9,
+                textTransform: "uppercase",
+                letterSpacing: "0.13em",
+              }}
+            >
+              {mission.title} — CP {currentCheckpoint + 1} of {mission.checkpoints.length}
+            </span>
+            <div style={{ flex: 1 }} />
+            <span
+              style={{
+                color: timerIsLow ? "#e74c3c" : "#1496ff",
+                fontSize: 13,
+                fontWeight: 700,
+                fontFamily: "monospace",
+              }}
+            >
+              {formatTime(displaySeconds)}
+            </span>
+          </div>
 
-        {mission.checkpoints.map((checkpoint, index) => {
-          const status = getCheckpointStatus(index);
-          const isMultipleChoice = checkpoint.type === "multiple-choice";
-          const hintAvailable = checkpoint.hint.length > 0;
-          const hintRevealed = hintsRevealed.includes(checkpoint.id);
-          const isActive = status === "active";
-          const isCompleted = status === "completed";
-          const isLocked = status === "locked";
-
-          return (
-            <Surface key={checkpoint.id}>
-              <Flex
-                padding={16}
-                gap={12}
-                alignItems="flex-start"
+          {/* Checkpoint body */}
+          <div
+            style={{
+              flex: 1,
+              padding: "14px 16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+              overflow: "hidden",
+            }}
+          >
+            {/* Progress pips */}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              {mission.checkpoints.map((_, i) => {
+                const st = getCheckpointStatus(i);
+                let bg = "rgba(255,255,255,0.08)";
+                if (st === "completed") bg = "#1dbb7e";
+                if (st === "active") bg = "#1496ff";
+                return (
+                  <div
+                    key={i}
+                    style={{ height: 3, width: 22, borderRadius: 2, background: bg }}
+                  />
+                );
+              })}
+              <span
                 style={{
-                  opacity: isLocked ? 0.4 : 1,
-                  borderLeft: isActive
-                    ? "3px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
-                    : "3px solid transparent",
+                  fontSize: 9,
+                  color: "rgba(150,170,200,0.35)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  marginLeft: 6,
                 }}
               >
-                {/* Step number / status indicator */}
-                <Flex
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{ minWidth: 32 }}
+                Checkpoint {currentCheckpoint + 1}
+              </span>
+            </div>
+
+            {cpStatus === "completed" || completedCheckpoints.includes(currentCheckpoint) ? (
+              /* ── Completed state ── */
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                <span style={{ fontSize: 24, color: "#1dbb7e" }}>✓</span>
+                <span style={{ fontSize: 12, color: "#1dbb7e", fontWeight: 600 }}>
+                  Checkpoint Complete
+                </span>
+                <span style={{ fontSize: 10, color: "rgba(150,170,200,0.4)", fontFamily: "monospace" }}>
+                  +{checkpoint?.points ?? 0} pts
+                </span>
+              </div>
+            ) : checkpoint ? (
+              <>
+                {/* Section label */}
+                <div
+                  style={{
+                    fontSize: 9,
+                    textTransform: "uppercase",
+                    color: "rgba(150,170,200,0.4)",
+                    letterSpacing: "0.08em",
+                  }}
                 >
-                  {isCompleted ? (
-                    <SuccessIcon />
-                  ) : (
-                    <Text textStyle="base-emphasized">
-                      <span style={{ fontFamily: "monospace" }}>
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </Text>
-                  )}
-                </Flex>
+                  {checkpoint.title}
+                </div>
 
-                {/* Content */}
-                <Flex flexDirection="column" gap={8} flexGrow={1}>
-                  <Flex gap={8} alignItems="center">
-                    <Strong>{checkpoint.title}</Strong>
-                    {isCompleted && (
-                      <Flex gap={8} alignItems="center">
-                        <Chip color="success" variant="emphasized">
-                          Complete
-                        </Chip>
-                        <Text textStyle="small">
-                          <span style={{ fontFamily: "monospace" }}>
-                            {checkpoint.points} pts
+                {/* Question text */}
+                <div style={{ fontSize: 12, color: "#c0cce0", lineHeight: 1.55 }}>
+                  {renderInstruction(checkpoint.instruction)}
+                </div>
+
+                {/* Hint revealed */}
+                {hintRevealed && (
+                  <div
+                    style={{
+                      padding: "6px 10px",
+                      borderRadius: 4,
+                      border: "1px solid rgba(255,191,0,0.15)",
+                      background: "rgba(255,191,0,0.05)",
+                      fontSize: 11,
+                      color: "rgba(255,191,0,0.7)",
+                    }}
+                  >
+                    {checkpoint.hint}
+                  </div>
+                )}
+
+                {/* Multiple choice options */}
+                {isMultipleChoice && checkpoint.choices && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                    {checkpoint.choices.map((option, i) => {
+                      const isSelected = selectedAnswer === option;
+                      return (
+                        <div
+                          key={option}
+                          onClick={() => setSelectedAnswer(option)}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: 4,
+                            border: isSelected
+                              ? "1px solid rgba(20,150,255,0.45)"
+                              : "1px solid rgba(255,255,255,0.07)",
+                            fontSize: 11,
+                            color: isSelected ? "#c8d4e8" : "rgba(180,200,220,0.6)",
+                            background: isSelected
+                              ? "rgba(20,150,255,0.1)"
+                              : "rgba(255,255,255,0.025)",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 9,
+                              fontFamily: "monospace",
+                              color: "rgba(150,170,200,0.3)",
+                            }}
+                          >
+                            {CHOICE_KEYS[i] ?? String(i + 1)}
                           </span>
-                        </Text>
-                      </Flex>
-                    )}
-                    {isActive && (
-                      <Chip color="primary" variant="emphasized">
-                        Active
-                      </Chip>
-                    )}
-                    {isLocked && (
-                      <Chip color="neutral">Locked</Chip>
-                    )}
-                  </Flex>
+                          {option}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
-                  {!isLocked && (
-                    <Paragraph>{checkpoint.instruction}</Paragraph>
-                  )}
+                {/* Answer error */}
+                {answerError && (
+                  <div style={{ fontSize: 11, color: "rgba(231,76,60,0.8)" }}>{answerError}</div>
+                )}
 
-                  {/* Hint system */}
-                  {isActive && hintAvailable && !hintRevealed && (
-                    <Flex>
-                      <Button
-                        variant="default"
+                {/* Action row */}
+                <div
+                  style={{
+                    marginTop: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    borderTop: "1px solid rgba(255,255,255,0.05)",
+                    paddingTop: 8,
+                  }}
+                >
+                  {/* Hint button */}
+                  <div>
+                    {hintAvailable && !hintRevealed && (
+                      <span
                         onClick={() => handleRequestHint(checkpoint.id)}
+                        style={{
+                          fontSize: 10,
+                          textTransform: "uppercase",
+                          color: "rgba(150,170,200,0.32)",
+                          cursor: "pointer",
+                          letterSpacing: "0.08em",
+                        }}
                       >
-                        Request Intel
-                      </Button>
-                    </Flex>
-                  )}
-
-                  {hintRevealed && (
-                    <Surface>
-                      <Flex flexDirection="column" padding={12} gap={4}>
-                        <Chip color="warning" variant="emphasized">
-                          Intel
-                        </Chip>
-                        <Text>{checkpoint.hint}</Text>
-                        <Text textStyle="small" style={{ opacity: 0.6 }}>
-                          Intel requested: -{HINT_PENALTY} pts
-                        </Text>
-                      </Flex>
-                    </Surface>
-                  )}
-
-                  {/* Multiple choice options */}
-                  {isActive && isMultipleChoice && checkpoint.choices && (
-                    <Flex flexDirection="column" gap={8}>
-                      <RadioGroup
-                        value={selectedAnswer}
-                        onChange={(value: string) => setSelectedAnswer(value)}
-                      >
-                        {checkpoint.choices.map((option) => (
-                          <Radio key={option} value={option}>
-                            {option}
-                          </Radio>
-                        ))}
-                      </RadioGroup>
-                      {answerError && (
-                        <Chip color="critical" variant="emphasized">
-                          {answerError}
-                        </Chip>
-                      )}
-                    </Flex>
-                  )}
-
+                        ⊹ Request intel (−{HINT_PENALTY} pts)
+                      </span>
+                    )}
+                  </div>
                   {/* Validate button */}
-                  {isActive && (
-                    <Flex padding={4}>
-                      <Button
-                        variant="accent"
-                        disabled={
-                          isValidating ||
-                          (isMultipleChoice && !selectedAnswer)
-                        }
-                        onClick={() => handleValidate(index)}
-                      >
-                        {isValidating
-                          ? "Confirming..."
-                          : isMultipleChoice
-                            ? "Submit"
-                            : "Complete"}
-                      </Button>
-                    </Flex>
-                  )}
-                </Flex>
-              </Flex>
-            </Surface>
-          );
-        })}
-      </Flex>
-    </Flex>
-    </div>
+                  <button
+                    onClick={() => handleValidate(currentCheckpoint)}
+                    disabled={isValidating || (isMultipleChoice && !selectedAnswer)}
+                    style={{
+                      fontSize: 10,
+                      padding: "5px 14px",
+                      borderRadius: 3,
+                      background: "rgba(20,150,255,0.1)",
+                      border: "1px solid rgba(20,150,255,0.28)",
+                      color: "#1496ff",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      cursor:
+                        isValidating || (isMultipleChoice && !selectedAnswer)
+                          ? "default"
+                          : "pointer",
+                      opacity:
+                        isValidating || (isMultipleChoice && !selectedAnswer) ? 0.4 : 1,
+                    }}
+                  >
+                    {isValidating ? "Confirming..." : "Validate →"}
+                  </button>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        {/* ═══ RIGHT screen — Mission Briefing ═══ */}
+        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
+          <div style={scanLineStyle} />
+          <div
+            style={{
+              padding: 12,
+              display: "flex",
+              flexDirection: "column",
+              gap: 9,
+              flex: 1,
+              overflow: "hidden",
+            }}
+          >
+            {/* Eyebrow */}
+            <div
+              style={{
+                fontSize: 9,
+                textTransform: "uppercase",
+                color: "rgba(150,170,200,0.28)",
+                letterSpacing: "0.14em",
+              }}
+            >
+              Mission Briefing
+            </div>
+
+            {/* Mission title */}
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#d8e4f0" }}>{mission.title}</div>
+
+            {/* Tags */}
+            <div style={{ display: "flex", gap: 6 }}>
+              <span
+                style={{
+                  fontSize: 9,
+                  textTransform: "uppercase",
+                  padding: "2px 7px",
+                  borderRadius: 3,
+                  color: "rgba(200,215,230,0.5)",
+                  background: "rgba(255,255,255,0.05)",
+                }}
+              >
+                {mission.role}
+              </span>
+              <span
+                style={{
+                  fontSize: 9,
+                  textTransform: "uppercase",
+                  padding: "2px 7px",
+                  borderRadius: 3,
+                  color: DIFFICULTY_COLORS[mission.difficulty] ?? "rgba(200,215,230,0.5)",
+                  background: DIFFICULTY_BG[mission.difficulty] ?? "rgba(255,255,255,0.05)",
+                }}
+              >
+                {mission.difficulty}
+              </span>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+
+            {/* Briefing text */}
+            <div
+              style={{
+                fontSize: 10,
+                color: "rgba(140,160,185,0.5)",
+                lineHeight: 1.65,
+                flex: 1,
+                overflow: "hidden",
+              }}
+            >
+              {mission.briefing}
+            </div>
+
+            {/* Timer widget */}
+            <div
+              style={{
+                border: "1px solid rgba(20,150,255,0.12)",
+                borderRadius: 4,
+                background: "rgba(20,150,255,0.035)",
+                padding: 9,
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 9,
+                  color: "rgba(150,170,200,0.28)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom: 4,
+                }}
+              >
+                Time Remaining
+              </div>
+              <div
+                style={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: timerIsLow ? "#e74c3c" : "#1496ff",
+                  fontFamily: "monospace",
+                }}
+              >
+                {formatTime(displaySeconds)}
+              </div>
+            </div>
+
+            {/* Abandon section */}
+            <div style={{ textAlign: "center" }}>
+              {!abandonConfirm ? (
+                <span
+                  onClick={() => setAbandonConfirm(true)}
+                  style={{
+                    fontSize: 9,
+                    textTransform: "uppercase",
+                    color: "rgba(200,80,80,0.35)",
+                    cursor: "pointer",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Abandon Mission
+                </span>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 9, color: "rgba(150,170,200,0.4)" }}>
+                    This will end your mission.
+                  </span>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <span
+                      onClick={() => navigate("/missions")}
+                      style={{
+                        fontSize: 9,
+                        textTransform: "uppercase",
+                        color: "rgba(231,76,60,0.7)",
+                        cursor: "pointer",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      Confirm
+                    </span>
+                    <span
+                      onClick={() => setAbandonConfirm(false)}
+                      style={{
+                        fontSize: 9,
+                        textTransform: "uppercase",
+                        color: "rgba(150,170,200,0.4)",
+                        cursor: "pointer",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      Cancel
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
