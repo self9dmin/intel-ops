@@ -65,12 +65,14 @@ const scanLineStyle: React.CSSProperties = {
 };
 
 const screenBase: React.CSSProperties = {
-  borderRadius: 5,
+  borderRadius: 4,
   border: "1px solid rgba(255,255,255,0.07)",
   overflow: "hidden",
-  position: "relative",
+  position: "absolute",
   background: "rgba(2,4,12,0.82)",
   backdropFilter: "blur(2px)",
+  display: "flex",
+  flexDirection: "column",
 };
 
 export const Mission = () => {
@@ -258,9 +260,9 @@ export const Mission = () => {
     });
   }, [mission, timerSeconds, baseScore, hintsUsed, navigate]);
 
-  // ── Room wrapper (shared by all states) ──
-  const roomWrapper = (children: React.ReactNode) => (
-    <div style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#060810" }}>
+  // ── Room shell (shared by all states) ──
+  const roomShell = (children: React.ReactNode) => (
+    <div style={{ position: "relative", width: "100%", height: "100vh", overflow: "hidden", background: "#060810" }}>
       {/* Room photo */}
       <div
         style={{
@@ -268,47 +270,13 @@ export const Mission = () => {
           inset: 0,
           backgroundImage: `url(${roomBg})`,
           backgroundSize: "cover",
-          backgroundPosition: "center 15%",
-          filter: "brightness(0.35) saturate(0.7)",
+          backgroundPosition: "center top",
+          filter: "brightness(0.55) saturate(0.8)",
           zIndex: 0,
         }}
       />
-      {/* Vignette overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at 50% 120%, rgba(8,4,2,0.9) 0%, transparent 55%), linear-gradient(to bottom, rgba(4,6,14,0.25) 0%, transparent 30%, transparent 55%, rgba(4,6,14,0.7) 100%)",
-          zIndex: 1,
-          pointerEvents: "none",
-        }}
-      />
-      {/* Desk foreground */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 50,
-          background:
-            "linear-gradient(to top, rgba(10,5,2,0.96) 0%, rgba(10,5,2,0.55) 60%, transparent 100%)",
-          zIndex: 3,
-          pointerEvents: "none",
-        }}
-      />
       {/* UI layer */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          padding: "16px 18px 12px",
-        }}
-      >
+      <div style={{ position: "absolute", inset: 0, zIndex: 2 }}>
         {children}
       </div>
     </div>
@@ -316,14 +284,16 @@ export const Mission = () => {
 
   // ── Mission not found ──
   if (!mission) {
-    return roomWrapper(
+    return roomShell(
       <div
         style={{
-          flex: 1,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
           gap: 16,
         }}
       >
@@ -359,19 +329,446 @@ export const Mission = () => {
   const hintAvailable = checkpoint ? checkpoint.hint.length > 0 : false;
   const hintRevealed = checkpoint ? hintsRevealed.includes(checkpoint.id) : false;
 
-  return roomWrapper(
+  return roomShell(
     <>
-      {/* ── Status bar ── */}
+      {/* ═══ LEFT screen — Tenant Signal / MatrixBackground ═══ */}
+      <div style={{ ...screenBase, top: "7%", left: "5%", width: "25%", height: "44%" }}>
+        <div style={scanLineStyle} />
+        {/* Header strip */}
+        <div
+          style={{
+            padding: "6px 10px",
+            borderBottom: "1px solid rgba(0,200,50,0.1)",
+            background: "rgba(0,200,50,0.04)",
+            fontSize: 9,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "rgba(0,200,50,0.4)",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(0,200,50,0.6)" }} />
+          Tenant Signal
+        </div>
+        {/* Matrix canvas wrapper */}
+        <div style={{ flex: 1, position: "relative" }}>
+          <MatrixBackground colorTier={colorTier} />
+        </div>
+      </div>
+
+      {/* ═══ CENTER screen — Checkpoint ═══ */}
+      <div style={{ ...screenBase, top: "7%", left: "30.5%", width: "37%", height: "44%", background: "rgba(2,4,12,0.85)", border: "1px solid rgba(20,150,255,0.25)" }}>
+        <div style={scanLineStyle} />
+        {/* Top bar */}
+        <div
+          style={{
+            padding: "7px 14px",
+            borderBottom: "1px solid rgba(20,150,255,0.1)",
+            background: "rgba(20,150,255,0.05)",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              color: "rgba(20,150,255,0.6)",
+              fontSize: 9,
+              textTransform: "uppercase",
+              letterSpacing: "0.13em",
+            }}
+          >
+            {mission.title} — CP {currentCheckpoint + 1} of {mission.checkpoints.length}
+          </span>
+          <div style={{ flex: 1 }} />
+          <span
+            style={{
+              color: timerIsLow ? "#e74c3c" : "#1496ff",
+              fontSize: 13,
+              fontWeight: 700,
+              fontFamily: "monospace",
+            }}
+          >
+            {formatTime(displaySeconds)}
+          </span>
+        </div>
+
+        {/* Checkpoint body */}
+        <div
+          style={{
+            flex: 1,
+            padding: "14px 16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            overflow: "hidden",
+          }}
+        >
+          {/* Progress pips */}
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            {mission.checkpoints.map((_, i) => {
+              const st = getCheckpointStatus(i);
+              let bg = "rgba(255,255,255,0.08)";
+              if (st === "completed") bg = "#1dbb7e";
+              if (st === "active") bg = "#1496ff";
+              return (
+                <div
+                  key={i}
+                  style={{ height: 3, width: 22, borderRadius: 2, background: bg }}
+                />
+              );
+            })}
+            <span
+              style={{
+                fontSize: 9,
+                color: "rgba(150,170,200,0.35)",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                marginLeft: 6,
+              }}
+            >
+              Checkpoint {currentCheckpoint + 1}
+            </span>
+          </div>
+
+          {cpStatus === "completed" || completedCheckpoints.includes(currentCheckpoint) ? (
+            /* ── Completed state ── */
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 24, color: "#1dbb7e" }}>✓</span>
+              <span style={{ fontSize: 12, color: "#1dbb7e", fontWeight: 600 }}>
+                Checkpoint Complete
+              </span>
+              <span style={{ fontSize: 10, color: "rgba(150,170,200,0.4)", fontFamily: "monospace" }}>
+                +{checkpoint?.points ?? 0} pts
+              </span>
+            </div>
+          ) : checkpoint ? (
+            <>
+              {/* Section label */}
+              <div
+                style={{
+                  fontSize: 9,
+                  textTransform: "uppercase",
+                  color: "rgba(150,170,200,0.4)",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                {checkpoint.title}
+              </div>
+
+              {/* Question text */}
+              <div style={{ fontSize: 12, color: "#e0eaf8", lineHeight: 1.55 }}>
+                {renderInstruction(checkpoint.instruction)}
+              </div>
+
+              {/* Hint revealed */}
+              {hintRevealed && (
+                <div
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: 4,
+                    border: "1px solid rgba(255,191,0,0.15)",
+                    background: "rgba(255,191,0,0.05)",
+                    fontSize: 11,
+                    color: "rgba(255,191,0,0.7)",
+                  }}
+                >
+                  {checkpoint.hint}
+                </div>
+              )}
+
+              {/* Multiple choice options */}
+              {isMultipleChoice && checkpoint.choices && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  {checkpoint.choices.map((option, i) => {
+                    const isSelected = selectedAnswer === option;
+                    return (
+                      <div
+                        key={option}
+                        onClick={() => {
+                          console.log("choice clicked:", option);
+                          setSelectedAnswer(option);
+                        }}
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: 4,
+                          border: isSelected
+                            ? "1px solid rgba(20,150,255,0.45)"
+                            : "1px solid rgba(255,255,255,0.07)",
+                          fontSize: 11,
+                          color: isSelected ? "#c8d4e8" : "rgba(210,225,240,0.85)",
+                          background: isSelected
+                            ? "rgba(20,150,255,0.1)"
+                            : "rgba(255,255,255,0.025)",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 9,
+                            fontFamily: "monospace",
+                            color: "rgba(150,170,200,0.3)",
+                          }}
+                        >
+                          {CHOICE_KEYS[i] ?? String(i + 1)}
+                        </span>
+                        {option}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Answer error */}
+              {answerError && (
+                <div style={{ fontSize: 11, color: "rgba(231,76,60,0.8)" }}>{answerError}</div>
+              )}
+
+              {/* Action row */}
+              <div
+                style={{
+                  marginTop: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderTop: "1px solid rgba(255,255,255,0.05)",
+                  paddingTop: 8,
+                }}
+              >
+                {/* Hint button */}
+                <div>
+                  {hintAvailable && !hintRevealed && (
+                    <span
+                      onClick={() => handleRequestHint(mission.checkpoints[currentCheckpoint].id)}
+                      style={{
+                        fontSize: 10,
+                        textTransform: "uppercase",
+                        color: "rgba(150,170,200,0.32)",
+                        cursor: "pointer",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      ⊹ Request intel (−{HINT_PENALTY} pts)
+                    </span>
+                  )}
+                </div>
+                {/* Validate button */}
+                <button
+                  onClick={() => handleValidate(currentCheckpoint)}
+                  disabled={isValidating || (isMultipleChoice && !selectedAnswer)}
+                  style={{
+                    fontSize: 10,
+                    padding: "5px 14px",
+                    borderRadius: 3,
+                    background: "rgba(20,150,255,0.1)",
+                    border: "1px solid rgba(20,150,255,0.28)",
+                    color: "#1496ff",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    cursor:
+                      isValidating || (isMultipleChoice && !selectedAnswer)
+                        ? "default"
+                        : "pointer",
+                    opacity:
+                      isValidating || (isMultipleChoice && !selectedAnswer) ? 0.4 : 1,
+                  }}
+                >
+                  {isValidating ? "Confirming..." : "Validate →"}
+                </button>
+              </div>
+            </>
+          ) : null}
+        </div>
+      </div>
+
+      {/* ═══ RIGHT screen — Mission Briefing ═══ */}
+      <div style={{ ...screenBase, top: "7%", left: "68%", width: "24%", height: "44%" }}>
+        <div style={scanLineStyle} />
+        <div
+          style={{
+            padding: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 9,
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
+          {/* Eyebrow */}
+          <div
+            style={{
+              fontSize: 9,
+              textTransform: "uppercase",
+              color: "rgba(150,170,200,0.28)",
+              letterSpacing: "0.14em",
+            }}
+          >
+            Mission Briefing
+          </div>
+
+          {/* Mission title */}
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#eef4fc" }}>{mission.title}</div>
+
+          {/* Tags */}
+          <div style={{ display: "flex", gap: 6 }}>
+            <span
+              style={{
+                fontSize: 9,
+                textTransform: "uppercase",
+                padding: "2px 7px",
+                borderRadius: 3,
+                color: "rgba(200,215,230,0.5)",
+                background: "rgba(255,255,255,0.05)",
+              }}
+            >
+              {mission.role}
+            </span>
+            <span
+              style={{
+                fontSize: 9,
+                textTransform: "uppercase",
+                padding: "2px 7px",
+                borderRadius: 3,
+                color: DIFFICULTY_COLORS[mission.difficulty] ?? "rgba(200,215,230,0.5)",
+                background: DIFFICULTY_BG[mission.difficulty] ?? "rgba(255,255,255,0.05)",
+              }}
+            >
+              {mission.difficulty}
+            </span>
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+
+          {/* Briefing text */}
+          <div
+            style={{
+              fontSize: 10,
+              color: "rgba(170,190,210,0.75)",
+              lineHeight: 1.65,
+              flex: 1,
+              overflow: "hidden",
+            }}
+          >
+            {mission.briefing}
+          </div>
+
+          {/* Timer widget */}
+          <div
+            style={{
+              border: "1px solid rgba(20,150,255,0.12)",
+              borderRadius: 4,
+              background: "rgba(20,150,255,0.035)",
+              padding: 9,
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 9,
+                color: "rgba(150,170,200,0.28)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 4,
+              }}
+            >
+              Time Remaining
+            </div>
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: timerIsLow ? "#e74c3c" : "#1496ff",
+                fontFamily: "monospace",
+              }}
+            >
+              {formatTime(displaySeconds)}
+            </div>
+          </div>
+
+          {/* Abandon section */}
+          <div style={{ textAlign: "center" }}>
+            {!abandonConfirm ? (
+              <span
+                onClick={() => setAbandonConfirm(true)}
+                style={{
+                  fontSize: 9,
+                  textTransform: "uppercase",
+                  color: "rgba(200,80,80,0.35)",
+                  cursor: "pointer",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Abandon Mission
+              </span>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 9, color: "rgba(150,170,200,0.4)" }}>
+                  This will end your mission.
+                </span>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <span
+                    onClick={() => navigate("/missions")}
+                    style={{
+                      fontSize: 9,
+                      textTransform: "uppercase",
+                      color: "rgba(231,76,60,0.7)",
+                      cursor: "pointer",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    Confirm
+                  </span>
+                  <span
+                    onClick={() => setAbandonConfirm(false)}
+                    style={{
+                      fontSize: 9,
+                      textTransform: "uppercase",
+                      color: "rgba(150,170,200,0.4)",
+                      cursor: "pointer",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    Cancel
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom HUD strip ── */}
       <div
         style={{
+          position: "absolute",
+          bottom: "2%",
+          left: "5%",
+          right: "5%",
           display: "flex",
           alignItems: "center",
-          gap: 10,
-          marginBottom: 10,
+          gap: 16,
           fontSize: 10,
           letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: "rgba(180,200,220,0.75)",
+          textTransform: "uppercase" as const,
+          color: "rgba(180,200,220,0.6)",
+          zIndex: 3,
         }}
       >
         {/* Pulsing red dot */}
@@ -385,449 +782,14 @@ export const Mission = () => {
           }}
         />
         <span>Mission Control</span>
-        {/* Separator */}
         <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
         <span style={{ color: "rgba(20,150,255,0.65)" }}>
           {mission.codename} / {mission.title}
         </span>
-        <div style={{ flex: 0, width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
+        <div style={{ width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
         <span style={{ color: "rgba(29,187,126,0.6)" }}>Operator Active</span>
-        <div style={{ flex: 0, width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
+        <div style={{ width: 1, height: 8, background: "rgba(255,255,255,0.06)" }} />
         <span>Playground Env</span>
-      </div>
-
-      {/* ── Screen wall ── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1.75fr 1fr",
-          gap: 8,
-          flex: 1,
-          minHeight: 0,
-        }}
-      >
-        {/* ═══ LEFT screen — Tenant Signal / MatrixBackground ═══ */}
-        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
-          <div style={scanLineStyle} />
-          {/* Header strip */}
-          <div
-            style={{
-              padding: "6px 10px",
-              borderBottom: "1px solid rgba(0,200,50,0.1)",
-              background: "rgba(0,200,50,0.04)",
-              fontSize: 9,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "rgba(0,200,50,0.4)",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              flexShrink: 0,
-            }}
-          >
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(0,200,50,0.6)" }} />
-            Tenant Signal
-          </div>
-          {/* Matrix canvas wrapper */}
-          <div style={{ flex: 1, position: "relative" }}>
-            <MatrixBackground colorTier={colorTier} />
-          </div>
-        </div>
-
-        {/* ═══ CENTER screen — Checkpoint ═══ */}
-        <div style={{ ...screenBase, border: "1px solid rgba(20,150,255,0.25)", display: "flex", flexDirection: "column" }}>
-          <div style={scanLineStyle} />
-          {/* Top bar */}
-          <div
-            style={{
-              padding: "7px 14px",
-              borderBottom: "1px solid rgba(20,150,255,0.1)",
-              background: "rgba(20,150,255,0.05)",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                color: "rgba(20,150,255,0.6)",
-                fontSize: 9,
-                textTransform: "uppercase",
-                letterSpacing: "0.13em",
-              }}
-            >
-              {mission.title} — CP {currentCheckpoint + 1} of {mission.checkpoints.length}
-            </span>
-            <div style={{ flex: 1 }} />
-            <span
-              style={{
-                color: timerIsLow ? "#e74c3c" : "#1496ff",
-                fontSize: 13,
-                fontWeight: 700,
-                fontFamily: "monospace",
-              }}
-            >
-              {formatTime(displaySeconds)}
-            </span>
-          </div>
-
-          {/* Checkpoint body */}
-          <div
-            style={{
-              flex: 1,
-              padding: "14px 16px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-              overflow: "hidden",
-            }}
-          >
-            {/* Progress pips */}
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              {mission.checkpoints.map((_, i) => {
-                const st = getCheckpointStatus(i);
-                let bg = "rgba(255,255,255,0.08)";
-                if (st === "completed") bg = "#1dbb7e";
-                if (st === "active") bg = "#1496ff";
-                return (
-                  <div
-                    key={i}
-                    style={{ height: 3, width: 22, borderRadius: 2, background: bg }}
-                  />
-                );
-              })}
-              <span
-                style={{
-                  fontSize: 9,
-                  color: "rgba(150,170,200,0.35)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  marginLeft: 6,
-                }}
-              >
-                Checkpoint {currentCheckpoint + 1}
-              </span>
-            </div>
-
-            {cpStatus === "completed" || completedCheckpoints.includes(currentCheckpoint) ? (
-              /* ── Completed state ── */
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
-              >
-                <span style={{ fontSize: 24, color: "#1dbb7e" }}>✓</span>
-                <span style={{ fontSize: 12, color: "#1dbb7e", fontWeight: 600 }}>
-                  Checkpoint Complete
-                </span>
-                <span style={{ fontSize: 10, color: "rgba(150,170,200,0.4)", fontFamily: "monospace" }}>
-                  +{checkpoint?.points ?? 0} pts
-                </span>
-              </div>
-            ) : checkpoint ? (
-              <>
-                {/* Section label */}
-                <div
-                  style={{
-                    fontSize: 9,
-                    textTransform: "uppercase",
-                    color: "rgba(150,170,200,0.4)",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {checkpoint.title}
-                </div>
-
-                {/* Question text */}
-                <div style={{ fontSize: 12, color: "#e0eaf8", lineHeight: 1.55 }}>
-                  {renderInstruction(checkpoint.instruction)}
-                </div>
-
-                {/* Hint revealed */}
-                {hintRevealed && (
-                  <div
-                    style={{
-                      padding: "6px 10px",
-                      borderRadius: 4,
-                      border: "1px solid rgba(255,191,0,0.15)",
-                      background: "rgba(255,191,0,0.05)",
-                      fontSize: 11,
-                      color: "rgba(255,191,0,0.7)",
-                    }}
-                  >
-                    {checkpoint.hint}
-                  </div>
-                )}
-
-                {/* Multiple choice options */}
-                {isMultipleChoice && checkpoint.choices && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                    {checkpoint.choices.map((option, i) => {
-                      const isSelected = selectedAnswer === option;
-                      return (
-                        <div
-                          key={option}
-                          onClick={() => {
-                            console.log("choice clicked:", option);
-                            setSelectedAnswer(option);
-                          }}
-                          style={{
-                            padding: "6px 10px",
-                            borderRadius: 4,
-                            border: isSelected
-                              ? "1px solid rgba(20,150,255,0.45)"
-                              : "1px solid rgba(255,255,255,0.07)",
-                            fontSize: 11,
-                            color: isSelected ? "#c8d4e8" : "rgba(210,225,240,0.85)",
-                            background: isSelected
-                              ? "rgba(20,150,255,0.1)"
-                              : "rgba(255,255,255,0.025)",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: 9,
-                              fontFamily: "monospace",
-                              color: "rgba(150,170,200,0.3)",
-                            }}
-                          >
-                            {CHOICE_KEYS[i] ?? String(i + 1)}
-                          </span>
-                          {option}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Answer error */}
-                {answerError && (
-                  <div style={{ fontSize: 11, color: "rgba(231,76,60,0.8)" }}>{answerError}</div>
-                )}
-
-                {/* Action row */}
-                <div
-                  style={{
-                    marginTop: "auto",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    borderTop: "1px solid rgba(255,255,255,0.05)",
-                    paddingTop: 8,
-                  }}
-                >
-                  {/* Hint button */}
-                  <div>
-                    {hintAvailable && !hintRevealed && (
-                      <span
-                        onClick={() => handleRequestHint(mission.checkpoints[currentCheckpoint].id)}
-                        style={{
-                          fontSize: 10,
-                          textTransform: "uppercase",
-                          color: "rgba(150,170,200,0.32)",
-                          cursor: "pointer",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        ⊹ Request intel (−{HINT_PENALTY} pts)
-                      </span>
-                    )}
-                  </div>
-                  {/* Validate button */}
-                  <button
-                    onClick={() => handleValidate(currentCheckpoint)}
-                    disabled={isValidating || (isMultipleChoice && !selectedAnswer)}
-                    style={{
-                      fontSize: 10,
-                      padding: "5px 14px",
-                      borderRadius: 3,
-                      background: "rgba(20,150,255,0.1)",
-                      border: "1px solid rgba(20,150,255,0.28)",
-                      color: "#1496ff",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      cursor:
-                        isValidating || (isMultipleChoice && !selectedAnswer)
-                          ? "default"
-                          : "pointer",
-                      opacity:
-                        isValidating || (isMultipleChoice && !selectedAnswer) ? 0.4 : 1,
-                    }}
-                  >
-                    {isValidating ? "Confirming..." : "Validate →"}
-                  </button>
-                </div>
-              </>
-            ) : null}
-          </div>
-        </div>
-
-        {/* ═══ RIGHT screen — Mission Briefing ═══ */}
-        <div style={{ ...screenBase, display: "flex", flexDirection: "column" }}>
-          <div style={scanLineStyle} />
-          <div
-            style={{
-              padding: 12,
-              display: "flex",
-              flexDirection: "column",
-              gap: 9,
-              flex: 1,
-              overflow: "hidden",
-            }}
-          >
-            {/* Eyebrow */}
-            <div
-              style={{
-                fontSize: 9,
-                textTransform: "uppercase",
-                color: "rgba(150,170,200,0.28)",
-                letterSpacing: "0.14em",
-              }}
-            >
-              Mission Briefing
-            </div>
-
-            {/* Mission title */}
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#eef4fc" }}>{mission.title}</div>
-
-            {/* Tags */}
-            <div style={{ display: "flex", gap: 6 }}>
-              <span
-                style={{
-                  fontSize: 9,
-                  textTransform: "uppercase",
-                  padding: "2px 7px",
-                  borderRadius: 3,
-                  color: "rgba(200,215,230,0.5)",
-                  background: "rgba(255,255,255,0.05)",
-                }}
-              >
-                {mission.role}
-              </span>
-              <span
-                style={{
-                  fontSize: 9,
-                  textTransform: "uppercase",
-                  padding: "2px 7px",
-                  borderRadius: 3,
-                  color: DIFFICULTY_COLORS[mission.difficulty] ?? "rgba(200,215,230,0.5)",
-                  background: DIFFICULTY_BG[mission.difficulty] ?? "rgba(255,255,255,0.05)",
-                }}
-              >
-                {mission.difficulty}
-              </span>
-            </div>
-
-            {/* Divider */}
-            <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
-
-            {/* Briefing text */}
-            <div
-              style={{
-                fontSize: 10,
-                color: "rgba(170,190,210,0.75)",
-                lineHeight: 1.65,
-                flex: 1,
-                overflow: "hidden",
-              }}
-            >
-              {mission.briefing}
-            </div>
-
-            {/* Timer widget */}
-            <div
-              style={{
-                border: "1px solid rgba(20,150,255,0.12)",
-                borderRadius: 4,
-                background: "rgba(20,150,255,0.035)",
-                padding: 9,
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 9,
-                  color: "rgba(150,170,200,0.28)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  marginBottom: 4,
-                }}
-              >
-                Time Remaining
-              </div>
-              <div
-                style={{
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: timerIsLow ? "#e74c3c" : "#1496ff",
-                  fontFamily: "monospace",
-                }}
-              >
-                {formatTime(displaySeconds)}
-              </div>
-            </div>
-
-            {/* Abandon section */}
-            <div style={{ textAlign: "center" }}>
-              {!abandonConfirm ? (
-                <span
-                  onClick={() => setAbandonConfirm(true)}
-                  style={{
-                    fontSize: 9,
-                    textTransform: "uppercase",
-                    color: "rgba(200,80,80,0.35)",
-                    cursor: "pointer",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  Abandon Mission
-                </span>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 9, color: "rgba(150,170,200,0.4)" }}>
-                    This will end your mission.
-                  </span>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <span
-                      onClick={() => navigate("/missions")}
-                      style={{
-                        fontSize: 9,
-                        textTransform: "uppercase",
-                        color: "rgba(231,76,60,0.7)",
-                        cursor: "pointer",
-                        letterSpacing: "0.08em",
-                      }}
-                    >
-                      Confirm
-                    </span>
-                    <span
-                      onClick={() => setAbandonConfirm(false)}
-                      style={{
-                        fontSize: 9,
-                        textTransform: "uppercase",
-                        color: "rgba(150,170,200,0.4)",
-                        cursor: "pointer",
-                        letterSpacing: "0.08em",
-                      }}
-                    >
-                      Cancel
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
