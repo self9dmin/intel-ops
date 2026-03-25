@@ -23,7 +23,7 @@ Before using any Strato UI component, always use the knowledge base tools to sea
 
 ### App Identity
 - Facing name: **Mission Control** (set in `app.config.json` — do not change)
-- Nav tabs: **Race Control** (default, route `/`) | **Progress** | **Leaderboard**
+- Nav tabs: **Race Control** (default, route `/`) | **Progress**
 - Learning Paths → **Circuits**
 - Mission difficulty levels: `rookie` | `operator` | `elite` | `legend`
 
@@ -71,18 +71,24 @@ ui/app/
 │   └── LeaderboardContext.tsx
 ├── hooks/
 │   ├── useUserState.ts              # Document Service read/write with optimistic locking
-│   ├── useTenantScan.ts             # Runs 7 DQL capability checks against user's tenant
 │   ├── useUnlockedMissions.ts
 │   └── useFilteredMissions.ts
 ├── components/
 │   ├── MissionCard.tsx              # Card with flex layout, button pinned to bottom
 │   ├── PlayerStatusStrip.tsx        # Stats bar (plain div, no Surface)
-│   ├── DataModeToggle.tsx           # Live Mode switch — triggers tenant scan on enable
-│   ├── TenantCoveragePanel.tsx      # Capability chips row (shown in live mode only)
 │   └── AppSidebar.tsx               # Status/difficulty/topic filters
+├── pages/
+│   └── Mission.tsx                  # War room mission page (immersive 3-panel layout with room-bg.jpg background)
 └── tabs/
     └── MissionsTab.tsx              # Main mission grid view
+
+ui/assets/
+└── room-bg.jpg                      # Conference room background photo for mission page
+
+ui/types.d.ts                        # JPG module declaration for asset imports
 ```
+
+> **Note:** Live Mode removed — app is Playground-only pending Phase 3. DataModeToggle and TenantCoveragePanel are no longer active.
 
 ### Data Mode (Live vs Playground)
 The app supports two modes stored in `userState.dataMode`:
@@ -119,6 +125,7 @@ hasBizevents: `fetch bizevents | limit 1 | fields timestamp`
 - Use **plain divs** for stat strips and metric displays — Surface has hardcoded 24px inset padding
 - Use **Strato Surface** only for cards that need DT card styling
 - **Never nest Surface inside Surface**
+- **MatrixBackground** component uses `position: absolute; inset: 0; width: 100%; height: 100%` — it fills whatever parent container it sits in. Parent must have `position: relative` and defined dimensions.
 - **Do not use `flex: 1` directly on Strato components** — wrap in a plain div instead
 - Strato `Flex` does not reliably pass through `flex: 1` to children
 
@@ -189,6 +196,9 @@ Key rules:
 ---
 
 ## Development Workflow
+
+### Critical Rule
+**NEVER merge locally then push master.** Always push the feat/ branch and open a PR on GitHub: `git push origin feat/x` → PR → merge on GitHub → Action auto-deploys. Merging locally and pushing master bypasses the PR and goes straight to prod.
 
 ### Branch Strategy
 ```
