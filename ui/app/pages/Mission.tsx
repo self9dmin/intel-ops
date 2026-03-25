@@ -737,9 +737,10 @@ export const Mission = () => {
           {/* Briefing text */}
           <div
             style={{
-              fontSize: 10,
-              color: "rgba(170,190,210,0.75)",
-              lineHeight: 1.65,
+              fontSize: 15,
+              fontWeight: 600,
+              color: "#e0eaf8",
+              lineHeight: 1.6,
               flex: 1,
               overflow: "auto",
             }}
