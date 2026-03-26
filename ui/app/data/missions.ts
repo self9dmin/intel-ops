@@ -2686,6 +2686,465 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-why-is-it-slow",
+    title: "Why Is It Slow?",
+    codename: "LATENCY HUNT",
+    role: "Developer",
+    difficulty: "rookie",
+    description:
+      "A service is slow. Instead of opening 4 tabs, ask Assist. This is how developers investigate performance in 2026.",
+    briefing:
+      "You got a Slack message: astroshop-checkout is slow. The old workflow: open distributed traces, filter by service, scan for slow spans, find the outlier. The new workflow: ask Assist. One prompt, full latency breakdown, root cause hypothesis. This mission teaches you the Assist-first performance investigation workflow. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: ["mission-the-dock"],
+    disciplines: [
+      { track: "developer", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["traces", "dt-intelligence", "services"],
+    category: "performance",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Latency Prompt",
+        instruction:
+          "Which prompt gives a developer the fastest actionable answer about why astroshop-checkout is slow?",
+        hint: "You want Assist to look at trace data and identify where latency is being introduced — not just confirm that the service is slow.",
+        type: "multiple-choice",
+        choices: [
+          "show me astroshop-checkout",
+          "Why is astroshop-checkout slow? Analyze trace data for the last 30 days and identify where latency is being introduced in the request chain",
+          "what is the response time",
+          "show me slow spans",
+        ],
+        correctChoice:
+          "Why is astroshop-checkout slow? Analyze trace data for the last 30 days and identify where latency is being introduced in the request chain",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Trace vs Metrics",
+        instruction:
+          "When investigating latency, why does Assist analyze trace data rather than just host metrics?",
+        hint: "Host metrics tell you the host is slow. Trace data tells you which specific operation in which specific service call introduced the delay.",
+        type: "multiple-choice",
+        choices: [
+          "Metrics are not available in Dynatrace",
+          "Trace data shows the exact request path and which specific span — database call, external API, internal service — introduced the latency",
+          "Traces are faster to query than metrics",
+          "Host metrics are always inaccurate",
+        ],
+        correctChoice:
+          "Trace data shows the exact request path and which specific span — database call, external API, internal service — introduced the latency",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Deployment Correlation",
+        instruction:
+          "Assist identifies that latency in astroshop-checkout increased after a deployment. What is the next prompt to investigate?",
+        hint: "You know when it started and what changed. Now you need to understand what specifically in the deployment caused the regression.",
+        type: "multiple-choice",
+        choices: [
+          "roll back the deployment",
+          "Which deployment event correlates with the latency increase in astroshop-checkout, and what changed between the previous and current version?",
+          "show me the deployment logs",
+          "ignore it — deployments always cause temporary slowdowns",
+        ],
+        correctChoice:
+          "Which deployment event correlates with the latency increase in astroshop-checkout, and what changed between the previous and current version?",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-otel-query",
+    title: "The OTel Query",
+    codename: "OPEN SIGNALS",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "Your app sends OpenTelemetry signals. Use Assist to query them and understand what your instrumentation is telling you.",
+    briefing:
+      "OpenTelemetry is how modern applications speak to observability platforms. Dynatrace ingests OTel traces, metrics, and logs natively. But raw OTel data is meaningless without the ability to query it intelligently. Assist can translate your natural language questions into DQL queries against OTel span data — so you can get answers without knowing the schema. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-why-is-it-slow"],
+    disciplines: [
+      { track: "developer", xp: 125 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["traces", "dql", "dt-intelligence"],
+    category: "performance",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "OTel Service Inventory Prompt",
+        instruction:
+          "Which prompt asks Assist to list all OpenTelemetry-instrumented services in the environment?",
+        hint: "You want to understand what is sending OTel signals before querying specific services.",
+        type: "multiple-choice",
+        choices: [
+          "show me OTel",
+          "Show me all OpenTelemetry-instrumented services and their instrumentation libraries in this environment",
+          "what services use OpenTelemetry",
+          "list instrumented services",
+        ],
+        correctChoice:
+          "Show me all OpenTelemetry-instrumented services and their instrumentation libraries in this environment",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "OTel vs OneAgent",
+        instruction:
+          "What is the key difference between a service instrumented with OneAgent versus OpenTelemetry in Dynatrace?",
+        hint: "Think about who installs the instrumentation and what level of automation is involved.",
+        type: "multiple-choice",
+        choices: [
+          "OneAgent only monitors infrastructure; OTel only monitors applications",
+          "OneAgent auto-instruments without code changes; OTel requires developers to add instrumentation libraries to their code",
+          "OTel is more accurate than OneAgent",
+          "OneAgent is open source; OTel is proprietary",
+        ],
+        correctChoice:
+          "OneAgent auto-instruments without code changes; OTel requires developers to add instrumentation libraries to their code",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "DQL Behind the Prompt",
+        instruction:
+          "When you ask Assist to find OTel spans where duration exceeded 2 seconds, it generates a DQL query. Which Grail table does that query fetch from?",
+        hint: "Trace data in Dynatrace is stored in a specific Grail table. Think about what DQL command queries trace spans.",
+        type: "multiple-choice",
+        choices: [
+          "fetch logs",
+          "fetch events",
+          "fetch spans",
+          "fetch metrics",
+        ],
+        correctChoice: "fetch spans",
+        points: 125,
+      },
+      {
+        id: "cp4",
+        title: "Instrumentation Library Value",
+        instruction:
+          "Assist returns that my-otel-demo-frontend uses the @opentelemetry/instrumentation-fetch library. What does this tell a developer?",
+        hint: "The library name tells you what kind of operations are being instrumented — HTTP fetch calls in this case.",
+        type: "multiple-choice",
+        choices: [
+          "The service is written in Python",
+          "The service is automatically capturing browser fetch API calls as OTel spans — every HTTP request made by the frontend is traced",
+          "The service does not support tracing",
+          "The service uses a legacy instrumentation method",
+        ],
+        correctChoice:
+          "The service is automatically capturing browser fetch API calls as OTel spans — every HTTP request made by the frontend is traced",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-deployment-correlation",
+    title: "Deploy with Confidence",
+    codename: "CANARY CHECK",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "You just deployed. Use Assist to immediately verify whether your deployment affected service health.",
+    briefing:
+      "Every deployment is a risk. The question is: did this one cause a regression? Instead of waiting for an alert or a customer complaint, use Assist to immediately correlate your deployment event with service metrics. If something changed, you want to know in the first 5 minutes — not the first 5 hours. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-otel-query"],
+    disciplines: [
+      { track: "developer", xp: 125 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["traces", "dt-intelligence", "services"],
+    category: "performance",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Deployment Correlation Prompt",
+        instruction:
+          "Which prompt asks Assist to check if any recent deployment caused a service regression?",
+        hint: "You want Assist to correlate deployment events with error rate and latency changes — not just list deployments.",
+        type: "multiple-choice",
+        choices: [
+          "show me deployments",
+          "Did any deployment in the last 30 days cause a spike in service error rates or latency? Correlate deployment events with metric changes",
+          "what deployed recently",
+          "show me the deployment log",
+        ],
+        correctChoice:
+          "Did any deployment in the last 30 days cause a spike in service error rates or latency? Correlate deployment events with metric changes",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "What Correlation Proves",
+        instruction:
+          "Assist reports: a deployment of frontendreverseproxy occurred, and no error rate spikes were detected. What does this tell you?",
+        hint: "No correlation found is also a valid and useful result. What can you conclude?",
+        type: "multiple-choice",
+        choices: [
+          "The deployment was not recorded by Dynatrace",
+          "The deployment appears safe — no measurable error rate or latency regression was detected in the 30-day window",
+          "You need to wait 24 hours before drawing conclusions",
+          "Assist cannot correlate deployments with metrics",
+        ],
+        correctChoice:
+          "The deployment appears safe — no measurable error rate or latency regression was detected in the 30-day window",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Early Regression Detection",
+        instruction:
+          "Assist finds that a deployment correlates with a 20% error rate increase on astroshop-checkout. What is the correct immediate action?",
+        hint: "You have detected a regression within minutes of deployment. You have options — rollback, hotfix, or investigate further first.",
+        type: "multiple-choice",
+        choices: [
+          "Wait and see if the error rate stabilizes",
+          "Immediately assess whether the increase is within acceptable bounds — if not, initiate rollback or hotfix and open an incident",
+          "Close the deployment event and reopen a new one",
+          "Disable error rate monitoring for astroshop-checkout",
+        ],
+        correctChoice:
+          "Immediately assess whether the increase is within acceptable bounds — if not, initiate rollback or hotfix and open an incident",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-log-story",
+    title: "The Log Story",
+    codename: "PAPER TRAIL",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "Logs tell the story your traces do not. Use Assist to surface error patterns from log data across astroshop services.",
+    briefing:
+      "Traces show you the path. Logs show you what happened along the way. When a service fails silently — no obvious exception, no obvious span failure — the logs hold the answer. Assist can query log data across all astroshop services, group by error type, and surface patterns you would never find manually scrolling through raw log output. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-deployment-correlation"],
+    disciplines: [
+      { track: "developer", xp: 125 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["logs", "dql", "dt-intelligence"],
+    category: "root-cause-analysis",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Log Query Prompt",
+        instruction:
+          "Which prompt asks Assist to find error log patterns across astroshop services?",
+        hint: "You want logs filtered to ERROR level, grouped by service, so you can see which service is generating the most errors.",
+        type: "multiple-choice",
+        choices: [
+          "show me logs",
+          "Find all ERROR logs from astroshop services in the last 30 days, grouped by service name, sorted by count",
+          "what errors are in the logs",
+          "open the logs app",
+        ],
+        correctChoice:
+          "Find all ERROR logs from astroshop services in the last 30 days, grouped by service name, sorted by count",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "DQL Behind the Log Query",
+        instruction:
+          "When Assist queries error logs, which Grail table and filter does the generated DQL use?",
+        hint: "Logs in Dynatrace are stored in a specific Grail table. ERROR level filtering uses a specific field.",
+        type: "multiple-choice",
+        choices: [
+          "fetch events | filter level == 'ERROR'",
+          "fetch logs | filter status == 'ERROR'",
+          "fetch spans | filter error == true",
+          "fetch metrics | filter type == 'log'",
+        ],
+        correctChoice: "fetch logs | filter status == 'ERROR'",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "No Results Meaning",
+        instruction:
+          "Assist returns no ERROR logs from astroshop services in the last 30 days. What are the two most likely explanations?",
+        hint: "No results could mean the system is healthy, or it could mean the query did not find what it was looking for for a different reason.",
+        type: "multiple-choice",
+        choices: [
+          "Astroshop has no errors and the logs app is broken",
+          "Either astroshop services genuinely had no ERROR-level logs in 30 days, or the log ingestion or filtering for astroshop services is not configured correctly",
+          "Dynatrace does not support log querying",
+          "ERROR logs are automatically deleted after 7 days",
+        ],
+        correctChoice:
+          "Either astroshop services genuinely had no ERROR-level logs in 30 days, or the log ingestion or filtering for astroshop services is not configured correctly",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-error-budget-dev",
+    title: "Your Error Budget",
+    codename: "BURN RATE",
+    role: "Developer",
+    difficulty: "operator",
+    description:
+      "Your team owns the SLO. Use Assist to check how fast you are burning through the error budget before someone else notices.",
+    briefing:
+      "Developers own reliability now — not just features. Your service has an SLO. It has an error budget. And right now, that budget is either healthy, at risk, or burning fast. Assist can tell you in one prompt. This mission teaches developers to treat error budget like a resource — something you monitor and protect, not something you discover is gone after a breach. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-log-story"],
+    disciplines: [
+      { track: "developer", xp: 125 },
+      { track: "sre", xp: 100 },
+    ],
+    topics: ["slo", "dt-intelligence"],
+    category: "performance",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "SLO Status for Developers",
+        instruction:
+          "Which prompt gives a developer the clearest view of which SLOs are at risk right now?",
+        hint: "You want current SLO values, targets, and warning thresholds — not just a pass/fail.",
+        type: "multiple-choice",
+        choices: [
+          "show me SLOs",
+          "Show me all SLOs and their current status, warning thresholds, and targets — highlight any that are in warning state or below target",
+          "are my SLOs passing",
+          "what is the error rate",
+        ],
+        correctChoice:
+          "Show me all SLOs and their current status, warning thresholds, and targets — highlight any that are in warning state or below target",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Error Budget Ownership",
+        instruction:
+          "An SLO target is 95% and the current value is 94.8%. The SLO has breached. Who owns the error budget and what should happen next?",
+        hint: "In modern SRE practice, the team that owns the service owns the SLO. A breach triggers a specific response.",
+        type: "multiple-choice",
+        choices: [
+          "The SRE team owns all SLOs — developers just write code",
+          "The team that owns the service owns the SLO. A breach should freeze non-reliability work until the budget is restored and root cause is investigated",
+          "SLO breaches are automatically resolved by Dynatrace",
+          "Lower the SLO target to match current performance",
+        ],
+        correctChoice:
+          "The team that owns the service owns the SLO. A breach should freeze non-reliability work until the budget is restored and root cause is investigated",
+        points: 175,
+      },
+      {
+        id: "cp3",
+        title: "Proactive Budget Monitoring",
+        instruction:
+          "How often should a developer check their service SLO status using Assist?",
+        hint: "Error budget burns continuously. Checking it only when alerted is reactive.",
+        type: "multiple-choice",
+        choices: [
+          "Only when a customer complains",
+          "Only when an SLO breach alert fires",
+          "Regularly during normal operations — ideally as part of daily workflow — so budget burn is caught before a breach, not after",
+          "Once per quarter during planning",
+        ],
+        correctChoice:
+          "Regularly during normal operations — ideally as part of daily workflow — so budget burn is caught before a breach, not after",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-code-fix-brief",
+    title: "The Code Fix Brief",
+    codename: "ROOT TO BRANCH",
+    role: "Developer",
+    difficulty: "elite",
+    description:
+      "Production is broken. Use Assist to generate a developer-ready brief with enough context to fix it without a war room call.",
+    briefing:
+      "The SRE has found the problem. Now they need to hand it off to you. In the old world: a Slack message with a screenshot and a prayer. In the new world: Assist generates a structured brief with root cause, affected code context, and a recommended fix direction — all from Grail data. No war room call. No context switching. Just the information you need to open the right file. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-error-budget-dev"],
+    disciplines: [
+      { track: "developer", xp: 200 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["traces", "logs", "dt-intelligence"],
+    category: "root-cause-analysis",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Developer Handoff Prompt",
+        instruction:
+          "Which prompt generates the most useful developer-ready brief for a production issue?",
+        hint: "A developer needs: what broke, which service, what the error is, and where in the code to look. Specify all of this in the prompt.",
+        type: "multiple-choice",
+        choices: [
+          "what is broken",
+          "Generate a developer-ready incident brief for the most critical active problem — include the affected service, error type, example log lines, and a recommended starting point for investigation",
+          "show me the error",
+          "which team should fix this",
+        ],
+        correctChoice:
+          "Generate a developer-ready incident brief for the most critical active problem — include the affected service, error type, example log lines, and a recommended starting point for investigation",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "MCP Server Value",
+        instruction:
+          "The Dynatrace MCP Server allows a developer to query Assist from inside VS Code or GitHub Copilot. What is the main benefit of this workflow?",
+        hint: "Think about context switching — the biggest productivity killer for developers during incident response.",
+        type: "multiple-choice",
+        choices: [
+          "VS Code runs faster than the Dynatrace UI",
+          "Developers can query production observability data and get root cause context without leaving their IDE — eliminating context switching between tools",
+          "The MCP Server provides code auto-completion",
+          "GitHub Copilot can automatically fix bugs using Dynatrace data",
+        ],
+        correctChoice:
+          "Developers can query production observability data and get root cause context without leaving their IDE — eliminating context switching between tools",
+        points: 175,
+      },
+      {
+        id: "cp3",
+        title: "From Insight to Fix",
+        instruction:
+          "Assist provides a developer brief showing the astroshop-checkout service is failing with a Redis connection error. What is the correct developer workflow from here?",
+        hint: "The brief gives you the context. Now you need to act on it — but in the right order.",
+        type: "multiple-choice",
+        choices: [
+          "Immediately push a fix without testing",
+          "Use the brief to locate the Redis connection handling code, reproduce the failure locally if possible, implement and test the fix, then deploy with monitoring active",
+          "Reassign the ticket to the infrastructure team",
+          "Ask Assist to write the fix automatically",
+        ],
+        correctChoice:
+          "Use the brief to locate the Redis connection handling code, reproduce the failure locally if possible, implement and test the fix, then deploy with monitoring active",
+        points: 175,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
