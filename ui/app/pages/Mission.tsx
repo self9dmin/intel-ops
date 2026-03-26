@@ -85,7 +85,9 @@ export const Mission = () => {
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const selectedAnswerRef = useRef("");
   const [baseScore, setBaseScore] = useState(0);
+  const baseScoreRef = useRef(0);
   const [wrongAnswerGiven, setWrongAnswerGiven] = useState(false);
   const [answerError, setAnswerError] = useState("");
   const [hintsUsed, setHintsUsed] = useState<string[]>([]);
@@ -147,11 +149,12 @@ export const Mission = () => {
       if (!mission) return;
 
       setCompletedCheckpoints((prev) => [...prev, index]);
-      setBaseScore((prev) => prev + points);
+      const newBaseScore = baseScoreRef.current + points;
+      baseScoreRef.current = newBaseScore;
+      setBaseScore(newBaseScore);
 
       const isLastCheckpoint = index === mission.checkpoints.length - 1;
       if (isLastCheckpoint) {
-        const newBaseScore = baseScore + points;
         const timeBonus = Math.max(0, (timerSeconds ?? 0) * TIME_BONUS_PER_SECOND);
         const hintPenalty = hintsUsed.length * HINT_PENALTY;
         const totalScore = Math.max(0, newBaseScore + timeBonus - hintPenalty);
@@ -173,28 +176,30 @@ export const Mission = () => {
       } else {
         setCurrentCheckpoint(index + 1);
         setSelectedAnswer("");
+        selectedAnswerRef.current = "";
         setAnswerError("");
         setWrongAnswerGiven(false);
       }
     },
-    [mission, baseScore, timerSeconds, hintsUsed, navigate]
+    [mission, timerSeconds, hintsUsed, navigate]
   );
 
   const handleValidate = useCallback(
     (index: number) => {
-      console.log("handleValidate called, index:", index, "selectedAnswer:", selectedAnswer, "isValidating:", isValidating);
+      console.log("handleValidate called, index:", index, "selectedAnswer:", selectedAnswerRef.current, "isValidating:", isValidating);
       if (isValidating || !mission) return;
 
       const checkpoint = mission.checkpoints[index];
 
       if (checkpoint.type === "multiple-choice") {
-        if (!selectedAnswer) return;
+        const answer = selectedAnswerRef.current;
+        if (!answer) return;
         setIsValidating(true);
         setAnswerError("");
 
         setTimeout(() => {
           setIsValidating(false);
-          if (selectedAnswer === checkpoint.correctChoice) {
+          if (answer === checkpoint.correctChoice) {
             const points = wrongAnswerGiven
               ? checkpoint.points - WRONG_ANSWER_PENALTY
               : checkpoint.points;
@@ -213,7 +218,7 @@ export const Mission = () => {
         completeCheckpoint(index, checkpoint.points);
       }, 1000);
     },
-    [isValidating, mission, selectedAnswer, wrongAnswerGiven, completeCheckpoint]
+    [isValidating, mission, wrongAnswerGiven, completeCheckpoint]
   );
 
   const handleRequestHint = useCallback(
@@ -574,6 +579,7 @@ export const Mission = () => {
                         key={option}
                         onClick={() => {
                           console.log("choice clicked:", option);
+                          selectedAnswerRef.current = option;
                           setSelectedAnswer(option);
                         }}
                         style={{

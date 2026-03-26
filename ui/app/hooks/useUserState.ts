@@ -12,6 +12,7 @@ interface UseUserStateResult {
   loading: boolean;
   error: string | null;
   saveUserState: (partial: OnboardingPartial) => Promise<void>;
+  updateUserState: (partial: Partial<UserState>) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;
@@ -327,6 +328,20 @@ export function useUserState(): UseUserStateResult {
     [userState, writeUserState]
   );
 
+  const updateUserState = useCallback(
+    async (partial: Partial<UserState>) => {
+      if (!userState || !documentId) return;
+      const updatedState: UserState = { ...userState, ...partial };
+      setUserState(updatedState);
+      try {
+        await writeUserState(updatedState);
+      } catch (err: unknown) {
+        console.error("Failed to update user state:", err);
+      }
+    },
+    [userState, documentId, writeUserState]
+  );
+
   const resetUserState = useCallback(async () => {
     if (!documentId) return;
 
@@ -387,6 +402,7 @@ export function useUserState(): UseUserStateResult {
     loading,
     error,
     saveUserState,
+    updateUserState,
     awardXP,
     resetUserState,
     completeMission,

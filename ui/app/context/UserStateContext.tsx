@@ -9,6 +9,7 @@ export interface UserStateContextValue {
   loading: boolean;
   error: string | null;
   saveUserState: (partial: OnboardingPartial) => Promise<void>;
+  updateUserState: (partial: Partial<UserState>) => Promise<void>;
   awardXP: (xpGrants: XPGrant[]) => Promise<void>;
   resetUserState: () => Promise<void>;
   completeMission: (missionId: string) => void;

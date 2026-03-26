@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Heading } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import {
@@ -28,7 +28,7 @@ import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { ALL_BADGES } from "../data/badges";
 import { useUserStateContext } from "../context/UserStateContext";
-import type { Discipline } from "../types/UserState";
+import type { Discipline, ExperienceLevel } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
 import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 
@@ -231,6 +231,24 @@ const TOPIC_DOMAIN_GROUPS: { label: string; topics: TopicId[] }[] = [
   { label: "EXPLORE", topics: ["community", "bizevents", "dem", "security", "notebooks", "smartscape"] },
 ];
 
+// --- Driver picker options ---
+
+interface DriverPickerOption {
+  discipline: Discipline;
+  experienceLevel: ExperienceLevel;
+  name: string;
+  tier: string;
+  description: string;
+  helmet: string;
+}
+
+const DRIVER_PICKER_OPTIONS: DriverPickerOption[] = [
+  { discipline: "incident-commander", experienceLevel: "new", name: "Arvid Lindblad", tier: "Rookie", description: "Just arrived. Learn the platform and find your feet.", helmet: "/ui/assets/helmets/lindblad.png" },
+  { discipline: "developer", experienceLevel: "learning", name: "Liam Lawson", tier: "Intermediate", description: "You know the basics. Now push harder.", helmet: "/ui/assets/helmets/lawson.png" },
+  { discipline: "platform-engineer", experienceLevel: "experienced", name: "Isack Hadjar", tier: "Advanced", description: "Comfortable under pressure. Build on solid foundations.", helmet: "/ui/assets/helmets/hadjar.png" },
+  { discipline: "sre", experienceLevel: "experienced", name: "Max Verstappen", tier: "Elite", description: "No hand-holding. Full stack, full pressure.", helmet: "/ui/assets/helmets/verstappen.png" },
+];
+
 // --- Main ProgressTab ---
 
 interface ProgressTabProps {
@@ -238,7 +256,8 @@ interface ProgressTabProps {
 }
 
 export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
-  const { userState, resetUserState } = useUserStateContext();
+  const { userState, resetUserState, updateUserState } = useUserStateContext();
+  const [driverPickerOpen, setDriverPickerOpen] = useState(false);
 
   const missionCountByTopic = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -320,6 +339,202 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   </span>
                 </div>
               </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Driver Circuits */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Heading level={5}>Driver Circuits</Heading>
+          <Button variant="default" onClick={() => setDriverPickerOpen((prev) => !prev)}>
+            {driverPickerOpen ? "Close" : "Change Driver"}
+          </Button>
+        </div>
+
+        {/* Driver picker modal */}
+        {driverPickerOpen && (
+          <div style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0, 0, 0, 0.6)",
+          }}
+          onClick={() => setDriverPickerOpen(false)}
+          >
+            <div
+              style={{
+                background: "var(--dt-colors-background-container-neutral-default, #1a1a2e)",
+                border: "1px solid var(--dt-colors-border-neutral-default)",
+                borderRadius: "12px",
+                padding: "24px",
+                maxWidth: "560px",
+                width: "90%",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ textAlign: "center", marginBottom: "8px" }}>
+                <Heading level={4}>Pick your driver.</Heading>
+              </div>
+              <div style={{ textAlign: "center", opacity: 0.6, fontSize: "13px", marginBottom: "20px" }}>
+                This changes your starting discipline and experience level.
+              </div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}>
+                {DRIVER_PICKER_OPTIONS.map((driver) => {
+                  const isSelected = userState?.startingDiscipline === driver.discipline;
+                  return (
+                    <div
+                      key={driver.discipline}
+                      onClick={() => {
+                        void updateUserState({
+                          startingDiscipline: driver.discipline,
+                          experienceLevel: driver.experienceLevel,
+                        });
+                        setDriverPickerOpen(false);
+                      }}
+                      style={{
+                        padding: "16px 20px",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        border: isSelected
+                          ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                          : "1px solid var(--dt-colors-border-neutral-default)",
+                        background: isSelected
+                          ? "var(--dt-colors-background-container-neutral-default)"
+                          : "transparent",
+                        transition: "all 0.15s",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) e.currentTarget.style.background = "transparent";
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
+                          {driver.name}
+                        </div>
+                        <div style={{ fontSize: "11px", opacity: 0.5, marginTop: "2px" }}>
+                          {driver.tier}
+                        </div>
+                        <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "6px" }}>
+                          {driver.description}
+                        </div>
+                      </div>
+                      <img
+                        src={driver.helmet}
+                        alt=""
+                        style={{
+                          width: "64px",
+                          height: "64px",
+                          objectFit: "contain",
+                          flexShrink: 0,
+                          opacity: isSelected ? 0.9 : 0.5,
+                          pointerEvents: "none",
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ marginTop: "8px" }}>
+          {(["incident-commander", "developer", "platform-engineer", "sre"] as Discipline[]).map((disc) => {
+            const progress = userState.disciplines[disc];
+            const meta = DISCIPLINE_META[disc];
+            const driverInfo: Record<Discipline, { name: string; driverName: string; helmet: string }> = {
+              sre: { name: "Reliability Driver", driverName: "Max Verstappen", helmet: "/ui/assets/helmets/verstappen.png" },
+              developer: { name: "Speed Driver", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
+              "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
+              "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
+            };
+            const info = driverInfo[disc];
+            const isStarting = userState.startingDiscipline === disc;
+            const currentThresholdXP =
+              XP_THRESHOLDS.slice().reverse().find((t) => progress.xp >= t.xp)?.xp ?? 0;
+            const next = XP_THRESHOLDS.find((t) => progress.xp < t.xp);
+            const isMax = !next;
+            const progressPercent = isMax
+              ? 100
+              : ((progress.xp - currentThresholdXP) / (next.xp - currentThresholdXP)) * 100;
+
+            return (
+              <div
+                key={disc}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "260px 1fr 160px",
+                  alignItems: "center",
+                  padding: "8px 0",
+                  borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
+                  borderLeft: isStarting
+                    ? "3px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                    : "3px solid transparent",
+                  paddingLeft: "8px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <img
+                    src={info.helmet}
+                    alt=""
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      objectFit: "contain",
+                      flexShrink: 0,
+                      opacity: 0.85,
+                    }}
+                  />
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: "13px", fontWeight: 600 }}>{info.name}</span>
+                    <span style={{ fontSize: "11px", opacity: 0.5 }}>{meta.label}</span>
+                    <span style={{ fontSize: "10px", opacity: 0.35 }}>{info.driverName}</span>
+                  </div>
+                  <span style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>
+                    {progress.levelName}
+                  </span>
+                </div>
+                <div style={{ padding: "0 16px" }}>
+                  <div
+                    style={{
+                      background: "var(--dt-colors-background-container-neutral-default)",
+                      borderRadius: "4px",
+                      height: "6px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        background: meta.color,
+                        height: "100%",
+                        width: `${progressPercent}%`,
+                        borderRadius: "4px",
+                        transition: "width 0.3s ease",
+                      }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                  <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
+                    {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                  </span>
+                </div>
+              </div>
             );
           })}
         </div>
