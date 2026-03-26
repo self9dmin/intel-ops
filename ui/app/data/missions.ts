@@ -2242,6 +2242,450 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-war-room-brief",
+    title: "The War Room Brief",
+    codename: "BRIEF ME",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "You just walked into the war room. You have 60 seconds to understand what is happening. Use Assist.",
+    briefing:
+      "You are the Incident Commander. The war room is live. Everyone is looking at you. You have not been following the incident — you were just called in. The old way: ask five engineers to explain five different things. The new way: one prompt, full picture. Assist can give you an executive-level briefing across infrastructure, security, and performance in seconds. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: ["mission-the-dock"],
+    disciplines: [
+      { track: "incident-commander", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Executive Brief Prompt",
+        instruction:
+          "Which prompt gives an Incident Commander the fastest full-picture briefing on environment state?",
+        hint: "You want Assist to cross-correlate problems, security, and performance in one response. The prompt needs to ask for all three.",
+        type: "multiple-choice",
+        choices: [
+          "show me what is broken",
+          "Give me an executive briefing on the current state of this environment — what is broken, what is at risk, and what needs immediate attention",
+          "list all alerts",
+          "open the problems app",
+        ],
+        correctChoice:
+          "Give me an executive briefing on the current state of this environment — what is broken, what is at risk, and what needs immediate attention",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Cross-Signal Intelligence",
+        instruction:
+          "The executive briefing Assist returns covers active problems, security vulnerabilities, AND performance degradation in one response. What Dynatrace capability makes this possible?",
+        hint: "A single query across infrastructure, security, and performance data requires a unified data store — not separate siloed tools.",
+        type: "multiple-choice",
+        choices: [
+          "The Problems app has a built-in security tab",
+          "Grail — the unified data lakehouse that stores observability, security, and business data in one place",
+          "Assist queries three separate APIs and merges the results manually",
+          "The Settings app shows all active issues",
+        ],
+        correctChoice:
+          "Grail — the unified data lakehouse that stores observability, security, and business data in one place",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Immediate vs At-Risk",
+        instruction:
+          "Assist's executive briefing separates items into 'Active Problems' and 'At-Risk Areas'. What is the operational difference between these two categories?",
+        hint: "Active problems are happening now. At-risk areas could become problems if not addressed. The distinction changes your response priority.",
+        type: "multiple-choice",
+        choices: [
+          "There is no difference — both require immediate escalation",
+          "Active problems need immediate response; at-risk areas need monitoring and preventive action before they escalate",
+          "Active problems are infrastructure; at-risk areas are security",
+          "At-risk areas are more urgent than active problems",
+        ],
+        correctChoice:
+          "Active problems need immediate response; at-risk areas need monitoring and preventive action before they escalate",
+        points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-timeline-reconstruction",
+    title: "The Timeline",
+    codename: "REWIND",
+    role: "Incident Commander",
+    difficulty: "rookie",
+    description:
+      "When did it start? What happened first? Use Assist to reconstruct the incident timeline from Grail data.",
+    briefing:
+      "The hardest question in any incident is: what happened first? Engineers have different timelines. Logs contradict each other. Assist can reconstruct the sequence of events from Grail data — exact timestamps, entity transitions, and problem progressions — without anyone needing to remember. This mission teaches you to use Assist as your incident historian. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-war-room-brief"],
+    disciplines: [
+      { track: "incident-commander", xp: 100 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Timeline Prompt",
+        instruction:
+          "Which prompt asks Assist to reconstruct an incident timeline with exact timestamps?",
+        hint: "You need to specify which problem you want the timeline for and that you want chronological sequence — not just a summary.",
+        type: "multiple-choice",
+        choices: [
+          "when did the problem start",
+          "Reconstruct the timeline of events for the most critical active problem — when did it start, what happened first, what followed?",
+          "show me problem history",
+          "what time did the alert fire",
+        ],
+        correctChoice:
+          "Reconstruct the timeline of events for the most critical active problem — when did it start, what happened first, what followed?",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "What Grail Provides",
+        instruction:
+          "Assist reconstructs the timeline using Grail data. What makes Grail timestamps more reliable than engineer recollection?",
+        hint: "Grail stores event data at the time it happens, immutably. Human memory is reconstructive and degrades under stress.",
+        type: "multiple-choice",
+        choices: [
+          "Grail timestamps are in UTC which is more accurate than local time",
+          "Grail stores event sequences immutably at the moment they occur — there is no memory degradation or reconstruction bias",
+          "Engineers exaggerate timelines to avoid blame",
+          "Grail synchronizes with PagerDuty for accurate timestamps",
+        ],
+        correctChoice:
+          "Grail stores event sequences immutably at the moment they occur — there is no memory degradation or reconstruction bias",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Timeline to Decision",
+        instruction:
+          "Assist tells you the Redis connection error started at 00:00 UTC, and the cart service degradation followed at 00:01 UTC. What does this sequence tell you as Incident Commander?",
+        hint: "If A happened before B, and B is the symptom, what is the likely cause?",
+        type: "multiple-choice",
+        choices: [
+          "The cart service caused the Redis failure",
+          "They are unrelated — coincidence in timing proves nothing",
+          "The Redis failure is likely the root cause — it preceded the cart service degradation by one minute",
+          "Redis and cart service both failed independently at the same time",
+        ],
+        correctChoice:
+          "The Redis failure is likely the root cause — it preceded the cart service degradation by one minute",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-customer-impact",
+    title: "Customer Impact",
+    codename: "COUNT THE COST",
+    role: "Incident Commander",
+    difficulty: "operator",
+    description:
+      "Leadership wants to know: how many customers are affected? Use Assist to quantify business impact from technical signals.",
+    briefing:
+      "The VP is calling. They do not want to hear about CPU percentages or disk mount points. They want to know: are our customers affected? How many? What are they experiencing? Assist can correlate technical problems with user-facing impact — connecting infrastructure signals to business events. This mission teaches you to translate technical data into business language. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-timeline-reconstruction"],
+    disciplines: [
+      { track: "incident-commander", xp: 150 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["dt-intelligence", "dem", "bizevents"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Business Impact Prompt",
+        instruction:
+          "Which prompt asks Assist to connect technical problems to customer-facing impact?",
+        hint: "You need Assist to look at both the technical problem AND user experience data — not just infrastructure metrics.",
+        type: "multiple-choice",
+        choices: [
+          "show me affected entities",
+          "How many users are currently affected by active problems in this environment, and what are they experiencing?",
+          "what is the error rate",
+          "show me the astroshop frontend",
+        ],
+        correctChoice:
+          "How many users are currently affected by active problems in this environment, and what are they experiencing?",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Technical to Business Translation",
+        instruction:
+          "Assist reports 100% CPU saturation on frontend-high-cpu affecting the webserver process. How do you translate this for a VP who asks 'are customers affected?'",
+        hint: "The technical problem is on infrastructure. The business question is about user experience. What is the connection?",
+        type: "multiple-choice",
+        choices: [
+          "Tell the VP the CPU is at 100% — they should understand",
+          "Say it is an infrastructure issue with no customer impact",
+          "Explain that webserver CPU saturation typically causes slower response times or timeouts for users hitting that service — check RUM or synthetic data to quantify",
+          "Ask engineering to handle the VP communication",
+        ],
+        correctChoice:
+          "Explain that webserver CPU saturation typically causes slower response times or timeouts for users hitting that service — check RUM or synthetic data to quantify",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Business Events Correlation",
+        instruction:
+          "What prompt would you use to correlate active problems with business event drop-offs in the last 30 days?",
+        hint: "Business events in Dynatrace track things like checkout completions, page views, and conversions. You want to see if technical problems correlate with drops in these events.",
+        type: "multiple-choice",
+        choices: [
+          "show me business events",
+          "What business events dropped off in the last 30 days and correlate those drops with any active or resolved problems in the same timeframe",
+          "show me the astroshop conversion rate",
+          "list all bizevents",
+        ],
+        correctChoice:
+          "What business events dropped off in the last 30 days and correlate those drops with any active or resolved problems in the same timeframe",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-escalation-decision",
+    title: "Escalation Decision",
+    codename: "MAKE THE CALL",
+    role: "Incident Commander",
+    difficulty: "operator",
+    description:
+      "Do you escalate or hold? Use Assist to get the data you need to make the call in under 60 seconds.",
+    briefing:
+      "The hardest decision in incident command is escalation. Escalate too early and you burn out your team. Escalate too late and the customer impact grows. Assist can give you a rapid situation assessment — blast radius, severity, trend — so you can make a data-driven escalation decision. This mission teaches you the Assist-first escalation workflow. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-customer-impact"],
+    disciplines: [
+      { track: "incident-commander", xp: 150 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Escalation Assessment Prompt",
+        instruction:
+          "Which prompt gives you the fastest data to decide whether to escalate an active incident?",
+        hint: "You need severity, blast radius, and trend in one response. A good escalation prompt asks for all three.",
+        type: "multiple-choice",
+        choices: [
+          "show me the problem",
+          "For the most critical active problem: what is the severity, how many entities are affected, is it getting better or worse, and what is the recommended immediate action?",
+          "should I escalate",
+          "who is on call",
+        ],
+        correctChoice:
+          "For the most critical active problem: what is the severity, how many entities are affected, is it getting better or worse, and what is the recommended immediate action?",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "Escalation Criteria",
+        instruction:
+          "Assist reports: severity HIGH, 2 entities affected, trend STABLE, impact level INFRASTRUCTURE. Based on this, what is the appropriate escalation decision?",
+        hint: "STABLE trend means the problem is not spreading. INFRASTRUCTURE impact means no direct user-facing impact yet.",
+        type: "multiple-choice",
+        choices: [
+          "Escalate immediately to P1 — any HIGH severity requires full escalation",
+          "Hold — monitor closely but do not escalate yet. Stable trend and infrastructure-only impact suggest there is time to investigate before customer impact",
+          "Close the incident — stable trend means it is resolving",
+          "Escalate only if the VP asks",
+        ],
+        correctChoice:
+          "Hold — monitor closely but do not escalate yet. Stable trend and infrastructure-only impact suggest there is time to investigate before customer impact",
+        points: 175,
+      },
+      {
+        id: "cp3",
+        title: "When to Escalate",
+        instruction:
+          "Which signal from Assist should trigger an immediate escalation decision?",
+        hint: "Think about what changes the risk profile of an incident from investigate to all hands.",
+        type: "multiple-choice",
+        choices: [
+          "Any problem with HIGH severity regardless of trend or impact",
+          "When affected entity count grows, trend shows worsening, and impact level reaches APPLICATION or SERVICES",
+          "When the problem has been open for more than 1 hour",
+          "When any SLO drops below its warning threshold",
+        ],
+        correctChoice:
+          "When affected entity count grows, trend shows worsening, and impact level reaches APPLICATION or SERVICES",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-all-clear",
+    title: "The All-Clear",
+    codename: "STAND DOWN",
+    role: "Incident Commander",
+    difficulty: "operator",
+    description:
+      "The incident is resolving. Use Assist to confirm resolution and write the all-clear communication.",
+    briefing:
+      "Declaring all-clear too early is as dangerous as not declaring it at all. Before you stand down the team, you need confirmation that the root cause is gone, affected entities have recovered, and no new problems have opened. Assist can verify resolution from Grail data and generate the stakeholder communication. This mission teaches you to close incidents with data, not assumptions. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-escalation-decision"],
+    disciplines: [
+      { track: "incident-commander", xp: 125 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Resolution Verification Prompt",
+        instruction:
+          "Which prompt asks Assist to confirm that a specific problem has fully resolved and no related issues remain open?",
+        hint: "You need Assist to check both the original problem AND scan for any new problems that may have opened as a result.",
+        type: "multiple-choice",
+        choices: [
+          "is the problem fixed",
+          "Confirm whether the CPU saturation problem on frontend-high-cpu has resolved, and check if any related problems opened in the last hour",
+          "close the incident",
+          "show me closed problems",
+        ],
+        correctChoice:
+          "Confirm whether the CPU saturation problem on frontend-high-cpu has resolved, and check if any related problems opened in the last hour",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Why Data-Driven All-Clear Matters",
+        instruction:
+          "An engineer says it feels like it is back to normal. Why is this not sufficient before declaring all-clear?",
+        hint: "Feeling and data are different things. What specific verification does Assist provide that gut feeling cannot?",
+        type: "multiple-choice",
+        choices: [
+          "Engineers are always wrong about incident resolution",
+          "Assist can verify from Grail that problem status changed to RESOLVED, entity metrics returned to baseline, and no new related problems opened — gut feeling cannot confirm all three",
+          "You need to wait 24 hours before declaring all-clear",
+          "Only the VP can declare all-clear",
+        ],
+        correctChoice:
+          "Assist can verify from Grail that problem status changed to RESOLVED, entity metrics returned to baseline, and no new related problems opened — gut feeling cannot confirm all three",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Stakeholder Communication Prompt",
+        instruction:
+          "After confirming resolution, which prompt generates a stakeholder-ready all-clear communication?",
+        hint: "Specify the audience and the format. Stakeholders need plain language, not technical jargon.",
+        type: "multiple-choice",
+        choices: [
+          "write an email",
+          "Generate a stakeholder-ready all-clear communication for the CPU saturation incident on frontend-high-cpu — include what happened, when it was resolved, and what prevents recurrence",
+          "send a Slack message",
+          "update the Jira ticket",
+        ],
+        correctChoice:
+          "Generate a stakeholder-ready all-clear communication for the CPU saturation incident on frontend-high-cpu — include what happened, when it was resolved, and what prevents recurrence",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-command-postmortem",
+    title: "Command Postmortem",
+    codename: "LESSONS LEARNED",
+    role: "Incident Commander",
+    difficulty: "elite",
+    description:
+      "Use Assist to generate a full postmortem the engineering team can act on — not a retrospective nobody reads.",
+    briefing:
+      "A postmortem that sits in Confluence is worthless. A postmortem that drives process change is priceless. Assist can generate a structured postmortem from Grail data — timeline, root cause, contributing factors, action items — in the format your team can actually use. This mission teaches you to produce postmortems at the speed of incidents. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-all-clear"],
+    disciplines: [
+      { track: "incident-commander", xp: 200 },
+      { track: "sre", xp: 100 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Full Postmortem Prompt",
+        instruction:
+          "Which prompt generates the most complete and actionable postmortem from Assist?",
+        hint: "A good postmortem prompt specifies the incident, the sections you need, and the audience.",
+        type: "multiple-choice",
+        choices: [
+          "write a postmortem for the CPU problem",
+          "Generate a complete postmortem for the CPU saturation incident on frontend-high-cpu including: timeline of events, root cause analysis, blast radius, contributing factors, and three specific action items to prevent recurrence",
+          "summarize what happened",
+          "create an incident report",
+        ],
+        correctChoice:
+          "Generate a complete postmortem for the CPU saturation incident on frontend-high-cpu including: timeline of events, root cause analysis, blast radius, contributing factors, and three specific action items to prevent recurrence",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "Action Items vs Observations",
+        instruction:
+          "A postmortem action item must be what?",
+        hint: "Think about what makes an action item actually get done versus just being documented.",
+        type: "multiple-choice",
+        choices: [
+          "A general observation about what went wrong",
+          "Specific, assigned, time-bound, and tied to a system or process change — not a vague recommendation",
+          "A description of the symptoms that were observed",
+          "A list of who was on call during the incident",
+        ],
+        correctChoice:
+          "Specific, assigned, time-bound, and tied to a system or process change — not a vague recommendation",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Grail-Powered Postmortems",
+        instruction:
+          "What is the advantage of Assist generating the postmortem timeline from Grail versus engineers writing it from memory or chat logs?",
+        hint: "Think about accuracy, speed, and completeness.",
+        type: "multiple-choice",
+        choices: [
+          "Assist writes faster than engineers can type",
+          "Grail contains immutable, precise event data with exact timestamps — no reconstruction bias, no missing gaps, no blame-shifting between engineers",
+          "Engineers make spelling mistakes in postmortems",
+          "Grail postmortems are shorter",
+        ],
+        correctChoice:
+          "Grail contains immutable, precise event data with exact timestamps — no reconstruction bias, no missing gaps, no blame-shifting between engineers",
+        points: 200,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
