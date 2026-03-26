@@ -35,11 +35,7 @@ export const CIRCUITS: Circuit[] = [
     id: "terrain-recon",
     name: "Terrain Recon",
     description: "Read the signals — dashboards, logs, and observability data",
-    missionIds: [
-      "mission-read-dashboard",
-      "mission-find-the-log",
-      "mission-map-the-topology",
-    ],
+    missionIds: [],
     f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
     countryCode: "mc",
   },
@@ -49,8 +45,6 @@ export const CIRCUITS: Circuit[] = [
     name: "Insight",
     description: "SLOs, deployments, DQL — turning data into decisions",
     missionIds: [
-      "mission-golden-signal",
-      "mission-first-dql",
       "operation-silent-rollout",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
@@ -61,7 +55,6 @@ export const CIRCUITS: Circuit[] = [
     name: "Reliability Run",
     description: "Infrastructure and database investigation under real pressure",
     missionIds: [
-      "mission-iron-floor",
       "operation-3am-database-spike",
       "operation-k8s-meltdown",
     ],
@@ -75,7 +68,6 @@ export const CIRCUITS: Circuit[] = [
     description: "Trace through distributed systems to pinpoint root cause",
     missionIds: [
       "operation-ghost-in-the-trace",
-      "mission-follow-the-wire",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/interlagos.svg",
     countryCode: "br",
@@ -85,24 +77,10 @@ export const CIRCUITS: Circuit[] = [
     name: "First Response",
     description: "Triage and resolve active incidents under pressure",
     missionIds: [
-      "mission-silent-query",
-      "operation-3am-database-spike",
-      "mission-follow-the-error",
       "operation-flatline",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/marina-bay.svg",
     countryCode: "sg",
-  },
-  {
-    id: "root-cause-run",
-    name: "Root Cause Run",
-    description: "Work backwards from symptoms to find what actually broke",
-    missionIds: [
-      "operation-ghost-in-the-trace",
-      "operation-flatline",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
-    countryCode: "it",
   },
   {
     id: "reliability-driver",
