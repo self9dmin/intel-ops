@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   HostsIcon,
   WarningIcon,
@@ -64,12 +64,20 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: AppSidebarProps) => {
+  const { userState } = useUserStateContext();
+  const initialDifficulty = userState?.experienceLevel === "new" ? "rookie" as const : null;
   const [filters, setFilters] = useState<SidebarFilters>({
     status: null,
-    difficulty: null,
+    difficulty: initialDifficulty,
     topic: null,
   });
-  const { userState } = useUserStateContext();
+
+  // Push initial filter to parent on mount (handles experience-based default)
+  useEffect(() => {
+    if (initialDifficulty) {
+      onFilterChange(filters);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [statusOpen, setStatusOpen] = useState(true);
   const [difficultyOpen, setDifficultyOpen] = useState(true);
