@@ -42,14 +42,16 @@ interface DriverOption {
   id: Discipline;
   name: string;
   role: string;
+  driverName: string;
   description: string;
+  helmet: string;
 }
 
 const DRIVER_OPTIONS: DriverOption[] = [
-  { id: "sre", name: "Reliability Driver", role: "SRE", description: "Incident response, root cause analysis, and proactive reliability." },
-  { id: "incident-commander", name: "The Strategist", role: "Incident Commander", description: "Lead, communicate, and close incidents with data." },
-  { id: "developer", name: "Speed Driver", role: "Developer", description: "Performance, OTel signals, and deploy with confidence." },
-  { id: "platform-engineer", name: "The Builder", role: "Platform Engineer", description: "Forecast, automate, and manage infrastructure at scale." },
+  { id: "sre", name: "Reliability Driver", role: "SRE", driverName: "Max Verstappen", description: "Incident response, root cause analysis, and proactive reliability.", helmet: "/ui/assets/helmets/verstappen.png" },
+  { id: "incident-commander", name: "The Strategist", role: "Incident Commander", driverName: "Arvid Lindblad", description: "Lead, communicate, and close incidents with data.", helmet: "/ui/assets/helmets/lindblad.png" },
+  { id: "developer", name: "Speed Driver", role: "Developer", driverName: "Liam Lawson", description: "Performance, OTel signals, and deploy with confidence.", helmet: "/ui/assets/helmets/lawson.png" },
+  { id: "platform-engineer", name: "The Builder", role: "Platform Engineer", driverName: "Isack Hadjar", description: "Forecast, automate, and manage infrastructure at scale.", helmet: "/ui/assets/helmets/hadjar.png" },
 ];
 
 const EXPERIENCE_OPTIONS: ExperienceOption[] = [
@@ -492,19 +494,41 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                   <div
                     key={driver.id}
                     onClick={() => setSelectedDiscipline(driver.id)}
-                    style={cardStyle(isSelected)}
+                    style={{
+                      ...cardStyle(isSelected),
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
                     onMouseEnter={(e) => handleHover(e, isSelected, true)}
                     onMouseLeave={(e) => handleHover(e, isSelected, false)}
                   >
-                    <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                      {driver.name}
+                    <div>
+                      <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
+                        {driver.name}
+                      </div>
+                      <div style={{ fontSize: "11px", opacity: 0.5, marginTop: "2px" }}>
+                        {driver.role}
+                      </div>
+                      <div style={{ fontSize: "11px", opacity: 0.4, marginTop: "1px" }}>
+                        {driver.driverName}
+                      </div>
+                      <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "6px" }}>
+                        {driver.description}
+                      </div>
                     </div>
-                    <div style={{ fontSize: "11px", opacity: 0.5, marginTop: "2px" }}>
-                      {driver.role}
-                    </div>
-                    <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "6px" }}>
-                      {driver.description}
-                    </div>
+                    <img
+                      src={driver.helmet}
+                      alt=""
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "contain",
+                        flexShrink: 0,
+                        opacity: isSelected ? 0.9 : 0.5,
+                        pointerEvents: "none",
+                      }}
+                    />
                   </div>
                 );
               })}
