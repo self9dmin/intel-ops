@@ -32,57 +32,6 @@ export const CIRCUITS: Circuit[] = [
     countryCode: "bh",
   },
   {
-    id: "terrain-recon",
-    name: "Terrain Recon",
-    description: "Read the signals — dashboards, logs, and observability data",
-    missionIds: [],
-    f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
-    countryCode: "mc",
-  },
-  // ─── QUALIFYING ───────────────────────────────────────────────────
-  {
-    id: "insight",
-    name: "Insight",
-    description: "SLOs, deployments, DQL — turning data into decisions",
-    missionIds: [
-      "operation-silent-rollout",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
-    countryCode: "be",
-  },
-  {
-    id: "reliability-run",
-    name: "Reliability Run",
-    description: "Infrastructure and database investigation under real pressure",
-    missionIds: [
-      "operation-3am-database-spike",
-      "operation-k8s-meltdown",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
-    countryCode: "gb",
-  },
-  // ─── RACE DAY ─────────────────────────────────────────────────────
-  {
-    id: "signal-hunt",
-    name: "Signal Hunt",
-    description: "Trace through distributed systems to pinpoint root cause",
-    missionIds: [
-      "operation-ghost-in-the-trace",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/interlagos.svg",
-    countryCode: "br",
-  },
-  {
-    id: "first-response",
-    name: "First Response",
-    description: "Triage and resolve active incidents under pressure",
-    missionIds: [
-      "operation-flatline",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/marina-bay.svg",
-    countryCode: "sg",
-  },
-  {
     id: "reliability-driver",
     name: "Reliability Driver",
     description: "SRE missions using Dynatrace Assist for incident response, root cause analysis, and proactive reliability",
