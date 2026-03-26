@@ -163,12 +163,12 @@ Every mission has:
 - Onboarding wizard — role selection, starting circuit assignment
 - Progress tab — skill tracks, history, achievements
 - Playground-only mode (Live Mode removed pending Phase 3)
+- Mission page war room redesign — immersive full-viewport layout with conference room background, three-panel screen wall, F1 operator POV
 
 ### 🔄 In Progress
 
-- Mission page redesign — F1 circuit context in the briefing view (A/B testing two approaches)
-- Circuit audit — difficulty balancing across tiers
-- Setup track missions — The Dock, Deploy Your First Agent, Organize Your Fleet, Your First Alert, Get Notified, Your First DQL
+- Mission quality audit — scoring existing missions against 2025-2026 DT use cases
+- New missions: OpenTelemetry basics, Dynatrace Assist/Intelligence, Cost optimization with DQL
 
 ### 🔒 Planned
 
@@ -176,6 +176,10 @@ Every mission has:
 - DTU course links per mission — static links to relevant university content
 - Post-mission "learn more" CTA
 - Mission re-validation against latest Playground data
+- OpenTelemetry mission track — instrument an app, ingest OTel data, query spans
+- Dynatrace Assist mission — use AI to investigate a problem end-to-end
+- Cost optimization mission — use DQL to identify expensive queries and unused resources
+- AI Observability mission — observe LLM/agent workloads with the AI Observability app
 
 **Phase 3 — Live validation**
 - DQL checkpoint validation against synthetic Grail bizevents (`intel-ops.training.*` event prefix)
