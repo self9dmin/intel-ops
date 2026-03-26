@@ -454,7 +454,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
         )}
 
         <div style={{ marginTop: "8px" }}>
-          {(["sre", "developer", "incident-commander", "platform-engineer"] as Discipline[]).map((disc) => {
+          {(["incident-commander", "developer", "platform-engineer", "sre"] as Discipline[]).map((disc) => {
             const progress = userState.disciplines[disc];
             const meta = DISCIPLINE_META[disc];
             const driverInfo: Record<Discipline, { name: string; driverName: string; helmet: string }> = {

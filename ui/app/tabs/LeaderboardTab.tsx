@@ -1,36 +1,46 @@
 import React, { useEffect, useMemo } from "react";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
-import { Heading, Text } from "@dynatrace/strato-components/typography";
-import { MISSIONS } from "../data/missions";
 import { useLeaderboardContext, type StoredScore } from "../context/LeaderboardContext";
+import { useUserStateContext } from "../context/UserStateContext";
 import { SkeletonRows } from "../components/SkeletonRows";
 import { ErrorRetry } from "../components/ErrorRetry";
 import { EmptyState } from "../components/EmptyState";
+import { XP_THRESHOLDS } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 
-interface LeaderboardRow {
-  rank: number;
-  player: string;
-  bestMission: string;
-  score: number;
-  date: string;
-  userId: string;
-  isCurrentUser: boolean;
+// --- Helmet & color mapping ---
+
+const DISCIPLINE_HELMET: Record<Discipline, string> = {
+  sre: "/ui/assets/helmets/verstappen.png",
+  developer: "/ui/assets/helmets/lawson.png",
+  "incident-commander": "/ui/assets/helmets/lindblad.png",
+  "platform-engineer": "/ui/assets/helmets/hadjar.png",
+};
+
+const DISCIPLINE_BAR_COLOR: Record<Discipline, string> = {
+  sre: "#3B82F6",
+  developer: "#10B981",
+  "incident-commander": "#F59E0B",
+  "platform-engineer": "#8B5CF6",
+};
+
+const POSITION_COLORS: Record<number, string> = {
+  1: "#FFD700",
+  2: "#C0C0C0",
+  3: "#CD7F32",
+};
+
+// --- Country flag emoji helper ---
+
+function countryToFlag(code: string): string {
+  return code
+    .toUpperCase()
+    .split("")
+    .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+    .join("");
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatMissionName(key: string): string {
-  const mission = MISSIONS.find((m) => m.id === key);
-  if (mission) return mission.title;
-  return key;
-}
+// --- Helpers ---
 
 function resolveDisplayName(s: StoredScore): string {
   const name = s.userName;
@@ -38,37 +48,90 @@ function resolveDisplayName(s: StoredScore): string {
   return `${s.userId.slice(0, 8)}...`;
 }
 
-function aggregateBestPerPlayer(
+function getLevelName(totalXP: number): string {
+  for (let i = XP_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (totalXP >= XP_THRESHOLDS[i].xp) return XP_THRESHOLDS[i].name;
+  }
+  return "Recruit";
+}
+
+function guessDisciplineFromRole(role: string): Discipline | null {
+  const lower = role.toLowerCase();
+  if (lower.includes("sre")) return "sre";
+  if (lower.includes("incident") || lower.includes("commander")) return "incident-commander";
+  if (lower.includes("developer") || lower.includes("dev")) return "developer";
+  if (lower.includes("platform") || lower.includes("engineer")) return "platform-engineer";
+  return null;
+}
+
+interface StandingsRow {
+  position: number;
+  name: string;
+  userId: string;
+  totalPts: number;
+  isCurrentUser: boolean;
+  discipline: Discipline | null;
+  country: string | null;
+}
+
+function aggregateStandings(
   scores: StoredScore[],
-  currentUserId: string
-): LeaderboardRow[] {
-  // For each player, find their single highest score across all missions
-  const bestByPlayer = new Map<string, StoredScore>();
-  for (const score of scores) {
-    const existing = bestByPlayer.get(score.userId);
-    if (!existing || score.totalScore > existing.totalScore) {
-      bestByPlayer.set(score.userId, score);
+  currentUserId: string,
+  currentUserDiscipline: Discipline | null,
+  currentUserCountry: string | null,
+): StandingsRow[] {
+  const playerData = new Map<string, { name: string; totalPts: number; roles: string[] }>();
+
+  for (const s of scores) {
+    const existing = playerData.get(s.userId);
+    if (existing) {
+      existing.totalPts += s.totalScore;
+      if (s.role && !existing.roles.includes(s.role)) existing.roles.push(s.role);
+    } else {
+      playerData.set(s.userId, {
+        name: resolveDisplayName(s),
+        totalPts: s.totalScore,
+        roles: s.role ? [s.role] : [],
+      });
     }
   }
 
-  const sorted = [...bestByPlayer.values()].sort(
-    (a, b) => b.totalScore - a.totalScore
-  );
+  const sorted = [...playerData.entries()]
+    .sort((a, b) => b[1].totalPts - a[1].totalPts);
 
-  return sorted.map((s, i) => ({
-    rank: i + 1,
-    player: resolveDisplayName(s),
-    bestMission: formatMissionName(s.missionId ?? s.mission),
-    score: Math.round(s.totalScore),
-    date: formatDate(s.completedAt),
-    userId: s.userId,
-    isCurrentUser: s.userId === currentUserId,
-  }));
+  return sorted.map(([userId, data], i) => {
+    const isCurrentUser = userId === currentUserId;
+    let discipline: Discipline | null = null;
+    let country: string | null = null;
+
+    if (isCurrentUser) {
+      discipline = currentUserDiscipline;
+      country = currentUserCountry ?? null;
+    } else {
+      for (const role of data.roles) {
+        discipline = guessDisciplineFromRole(role);
+        if (discipline) break;
+      }
+    }
+
+    return {
+      position: i + 1,
+      name: data.name,
+      userId,
+      totalPts: Math.round(data.totalPts),
+      isCurrentUser,
+      discipline,
+      country,
+    };
+  });
 }
+
+// --- Component ---
 
 export const LeaderboardTab = () => {
   const { scores, loading, error, stale, fetchScores, retry } =
     useLeaderboardContext();
+  const { userState } = useUserStateContext();
   const currentUser = getCurrentUserDetails();
 
   useEffect(() => {
@@ -78,16 +141,51 @@ export const LeaderboardTab = () => {
   }, []);
 
   const rows = useMemo(
-    () => aggregateBestPerPlayer(scores, currentUser.id),
-    [scores, currentUser.id]
+    () =>
+      aggregateStandings(
+        scores,
+        currentUser.id,
+        userState?.startingDiscipline ?? null,
+        userState?.country ?? null,
+      ),
+    [scores, currentUser.id, userState?.startingDiscipline, userState?.country]
   );
+
+  const currentUserPosition = rows.find((r) => r.isCurrentUser)?.position ?? null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      <Heading level={4}>Leaderboard</Heading>
-      <Text textStyle="small" style={{ opacity: 0.5 }}>
-        Showing best score per player
-      </Text>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{
+            fontSize: "28px",
+            fontWeight: 700,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+          }}>
+            Standings
+          </div>
+          <div style={{ fontSize: "13px", opacity: 0.5, marginTop: "4px" }}>
+            Season 1 · Mission Control
+          </div>
+        </div>
+        {currentUserPosition !== null && (
+          <div style={{
+            fontSize: "24px",
+            fontWeight: 700,
+            color: POSITION_COLORS[currentUserPosition] ?? "var(--dt-colors-text-neutral-default)",
+            background: "rgba(255,255,255,0.05)",
+            borderRadius: "8px",
+            padding: "8px 16px",
+            letterSpacing: "0.05em",
+          }}>
+            P{currentUserPosition}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
       {loading ? (
         <SkeletonRows rows={5} />
       ) : error ? (
@@ -96,54 +194,133 @@ export const LeaderboardTab = () => {
         <EmptyState message="No scores yet" />
       ) : (
         <div>
-          {/* Header row */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "60px 1fr 1fr 100px 120px",
-              padding: "8px 12px",
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "var(--dt-colors-text-neutral-subdued)",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              borderBottom: "1px solid var(--dt-colors-border-neutral-default)",
-            }}
-          >
-            <span>Rank</span>
-            <span>Player</span>
-            <span>Best Mission</span>
-            <span>Score</span>
-            <span>Date</span>
-          </div>
-          {rows.map((row) => (
-            <div
-              key={row.userId}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "60px 1fr 1fr 100px 120px",
-                padding: "8px 12px",
-                fontSize: "13px",
-                borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
-                background: row.isCurrentUser
-                  ? "var(--dt-colors-background-container-primary-default)"
-                  : "transparent",
-              }}
-            >
-              <span style={{ fontWeight: 600 }}>#{row.rank}</span>
-              <span style={{ fontWeight: row.isCurrentUser ? 600 : 400 }}>
-                {row.player}
-                {row.isCurrentUser && (
-                  <span style={{ opacity: 0.5, marginLeft: "6px", fontSize: "11px" }}>
-                    (you)
+          {rows.map((row) => {
+            const posColor = POSITION_COLORS[row.position] ?? undefined;
+            const barColor = row.discipline
+              ? DISCIPLINE_BAR_COLOR[row.discipline]
+              : "var(--dt-colors-border-neutral-default)";
+            const helmetSrc = row.discipline ? DISCIPLINE_HELMET[row.discipline] : null;
+            const levelName = getLevelName(row.totalPts);
+            const initial = row.name.charAt(0).toUpperCase();
+
+            return (
+              <div
+                key={row.userId}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "10px 12px",
+                  borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
+                  background: row.isCurrentUser
+                    ? "rgba(20, 150, 255, 0.08)"
+                    : row.position % 2 === 0
+                      ? "rgba(255,255,255,0.02)"
+                      : "transparent",
+                }}
+              >
+                {/* Position */}
+                <div style={{
+                  width: "48px",
+                  flexShrink: 0,
+                  fontSize: "18px",
+                  fontWeight: 700,
+                  color: posColor ?? "var(--dt-colors-text-neutral-subdued)",
+                }}>
+                  P{row.position}
+                </div>
+
+                {/* Discipline color bar */}
+                <div style={{
+                  width: "4px",
+                  height: "36px",
+                  borderRadius: "2px",
+                  background: barColor,
+                  flexShrink: 0,
+                  marginRight: "12px",
+                }} />
+
+                {/* Helmet / initial */}
+                <div style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  marginRight: "10px",
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: helmetSrc ? "transparent" : "rgba(255,255,255,0.1)",
+                }}>
+                  {helmetSrc ? (
+                    <img
+                      src={helmetSrc}
+                      alt=""
+                      style={{ width: "32px", height: "32px", objectFit: "contain" }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: "14px", fontWeight: 600, opacity: 0.6 }}>
+                      {initial}
+                    </span>
+                  )}
+                </div>
+
+                {/* Name + country */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontSize: "14px",
+                    fontWeight: row.isCurrentUser ? 600 : 400,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}>
+                    <span style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}>
+                      {row.name}
+                    </span>
+                    {row.country && (
+                      <span style={{ fontSize: "14px", flexShrink: 0 }}>
+                        {countryToFlag(row.country)}
+                      </span>
+                    )}
+                    {row.isCurrentUser && (
+                      <span style={{ fontSize: "11px", opacity: 0.4 }}>(you)</span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: "11px", opacity: 0.45, marginTop: "1px" }}>
+                    {levelName}
+                  </div>
+                </div>
+
+                {/* PTS */}
+                <div style={{
+                  flexShrink: 0,
+                  textAlign: "right",
+                  minWidth: "80px",
+                }}>
+                  <span style={{
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: posColor ?? "var(--dt-colors-text-neutral-default)",
+                  }}>
+                    {row.totalPts}
                   </span>
-                )}
-              </span>
-              <span style={{ opacity: 0.8 }}>{row.bestMission}</span>
-              <span style={{ fontWeight: 600 }}>{row.score}</span>
-              <span style={{ opacity: 0.6 }}>{row.date}</span>
-            </div>
-          ))}
+                  <span style={{
+                    fontSize: "11px",
+                    opacity: 0.45,
+                    marginLeft: "4px",
+                    fontWeight: 600,
+                    letterSpacing: "0.05em",
+                  }}>
+                    PTS
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
