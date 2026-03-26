@@ -36,10 +36,9 @@ export const CIRCUITS: Circuit[] = [
     name: "Terrain Recon",
     description: "Read the signals — dashboards, logs, and observability data",
     missionIds: [
-      "mission-identify-signal",
       "mission-read-dashboard",
       "mission-find-the-log",
-      "mission-map-topology",
+      "mission-map-the-topology",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
     countryCode: "mc",
@@ -52,7 +51,6 @@ export const CIRCUITS: Circuit[] = [
     missionIds: [
       "mission-golden-signal",
       "mission-first-dql",
-      "mission-silent-disk-drain",
       "operation-silent-rollout",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
@@ -64,7 +62,6 @@ export const CIRCUITS: Circuit[] = [
     description: "Infrastructure and database investigation under real pressure",
     missionIds: [
       "mission-iron-floor",
-      "mission-investigate-database-failure",
       "operation-3am-database-spike",
       "operation-k8s-meltdown",
     ],
