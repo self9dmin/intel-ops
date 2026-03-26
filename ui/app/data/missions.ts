@@ -3145,6 +3145,466 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-fleet-report",
+    title: "The Fleet Report",
+    codename: "FULL INVENTORY",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "You manage the infrastructure. Use Assist to get a full health report across hosts, clusters, and services in one prompt.",
+    briefing:
+      "Platform engineers live and die by their ability to quickly understand the state of the infrastructure they own. The old way: open Infrastructure and Operations, then Kubernetes, then Services — three apps, three mental models. The new way: one Assist prompt, full picture. This mission teaches you the Assist-first infrastructure overview workflow. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: ["mission-the-dock"],
+    disciplines: [
+      { track: "platform-engineer", xp: 75 },
+      { track: "sre", xp: 25 },
+    ],
+    topics: ["infrastructure", "kubernetes", "dt-intelligence"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Fleet Report Prompt",
+        instruction:
+          "Which prompt gives a Platform Engineer the fastest full infrastructure health summary?",
+        hint: "You want hosts, Kubernetes clusters, and services in one response — not three separate queries.",
+        type: "multiple-choice",
+        choices: [
+          "show me infrastructure",
+          "Give me a full infrastructure health report — hosts, Kubernetes clusters, and services — current status summary",
+          "how many hosts do we have",
+          "open Infrastructure and Operations",
+        ],
+        correctChoice:
+          "Give me a full infrastructure health report — hosts, Kubernetes clusters, and services — current status summary",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "What the Report Covers",
+        instruction:
+          "The infrastructure health report from Assist covers three layers. What are they?",
+        hint: "Think compute, orchestration, and application — the three tiers of a modern cloud-native environment.",
+        type: "multiple-choice",
+        choices: [
+          "CPU, memory, and disk",
+          "Hosts, Kubernetes clusters, and services",
+          "Development, staging, and production",
+          "AWS, Azure, and GCP",
+        ],
+        correctChoice: "Hosts, Kubernetes clusters, and services",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Report to Action",
+        instruction:
+          "Assist reports 11 active problems across the environment with 2 services directly affected. What is the Platform Engineer's correct next step?",
+        hint: "You have the overview. Now you need to prioritize — not investigate everything at once.",
+        type: "multiple-choice",
+        choices: [
+          "Restart all affected services immediately",
+          "Triage the 11 problems by severity and blast radius — use Assist to get the causal chain for the highest severity items first",
+          "Wait for the SRE team to handle it",
+          "Open each problem in the UI manually",
+        ],
+        correctChoice:
+          "Triage the 11 problems by severity and blast radius — use Assist to get the causal chain for the highest severity items first",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-disk-forecast",
+    title: "Disk Forecast",
+    codename: "SPACE INVADER",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Disk does not fail suddenly — it fills slowly. Use Assist to predict which hosts run out of space before the alert fires.",
+    briefing:
+      "The disk alert on frontend-high-cpu has been open for 30 days. Nobody acted. That is the failure mode. The Forecasting Agent can predict disk exhaustion before it happens — giving you days to act instead of minutes. This mission teaches you to use predictive AI for proactive infrastructure management. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-fleet-report"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["infrastructure", "dt-intelligence", "metrics"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Disk Forecast Prompt",
+        instruction:
+          "Which prompt correctly asks Assist to predict disk space exhaustion across all hosts in the next 7 days?",
+        hint: "Specify the prediction window and the data source. Assist needs both to run the Forecasting Agent.",
+        type: "multiple-choice",
+        choices: [
+          "show me disk usage",
+          "Which hosts are predicted to run out of disk space in the next 7 days based on the last 30 days of data?",
+          "what is disk space",
+          "forecast storage",
+        ],
+        correctChoice:
+          "Which hosts are predicted to run out of disk space in the next 7 days based on the last 30 days of data?",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Forecast Output Structure",
+        instruction:
+          "When the Forecasting Agent responds to a disk prediction request, what does it return for each host?",
+        hint: "The Forecasting Agent gives you a predicted percentage — not a binary yes or no — so you can prioritize by risk level.",
+        type: "multiple-choice",
+        choices: [
+          "A simple yes or no — will it run out or not",
+          "A predicted percentage of free disk space remaining at the end of the forecast window",
+          "The exact date and time of disk exhaustion",
+          "A list of files consuming the most disk space",
+        ],
+        correctChoice:
+          "A predicted percentage of free disk space remaining at the end of the forecast window",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Proactive vs Reactive",
+        instruction:
+          "A host is predicted to have 50% disk free in 7 days — not critical. Another shows 3% free currently with an active alert. How do you prioritize?",
+        hint: "One is a current problem, one is a future risk. Both need attention but in different timeframes.",
+        type: "multiple-choice",
+        choices: [
+          "Handle the 50% host first because forecasting identified it proactively",
+          "Address the 3% host immediately as an active incident, then schedule disk expansion for the 50% host within the week",
+          "Ignore both — disk alerts resolve themselves",
+          "Escalate both to P1 immediately",
+        ],
+        correctChoice:
+          "Address the 3% host immediately as an active incident, then schedule disk expansion for the 50% host within the week",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-otel-inventory",
+    title: "OTel Inventory",
+    codename: "SIGNAL CENSUS",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Before you can manage telemetry at scale, you need to know what is sending signals. Use Assist to build a complete OTel inventory.",
+    briefing:
+      "Your organization has 100+ services. Some use OneAgent. Some use OpenTelemetry. Some use both. Some use neither. Before you can enforce observability standards or optimize ingestion costs, you need to know what is instrumented, how, and with which libraries. Assist can build that inventory in one prompt. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-disk-forecast"],
+    disciplines: [
+      { track: "platform-engineer", xp: 125 },
+      { track: "developer", xp: 50 },
+    ],
+    topics: ["infrastructure", "dt-intelligence"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "OTel Inventory Prompt",
+        instruction:
+          "Which prompt asks Assist to return a complete list of OpenTelemetry-instrumented services with their libraries?",
+        hint: "You want both the service name AND the instrumentation library — not just a count.",
+        type: "multiple-choice",
+        choices: [
+          "show me OTel services",
+          "Show me all OpenTelemetry-instrumented services and their instrumentation libraries in this environment",
+          "which services use OpenTelemetry",
+          "list instrumentation",
+        ],
+        correctChoice:
+          "Show me all OpenTelemetry-instrumented services and their instrumentation libraries in this environment",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Instrumentation Library Patterns",
+        instruction:
+          "Assist returns that multiple services use the grpc instrumentation library. What does this tell a Platform Engineer about those services?",
+        hint: "The library name tells you the communication protocol being traced. gRPC is a specific protocol.",
+        type: "multiple-choice",
+        choices: [
+          "Those services are written in Go",
+          "Those services communicate via gRPC protocol — their inter-service calls are being traced as OTel spans",
+          "Those services do not support HTTP",
+          "gRPC is a legacy instrumentation method that should be replaced",
+        ],
+        correctChoice:
+          "Those services communicate via gRPC protocol — their inter-service calls are being traced as OTel spans",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Coverage Gap Identification",
+        instruction:
+          "Assist returns 35 OTel-instrumented services in an environment with 100+ total services. What should a Platform Engineer do with this information?",
+        hint: "35 out of 100+ means the majority are not OTel-instrumented. What is the platform engineering response to an observability coverage gap?",
+        type: "multiple-choice",
+        choices: [
+          "Nothing — 35 services is enough",
+          "Identify which of the remaining services are business-critical and prioritize adding OTel instrumentation or OneAgent coverage to close the gap",
+          "Remove OTel from all 35 services and standardize on OneAgent only",
+          "Ask developers to instrument all 100 services this sprint",
+        ],
+        correctChoice:
+          "Identify which of the remaining services are business-critical and prioritize adding OTel instrumentation or OneAgent coverage to close the gap",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-log-volume",
+    title: "Log Volume Intelligence",
+    codename: "LOG ECONOMY",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Log ingestion costs money. Use Assist to identify which services generate the most volume and where to optimize.",
+    briefing:
+      "Every log line costs compute and storage. At scale, unmanaged log volume becomes a budget problem. Before you can optimize, you need to know which services are generating the most logs and whether that volume is signal or noise. Assist can surface this — but at scale, complex log volume queries can hit Assist tool call limits. This mission teaches you how to scope queries effectively. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-otel-inventory"],
+    disciplines: [
+      { track: "platform-engineer", xp: 125 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["logs", "dql", "dt-intelligence"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Scoped Log Volume Prompt",
+        instruction:
+          "Asking Assist for log volume across ALL services at once can hit tool call limits. Which prompt is better scoped for reliable results?",
+        hint: "Assist can make up to 10 internal tool calls per response. A query scoped to a namespace or specific services is less likely to exceed this limit.",
+        type: "multiple-choice",
+        choices: [
+          "Which services are generating the most log volume in the last 30 days? Show top 10",
+          "Show me all logs from all services for the last 30 days",
+          "Which astroshop services generated the most ERROR logs in the last 30 days, grouped by service?",
+          "fetch logs | summarize count()",
+        ],
+        correctChoice:
+          "Which astroshop services generated the most ERROR logs in the last 30 days, grouped by service?",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Tool Call Limit Meaning",
+        instruction:
+          "Assist returns: the maximum number of tool calls has been reached for this request. What does this mean and what should you do?",
+        hint: "Assist uses internal MCP tools to query Grail. Complex or broad queries require more tool calls. The limit is 10 per response.",
+        type: "multiple-choice",
+        choices: [
+          "Dynatrace is down — try again later",
+          "The query was too broad and required more than 10 internal tool calls. Narrow the scope — target a specific namespace, service, or timeframe — and retry",
+          "You have run out of Assist credits for the day",
+          "The logs app is unavailable",
+        ],
+        correctChoice:
+          "The query was too broad and required more than 10 internal tool calls. Narrow the scope — target a specific namespace, service, or timeframe — and retry",
+        points: 175,
+      },
+      {
+        id: "cp3",
+        title: "Log Volume to Cost Action",
+        instruction:
+          "Assist identifies that a single service generates 80% of all log volume. What are the two options a Platform Engineer should evaluate?",
+        hint: "High log volume from one service is either justified by the signal value or wasteful noise. Both cases have different responses.",
+        type: "multiple-choice",
+        choices: [
+          "Delete all logs from that service immediately",
+          "Evaluate whether the high volume is valuable signal — if yes, optimize ingestion with OpenPipeline filtering; if noise, work with the team to reduce log verbosity at the source",
+          "Increase the log storage quota to accommodate the volume",
+          "Move the service to a different cluster",
+        ],
+        correctChoice:
+          "Evaluate whether the high volume is valuable signal — if yes, optimize ingestion with OpenPipeline filtering; if noise, work with the team to reduce log verbosity at the source",
+        points: 175,
+      },
+    ],
+  },
+  {
+    id: "mission-workflow-builder",
+    title: "Build the Workflow",
+    codename: "AUTOMATE IT",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description:
+      "Stop responding to the same alert manually. Use Assist to design a workflow that handles it automatically.",
+    briefing:
+      "The CPU alert on frontend-high-cpu has fired dozens of times. Every time, an engineer manually investigates and restarts the process. That is toil. Dynatrace Workflows can automate this — triggered by a metric event, executing a remediation action. Assist can design the workflow for you. This mission teaches you to use Assist as your automation architect. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-log-volume"],
+    disciplines: [
+      { track: "platform-engineer", xp: 150 },
+      { track: "sre", xp: 75 },
+    ],
+    topics: ["automation", "dt-intelligence"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Workflow Design Prompt",
+        instruction:
+          "Which prompt asks Assist to design a complete workflow for CPU-based auto-remediation?",
+        hint: "Specify the trigger condition, the notification action, and the remediation action. The more specific the prompt, the more complete the workflow design.",
+        type: "multiple-choice",
+        choices: [
+          "create a workflow",
+          "Generate a Dynatrace workflow that fires when CPU usage exceeds 90% on any host for more than 5 minutes, sends a Slack notification, and restarts the affected process group",
+          "how do I automate alerts",
+          "show me workflows",
+        ],
+        correctChoice:
+          "Generate a Dynatrace workflow that fires when CPU usage exceeds 90% on any host for more than 5 minutes, sends a Slack notification, and restarts the affected process group",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Workflow Trigger Type",
+        instruction:
+          "For a workflow that fires when CPU exceeds 90% for more than 5 minutes, which trigger type should you configure in Dynatrace Workflows?",
+        hint: "You are triggering on a sustained metric threshold — not an event, not a schedule, not a problem.",
+        type: "multiple-choice",
+        choices: [
+          "Schedule trigger — runs every 5 minutes",
+          "Problem detected trigger — fires when Davis opens a problem",
+          "Metric event trigger — fires when a metric crosses a defined threshold for a sustained duration",
+          "Webhook trigger — fires when an external system calls Dynatrace",
+        ],
+        correctChoice:
+          "Metric event trigger — fires when a metric crosses a defined threshold for a sustained duration",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Assist vs Manual Workflow Design",
+        instruction:
+          "What is the advantage of using Assist to design a workflow versus building it manually in the Workflows UI?",
+        hint: "Think about what Assist provides that the UI canvas does not — especially for someone new to workflow configuration.",
+        type: "multiple-choice",
+        choices: [
+          "Assist workflows deploy automatically without any manual configuration",
+          "Assist generates a step-by-step design with specific metric names, trigger conditions, and action types — giving you a blueprint to implement rather than starting from a blank canvas",
+          "Assist workflows are faster than manually configured ones",
+          "The Workflows UI does not support CPU-based triggers",
+        ],
+        correctChoice:
+          "Assist generates a step-by-step design with specific metric names, trigger conditions, and action types — giving you a blueprint to implement rather than starting from a blank canvas",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-approval-gate",
+    title: "The Approval Gate",
+    codename: "HUMAN IN THE LOOP",
+    role: "Platform Engineer",
+    difficulty: "elite",
+    description:
+      "Full automation is powerful but dangerous. Use Assist to design a workflow with a human approval gate before any remediation runs.",
+    briefing:
+      "Auto-remediation without human oversight is how you make a bad situation catastrophic. A workflow that automatically restarts a process during a cascade failure could make things worse. The approval gate pattern puts a human in the loop before any destructive action runs — Assist sends the notification, a human reviews and approves, then the workflow proceeds. This is responsible automation. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-workflow-builder"],
+    disciplines: [
+      { track: "platform-engineer", xp: 200 },
+      { track: "incident-commander", xp: 100 },
+    ],
+    topics: ["automation", "dt-intelligence"],
+    category: "configuration",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Approval Gate Prompt",
+        instruction:
+          "Which prompt asks Assist to design a workflow that includes a human approval gate before remediation?",
+        hint: "You need to explicitly specify the approval gate in the prompt — Assist will include it in the workflow design if you ask for it.",
+        type: "multiple-choice",
+        choices: [
+          "create a workflow with approval",
+          "Generate a Dynatrace workflow that sends a Slack notification when any host CPU exceeds 90% for more than 5 minutes, and include an approval gate before any remediation action runs",
+          "how do I add an approval to a workflow",
+          "show me approval workflows",
+        ],
+        correctChoice:
+          "Generate a Dynatrace workflow that sends a Slack notification when any host CPU exceeds 90% for more than 5 minutes, and include an approval gate before any remediation action runs",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "Why Approval Gates Matter",
+        instruction:
+          "A workflow detects CPU saturation and automatically restarts the webserver process without an approval gate. During a cascade failure affecting 5 services, what is the risk?",
+        hint: "Think about what restarting a process does to in-flight requests during a cascade failure.",
+        type: "multiple-choice",
+        choices: [
+          "No risk — restarting always resolves CPU issues",
+          "Restarting the process during a cascade drops all in-flight requests, potentially worsening the failure and making root cause analysis harder",
+          "The workflow would be blocked by Dynatrace security policies",
+          "Approval gates slow down remediation too much to be useful",
+        ],
+        correctChoice:
+          "Restarting the process during a cascade drops all in-flight requests, potentially worsening the failure and making root cause analysis harder",
+        points: 175,
+      },
+      {
+        id: "cp3",
+        title: "Approval Gate Workflow Order",
+        instruction:
+          "What is the correct sequence of steps in an approval gate workflow?",
+        hint: "The human needs enough information to make the approval decision — so notification must come before the gate, not after.",
+        type: "multiple-choice",
+        choices: [
+          "Trigger → Remediation → Notification → Approval gate",
+          "Trigger → Notification with context → Approval gate → Remediation",
+          "Approval gate → Trigger → Notification → Remediation",
+          "Trigger → Approval gate → Remediation → Notification",
+        ],
+        correctChoice:
+          "Trigger → Notification with context → Approval gate → Remediation",
+        points: 175,
+      },
+      {
+        id: "cp4",
+        title: "Responsible Automation Principle",
+        instruction:
+          "When should a Platform Engineer choose full automation versus human-in-the-loop automation?",
+        hint: "Think about risk level, reversibility, and confidence in the remediation action.",
+        type: "multiple-choice",
+        choices: [
+          "Always use full automation — humans are the bottleneck",
+          "Always use approval gates — automation is never safe",
+          "Use full automation for low-risk, reversible, well-understood actions with high confidence. Use approval gates for high-risk, irreversible, or novel remediation actions",
+          "Use approval gates only during business hours",
+        ],
+        correctChoice:
+          "Use full automation for low-risk, reversible, well-understood actions with high confidence. Use approval gates for high-risk, irreversible, or novel remediation actions",
+        points: 200,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
