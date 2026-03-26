@@ -41,17 +41,16 @@ interface ExperienceOption {
 interface DriverOption {
   id: Discipline;
   name: string;
-  role: string;
-  driverName: string;
+  tier: string;
   description: string;
   helmet: string;
 }
 
 const DRIVER_OPTIONS: DriverOption[] = [
-  { id: "sre", name: "Reliability Driver", role: "SRE", driverName: "Max Verstappen", description: "Incident response, root cause analysis, and proactive reliability.", helmet: "/ui/assets/helmets/verstappen.png" },
-  { id: "incident-commander", name: "The Strategist", role: "Incident Commander", driverName: "Arvid Lindblad", description: "Lead, communicate, and close incidents with data.", helmet: "/ui/assets/helmets/lindblad.png" },
-  { id: "developer", name: "Speed Driver", role: "Developer", driverName: "Liam Lawson", description: "Performance, OTel signals, and deploy with confidence.", helmet: "/ui/assets/helmets/lawson.png" },
-  { id: "platform-engineer", name: "The Builder", role: "Platform Engineer", driverName: "Isack Hadjar", description: "Forecast, automate, and manage infrastructure at scale.", helmet: "/ui/assets/helmets/hadjar.png" },
+  { id: "incident-commander", name: "Arvid Lindblad", tier: "Rookie", description: "Just arrived. Learn the platform and find your feet.", helmet: "/ui/assets/helmets/lindblad.png" },
+  { id: "developer", name: "Liam Lawson", tier: "Intermediate", description: "You know the basics. Now push harder.", helmet: "/ui/assets/helmets/lawson.png" },
+  { id: "platform-engineer", name: "Isack Hadjar", tier: "Advanced", description: "Comfortable under pressure. Build on solid foundations.", helmet: "/ui/assets/helmets/hadjar.png" },
+  { id: "sre", name: "Max Verstappen", tier: "Elite", description: "No hand-holding. Full stack, full pressure.", helmet: "/ui/assets/helmets/verstappen.png" },
 ];
 
 const EXPERIENCE_OPTIONS: ExperienceOption[] = [
@@ -508,10 +507,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                         {driver.name}
                       </div>
                       <div style={{ fontSize: "11px", opacity: 0.5, marginTop: "2px" }}>
-                        {driver.role}
-                      </div>
-                      <div style={{ fontSize: "11px", opacity: 0.4, marginTop: "1px" }}>
-                        {driver.driverName}
+                        {driver.tier}
                       </div>
                       <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "6px" }}>
                         {driver.description}
