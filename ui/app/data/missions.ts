@@ -23,7 +23,7 @@ export const MISSIONS: Mission[] = [
         id: "cp1",
         title: "The Platform Model",
         instruction:
-          "On the Playground home screen, click 'What is Dynatrace?' under 'Get started with Dynatrace'. Under 'What Makes Dynatrace Unique?' — what is the role of Producers in the Dynatrace model?",
+          "On the Playground home screen, click 'What is Dynatrace?' under 'Get started with Dynatrace'. Once on that page, scroll down past the YouTube guides to the section titled 'What Makes Dynatrace Unique?' — what is the role of Producers in the Dynatrace model?",
         hint: "Read the Producers/Consumers diagram carefully. Producers are on the left side of the model — what do they do?",
         type: "multiple-choice",
         choices: [
