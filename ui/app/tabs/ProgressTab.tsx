@@ -332,12 +332,13 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
           {(["sre", "developer", "incident-commander", "platform-engineer"] as Discipline[]).map((disc) => {
             const progress = userState.disciplines[disc];
             const meta = DISCIPLINE_META[disc];
-            const driverName: Record<Discipline, string> = {
-              sre: "Reliability Driver",
-              developer: "Speed Driver",
-              "incident-commander": "The Strategist",
-              "platform-engineer": "The Builder",
+            const driverInfo: Record<Discipline, { name: string; driverName: string; helmet: string }> = {
+              sre: { name: "Reliability Driver", driverName: "Max Verstappen", helmet: "/ui/assets/helmets/verstappen.png" },
+              developer: { name: "Speed Driver", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
+              "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
+              "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
             };
+            const info = driverInfo[disc];
             const isStarting = userState.startingDiscipline === disc;
             const currentThresholdXP =
               XP_THRESHOLDS.slice().reverse().find((t) => progress.xp >= t.xp)?.xp ?? 0;
@@ -352,7 +353,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                 key={disc}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "200px 1fr 160px",
+                  gridTemplateColumns: "260px 1fr 160px",
                   alignItems: "center",
                   padding: "8px 0",
                   borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
@@ -363,18 +364,21 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div
+                  <img
+                    src={info.helmet}
+                    alt=""
                     style={{
-                      width: "4px",
-                      height: "28px",
-                      borderRadius: "2px",
-                      background: meta.color,
+                      width: "48px",
+                      height: "48px",
+                      objectFit: "contain",
                       flexShrink: 0,
+                      opacity: 0.85,
                     }}
                   />
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: "13px", fontWeight: 600 }}>{driverName[disc]}</span>
+                    <span style={{ fontSize: "13px", fontWeight: 600 }}>{info.name}</span>
                     <span style={{ fontSize: "11px", opacity: 0.5 }}>{meta.label}</span>
+                    <span style={{ fontSize: "10px", opacity: 0.35 }}>{info.driverName}</span>
                   </div>
                   <span style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>
                     {progress.levelName}
