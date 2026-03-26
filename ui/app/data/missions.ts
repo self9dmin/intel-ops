@@ -1772,6 +1772,476 @@ export const MISSIONS: Mission[] = [
       },
     ],
   },
+  {
+    id: "mission-first-briefing",
+    title: "First Briefing",
+    codename: "SITUATION REPORT",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "Before you touch a single dashboard, ask Assist what's happening. This is how modern SREs start every shift.",
+    briefing:
+      "Your shift just started. Something may be wrong — or everything may be fine. The old way: open 5 dashboards, scan for red. The new way: open Assist and ask. This mission teaches you the difference between a vague prompt and an operator-grade prompt, and why it matters when every second counts. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 300,
+    status: "available",
+    prerequisites: ["mission-the-dock"],
+    disciplines: [
+      { track: "sre", xp: 75 },
+      { track: "incident-commander", xp: 25 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Open Assist",
+        instruction:
+          "Open Dynatrace Assist on the Playground. What is the keyboard shortcut to open it?",
+        hint: "The shortcut is shown as a tooltip when you hover over the Assist icon in the left dock.",
+        type: "multiple-choice",
+        choices: ["Ctrl+K", "Ctrl+I", "Ctrl+A", "Ctrl+Space"],
+        correctChoice: "Ctrl+I",
+        points: 75,
+      },
+      {
+        id: "cp2",
+        title: "The Vague Prompt",
+        instruction:
+          "You type: 'show me problems'. Assist returns a list. What is the problem with this prompt for a production SRE?",
+        hint: "Think about what is missing — scope, timeframe, severity, grouping. A good prompt gives Assist enough context to return actionable intelligence, not just a list.",
+        type: "multiple-choice",
+        choices: [
+          "It returns too many results with no prioritization or grouping",
+          "Assist cannot understand plain English",
+          "Problems are not available in the Playground",
+          "You need to use DQL instead",
+        ],
+        correctChoice:
+          "It returns too many results with no prioritization or grouping",
+        points: 100,
+      },
+      {
+        id: "cp3",
+        title: "The Operator Prompt",
+        instruction:
+          "Which of these prompts would give an SRE the most actionable shift briefing from Assist?",
+        hint: "A good operator prompt specifies what you want grouped, filtered, and prioritized. Assist uses this context to run the right Grail queries and apply the right agent.",
+        type: "multiple-choice",
+        choices: [
+          "show me problems",
+          "what is broken",
+          "Summarize all open problems grouped by severity and impact level, highlighting any that affect more than one entity",
+          "list active alerts",
+        ],
+        correctChoice:
+          "Summarize all open problems grouped by severity and impact level, highlighting any that affect more than one entity",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Which Agent Fired",
+        instruction:
+          "When you ask Assist to summarize open problems, which Dynatrace Intelligence agent handles the response?",
+        hint: "Assist shows which agent is working in the response header. Problem analysis uses a specific agent designed for root cause reasoning.",
+        type: "multiple-choice",
+        choices: [
+          "Grail Query Agent",
+          "Root Cause Agent",
+          "Forecasting Agent",
+          "Help Agent",
+        ],
+        correctChoice: "Root Cause Agent",
+        points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-blast-radius",
+    title: "Blast Radius",
+    codename: "CONTAIN THE BLAST",
+    role: "SRE",
+    difficulty: "rookie",
+    description:
+      "An alert fired. Before you do anything else, use Assist to map what is affected. Scope first, fix second.",
+    briefing:
+      "A problem opened on frontend-high-cpu. Your first instinct might be to SSH in and look around. Do not. First, understand the blast radius — what else is affected, what depends on this host, what is downstream. Assist can map this in seconds using Smartscape. This mission teaches you to scope before you act. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-first-briefing"],
+    disciplines: [
+      { track: "sre", xp: 100 },
+      { track: "incident-commander", xp: 50 },
+    ],
+    topics: ["problems", "dt-intelligence", "infrastructure"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Blast Radius Prompt",
+        instruction:
+          "Which prompt best asks Assist to map the impact of the CPU saturation on frontend-high-cpu?",
+        hint: "You want Assist to use Smartscape to find what depends on this host and what downstream services could be affected.",
+        type: "multiple-choice",
+        choices: [
+          "what is wrong with frontend-high-cpu",
+          "For the CPU saturation problem on frontend-high-cpu, identify all downstream services and entities affected using Smartscape topology",
+          "show me the frontend-high-cpu host",
+          "how do I fix high CPU",
+        ],
+        correctChoice:
+          "For the CPU saturation problem on frontend-high-cpu, identify all downstream services and entities affected using Smartscape topology",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "What Smartscape Provides",
+        instruction:
+          "When Assist uses Smartscape to map blast radius, what type of information does it provide that a simple metrics query cannot?",
+        hint: "Smartscape is a real-time dependency graph, not a metrics store. Think about relationships between entities, not just numbers.",
+        type: "multiple-choice",
+        choices: [
+          "Current CPU and memory percentages for each host",
+          "Causal dependency relationships between services, processes, and infrastructure",
+          "Historical log entries from the affected host",
+          "The DQL query used to detect the problem",
+        ],
+        correctChoice:
+          "Causal dependency relationships between services, processes, and infrastructure",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Scope Before Action",
+        instruction:
+          "An SRE receives a CPU alert on a host. What is the correct order of operations using Assist?",
+        hint: "Modern incident response with AI: understand the full scope first, then act. Acting before scoping risks missing related issues or making things worse.",
+        type: "multiple-choice",
+        choices: [
+          "Restart the affected process, then ask Assist what broke",
+          "Ask Assist for blast radius, understand impact, then decide on remediation",
+          "Open the host in the UI, check metrics manually, then use Assist if confused",
+          "Escalate immediately without investigation",
+        ],
+        correctChoice:
+          "Ask Assist for blast radius, understand impact, then decide on remediation",
+        points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-causal-chain",
+    title: "The Causal Chain",
+    codename: "FOLLOW THE CAUSE",
+    role: "SRE",
+    difficulty: "operator",
+    description:
+      "Root cause is not always where the alert fires. Use Assist to trace the causal chain through Smartscape and find where it actually started.",
+    briefing:
+      "The problem is on the host. But is the host the root cause — or just where the symptom surfaced? Dynatrace Intelligence uses causal AI, not correlation. It traces dependencies through Smartscape to find what actually triggered the chain. This mission teaches you to ask Assist for root cause reasoning, not just symptom reporting. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-blast-radius"],
+    disciplines: [
+      { track: "sre", xp: 125 },
+      { track: "incident-commander", xp: 75 },
+    ],
+    topics: ["problems", "dt-intelligence", "infrastructure"],
+    category: "root-cause-analysis",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Causal AI vs Correlation",
+        instruction:
+          "What is the key difference between causal AI (what Dynatrace uses) and correlation-based alerting?",
+        hint: "Correlation finds things that happen at the same time. Causal AI finds what caused what — the difference between a symptom and a root cause.",
+        type: "multiple-choice",
+        choices: [
+          "Causal AI is faster but less accurate than correlation",
+          "Causal AI determines cause-and-effect relationships using topology; correlation only finds things that happen simultaneously",
+          "Correlation uses Smartscape; causal AI uses DQL",
+          "They are the same — both analyze metrics over time",
+        ],
+        correctChoice:
+          "Causal AI determines cause-and-effect relationships using topology; correlation only finds things that happen simultaneously",
+        points: 150,
+      },
+      {
+        id: "cp2",
+        title: "The Root Cause Prompt",
+        instruction:
+          "Which prompt asks Assist to trace the causal chain for an active problem, not just describe its symptoms?",
+        hint: "You want Assist to use its Root Cause Agent and Smartscape to reason backwards from the symptom to the origin.",
+        type: "multiple-choice",
+        choices: [
+          "Describe the CPU saturation problem on frontend-high-cpu",
+          "For the most critical active problem, trace the causal chain through Smartscape and identify the root cause entity and what triggered it",
+          "What is the CPU usage on frontend-high-cpu right now",
+          "Show me all problems affecting frontend-high-cpu",
+        ],
+        correctChoice:
+          "For the most critical active problem, trace the causal chain through Smartscape and identify the root cause entity and what triggered it",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Root Cause Entity",
+        instruction:
+          "Assist identifies the root cause entity for the CPU saturation problem as a Process Group. What does this tell you about where to focus remediation?",
+        hint: "If the root cause is a Process Group, not the Host itself, what does that mean about where the fix needs to happen?",
+        type: "multiple-choice",
+        choices: [
+          "The host hardware is faulty and needs replacement",
+          "A specific process is causing the saturation — fixing the host will not solve it, the process needs investigation",
+          "The Kubernetes cluster needs to be restarted",
+          "The network is the root cause, not the host",
+        ],
+        correctChoice:
+          "A specific process is causing the saturation — fixing the host will not solve it, the process needs investigation",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Next Prompt in the Chain",
+        instruction:
+          "After Assist identifies the webserver process as the root cause entity, what is the best follow-up prompt?",
+        hint: "You now know the root cause entity. The next logical question is: what is that process doing and what changed?",
+        type: "multiple-choice",
+        choices: [
+          "Show me all hosts in the environment",
+          "What is the webserver process, what is its normal CPU baseline, and did anything change before the saturation started?",
+          "Close the problem and mark it resolved",
+          "Show me the DQL for CPU usage",
+        ],
+        correctChoice:
+          "What is the webserver process, what is its normal CPU baseline, and did anything change before the saturation started?",
+        points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-slo-burn",
+    title: "SLO Burn Rate",
+    codename: "BUDGET ON FIRE",
+    role: "SRE",
+    difficulty: "operator",
+    description:
+      "SLOs do not just pass or fail. They burn. Use Assist to find which objectives are consuming error budget before they breach.",
+    briefing:
+      "An SLO breach is a customer-facing failure. But by the time an SLO breaches, it is too late — the error budget was burning for hours. Your job is to catch the burn before the breach. Assist can analyze SLO status and error budget consumption across the environment in one prompt. This mission teaches you to monitor SLO health proactively. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-causal-chain"],
+    disciplines: [
+      { track: "sre", xp: 125 },
+      { track: "incident-commander", xp: 50 },
+    ],
+    topics: ["slo", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "SLO Status Prompt",
+        instruction:
+          "Which prompt gives you the most complete view of SLO health across the environment?",
+        hint: "You want current status AND threshold context, not just a pass/fail list.",
+        type: "multiple-choice",
+        choices: [
+          "show me SLOs",
+          "Show me all SLOs and their current status, warning thresholds, and targets",
+          "which SLOs are failing",
+          "list service level objectives",
+        ],
+        correctChoice:
+          "Show me all SLOs and their current status, warning thresholds, and targets",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Error Budget Meaning",
+        instruction:
+          "An SLO has a 95% target with a 66% warning threshold. The current value is 68%. What does this mean for operations?",
+        hint: "The value is above the warning threshold but close to it. What state is this SLO in and what action is appropriate?",
+        type: "multiple-choice",
+        choices: [
+          "The SLO is healthy — no action needed",
+          "The SLO has breached — declare an incident immediately",
+          "The SLO is in warning state — monitor closely and investigate what is consuming error budget",
+          "The SLO target needs to be lowered",
+        ],
+        correctChoice:
+          "The SLO is in warning state — monitor closely and investigate what is consuming error budget",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Which Agent for SLOs",
+        instruction:
+          "When you ask Assist about SLO status and burn rate, which combination of agents handles the response?",
+        hint: "SLO data lives in Grail. Assist needs to query it and then analyze the results.",
+        type: "multiple-choice",
+        choices: [
+          "Root Cause Agent only",
+          "Help Agent only",
+          "Grail Query Agent followed by Data Analysis Agent",
+          "Forecasting Agent only",
+        ],
+        correctChoice: "Grail Query Agent followed by Data Analysis Agent",
+        points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-predict-failure",
+    title: "Predict the Failure",
+    codename: "AHEAD OF THE CURVE",
+    role: "SRE",
+    difficulty: "operator",
+    description:
+      "The best incident is the one that never happens. Use Assist to forecast resource exhaustion before it becomes a problem.",
+    briefing:
+      "frontend-high-cpu has been running hot for weeks. The disk is filling. Nobody acted. This is the failure mode Dynatrace Intelligence is designed to prevent. The Forecasting Agent can predict when resources will exhaust based on historical trends — before the alert fires. This mission teaches you to use predictive AI for proactive operations. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-slo-burn"],
+    disciplines: [
+      { track: "sre", xp: 150 },
+      { track: "platform-engineer", xp: 75 },
+    ],
+    topics: ["infrastructure", "dt-intelligence", "metrics"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Forecast Prompt",
+        instruction:
+          "Which prompt correctly asks Assist to forecast CPU usage for all hosts over the next 24 hours?",
+        hint: "Specify the prediction window and the data source for the forecast. Assist needs to know how far ahead to predict and what historical data to base it on.",
+        type: "multiple-choice",
+        choices: [
+          "show me CPU usage",
+          "Predict CPU usage for all hosts over the next 24 hours based on the last 30 days of data",
+          "what will CPU be tomorrow",
+          "forecast metrics",
+        ],
+        correctChoice:
+          "Predict CPU usage for all hosts over the next 24 hours based on the last 30 days of data",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Forecasting Agent Output",
+        instruction:
+          "When the Forecasting Agent responds to a CPU prediction request, what does it return for each host?",
+        hint: "The Forecasting Agent gives you a range and a trend description — not a single number.",
+        type: "multiple-choice",
+        choices: [
+          "A single predicted CPU percentage",
+          "A forecasted range with a trend description — stable, increasing, or decreasing",
+          "A list of recommended actions to reduce CPU",
+          "The DQL query used to compute the forecast",
+        ],
+        correctChoice:
+          "A forecasted range with a trend description — stable, increasing, or decreasing",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Proactive vs Reactive",
+        instruction:
+          "A host is forecasted to reach 100% CPU in the next 6 hours with a stable trend. What is the correct proactive response?",
+        hint: "You have 6 hours. This is the advantage of predictive AI — you can act before the incident, not during it.",
+        type: "multiple-choice",
+        choices: [
+          "Wait for the alert to fire before acting",
+          "Investigate the process causing the trend now and either scale the host or optimize the process before saturation hits",
+          "Disable the forecasting to avoid false alarms",
+          "Acknowledge the prediction and close it",
+        ],
+        correctChoice:
+          "Investigate the process causing the trend now and either scale the host or optimize the process before saturation hits",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-operator-debrief",
+    title: "The Postmortem",
+    codename: "AFTER ACTION",
+    role: "SRE",
+    difficulty: "operator",
+    description:
+      "The incident is over. Use Assist to write the postmortem before memory fades and tickets pile up.",
+    briefing:
+      "Every incident deserves a postmortem. Most do not get one because writing them takes time nobody has. Assist can reconstruct the timeline from Grail data and generate a stakeholder-ready summary in seconds. This is how modern SRE teams close the loop — not with a Confluence page written three days later, but with Grail-backed intelligence generated while the data is fresh. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: ["mission-predict-failure"],
+    disciplines: [
+      { track: "sre", xp: 100 },
+      { track: "incident-commander", xp: 150 },
+    ],
+    topics: ["problems", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["Dynatrace Assist"],
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "The Postmortem Prompt",
+        instruction:
+          "Which prompt asks Assist to generate a stakeholder-ready incident summary for the CPU saturation problem on frontend-high-cpu?",
+        hint: "Be specific about the problem and what format you need. Assist returns structured output when you specify the audience.",
+        type: "multiple-choice",
+        choices: [
+          "summarize the CPU problem",
+          "Write a stakeholder-ready incident summary for the CPU saturation problem on frontend-high-cpu including problem ID, timeline, affected entities, impact, and recommended next steps",
+          "what happened on frontend-high-cpu",
+          "close the incident",
+        ],
+        correctChoice:
+          "Write a stakeholder-ready incident summary for the CPU saturation problem on frontend-high-cpu including problem ID, timeline, affected entities, impact, and recommended next steps",
+        points: 125,
+      },
+      {
+        id: "cp2",
+        title: "What Assist Includes",
+        instruction:
+          "When Assist generates an incident summary, which of these is included in the structured response?",
+        hint: "Assist pulls data from Grail — it has access to the problem record, timestamps, entity metadata, and cloud context.",
+        type: "multiple-choice",
+        choices: [
+          "Only the start time and end time",
+          "Problem ID, affected entities, cloud provider and region, impact description, and recommended next steps",
+          "Only the DQL query used to detect the problem",
+          "A list of engineers who should be blamed",
+        ],
+        correctChoice:
+          "Problem ID, affected entities, cloud provider and region, impact description, and recommended next steps",
+        points: 150,
+      },
+      {
+        id: "cp3",
+        title: "Grail-Backed vs Memory-Based",
+        instruction:
+          "Why is an Assist-generated postmortem more reliable than one written manually from memory 48 hours after the incident?",
+        hint: "Think about where Assist gets its data and what happens to human memory over time.",
+        type: "multiple-choice",
+        choices: [
+          "Assist writes faster than humans",
+          "Assist queries Grail for exact timestamps, entity IDs, and event sequences — not human recollection which fades and distorts",
+          "Assist postmortems are shorter",
+          "Manual postmortems require admin permissions",
+        ],
+        correctChoice:
+          "Assist queries Grail for exact timestamps, entity IDs, and event sequences — not human recollection which fades and distorts",
+        points: 150,
+      },
+    ],
+  },
 ];
 
 export function getMissionById(id: string): Mission | undefined {
