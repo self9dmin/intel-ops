@@ -146,7 +146,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
-  const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("sre");
+  const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("incident-commander");
   const [selectedCircuit, setSelectedCircuit] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
