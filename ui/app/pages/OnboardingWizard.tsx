@@ -479,7 +479,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
             <Flex flexDirection="column" alignItems="center" gap={8}>
               <Heading level={2}>Pick your driver.</Heading>
               <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
-                You can switch at any time.
+                You can change your driver anytime from the Progress tab.
               </Text>
             </Flex>
 
