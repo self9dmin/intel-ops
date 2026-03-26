@@ -325,6 +325,92 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
         </div>
       </div>
 
+      {/* Driver Circuits */}
+      <div>
+        <Heading level={5}>Driver Circuits</Heading>
+        <div style={{ marginTop: "8px" }}>
+          {(["sre", "developer", "incident-commander", "platform-engineer"] as Discipline[]).map((disc) => {
+            const progress = userState.disciplines[disc];
+            const meta = DISCIPLINE_META[disc];
+            const driverName: Record<Discipline, string> = {
+              sre: "Reliability Driver",
+              developer: "Speed Driver",
+              "incident-commander": "The Strategist",
+              "platform-engineer": "The Builder",
+            };
+            const isStarting = userState.startingDiscipline === disc;
+            const currentThresholdXP =
+              XP_THRESHOLDS.slice().reverse().find((t) => progress.xp >= t.xp)?.xp ?? 0;
+            const next = XP_THRESHOLDS.find((t) => progress.xp < t.xp);
+            const isMax = !next;
+            const progressPercent = isMax
+              ? 100
+              : ((progress.xp - currentThresholdXP) / (next.xp - currentThresholdXP)) * 100;
+
+            return (
+              <div
+                key={disc}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "200px 1fr 160px",
+                  alignItems: "center",
+                  padding: "8px 0",
+                  borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
+                  borderLeft: isStarting
+                    ? "3px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
+                    : "3px solid transparent",
+                  paddingLeft: "8px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div
+                    style={{
+                      width: "4px",
+                      height: "28px",
+                      borderRadius: "2px",
+                      background: meta.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontSize: "13px", fontWeight: 600 }}>{driverName[disc]}</span>
+                    <span style={{ fontSize: "11px", opacity: 0.5 }}>{meta.label}</span>
+                  </div>
+                  <span style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>
+                    {progress.levelName}
+                  </span>
+                </div>
+                <div style={{ padding: "0 16px" }}>
+                  <div
+                    style={{
+                      background: "var(--dt-colors-background-container-neutral-default)",
+                      borderRadius: "4px",
+                      height: "6px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        background: meta.color,
+                        height: "100%",
+                        width: `${progressPercent}%`,
+                        borderRadius: "4px",
+                        transition: "width 0.3s ease",
+                      }}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                  <span style={{ fontSize: "12px", color: "var(--dt-colors-text-neutral-subdued)" }}>
+                    {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Topic Tracks */}
       <div>
         <Heading level={5}>Topic Tracks</Heading>
