@@ -453,84 +453,6 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
-    id: "mission-grid-search",
-    title: "Map the Kubernetes Cluster",
-    codename: "GRID SEARCH",
-    role: "Platform Engineer",
-    difficulty: "operator",
-    description:
-      "Map the EKS cluster before something breaks at 3am. Nodes, namespaces, workloads — know the terrain.",
-    briefing:
-      "The EKS cluster is running production workloads across multiple namespaces. You need to map it — node count, workload distribution, namespace health — before you can do anything useful when something breaks. Navigation under pressure starts with navigation when things are calm. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
-    timerSeconds: 480,
-    status: "available",
-    prerequisites: ["mission-what-are-you"],
-    disciplines: [
-      { track: "platform-engineer", xp: 100 },
-      { track: "sre", xp: 50 },
-    ],
-    topics: ["kubernetes", "infrastructure"],
-    category: "configuration",
-    apps: ["Kubernetes"],
-    checkpoints: [
-      {
-        id: "cp1",
-        title: "Open the Kubernetes App and Count the Clusters",
-        instruction:
-          "Open the Kubernetes app in Dynatrace. How many Kubernetes clusters are visible in the cluster list?",
-        hint: "The playground runs workloads on two different cloud providers. Look for both AWS and Azure clusters in the list.",
-        type: "multiple-choice",
-        choices: ["1", "2", "3", "4"],
-        correctChoice: "2",
-        points: 100,
-      },
-      {
-        id: "cp2",
-        title: "Identify the EKS Cluster Node Count",
-        instruction:
-          "Select the EKS cluster (aws-eks-3). How many worker nodes does it have?",
-        hint: "The cluster summary panel shows total node count near the top. Worker nodes are the ones running your workloads.",
-        type: "multiple-choice",
-        choices: ["3", "4", "5", "6"],
-        correctChoice: "5",
-        points: 150,
-      },
-      {
-        id: "cp3",
-        title: "Navigate to the hipstershop Namespace",
-        instruction:
-          "In the aws-eks-3 cluster, navigate to the Namespaces tab and open the 'prod' namespace. How many workloads are running in this namespace?",
-        hint: "The namespace detail view shows a Resources analysis section near the top. The workload count is displayed prominently.",
-        type: "multiple-choice",
-        choices: ["8", "12", "15", "20"],
-        correctChoice: "15",
-        points: 150,
-      },
-      {
-        id: "cp4",
-        title: "Count the Kubernetes Services in the Namespace",
-        instruction:
-          "Still in the 'prod' namespace on aws-eks-3, how many Kubernetes services are defined in this namespace?",
-        hint: "Kubernetes services are the networking layer inside the cluster — different from Dynatrace services. Scroll past the workloads section to find the Kubernetes services list.",
-        type: "multiple-choice",
-        choices: ["10", "14", "17", "22"],
-        correctChoice: "17",
-        points: 150,
-      },
-      {
-        id: "cp5",
-        title: "Identify the AKS Node Count",
-        instruction:
-          "Go back to the cluster list and open the AKS cluster (aks-playground). How many nodes does it have?",
-        hint: "The AKS cluster is smaller than the EKS cluster. Check the node count in the cluster summary panel.",
-        type: "multiple-choice",
-        choices: ["2", "3", "5", "7"],
-        correctChoice: "3",
-        points: 150,
-      },
-    ],
-  },
-  {
     id: "mission-follow-the-wire",
     title: "Trace the Service Dependency Chain",
     codename: "FOLLOW THE WIRE",
@@ -688,88 +610,6 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
-    id: "mission-stone-wall",
-    title: "Extract the Host Evidence",
-    codename: "STONE WALL",
-    role: "Platform Engineer",
-    difficulty: "operator",
-    description:
-      "Go beyond the alert. Extract entity IDs, read Grail DQL, and confirm the host OS — the data needed to build automated remediation.",
-    briefing:
-      "The /data disk on frontend-high-cpu is critically full. The platform team needs more than the alert — they need the exact entity IDs, the Grail DQL metric driving the newer alert, and the host OS version to build an automated remediation workflow. Your job is to extract that data. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
-    timerSeconds: 480,
-    status: "available",
-    prerequisites: ["mission-iron-floor"],
-    disciplines: [
-      { track: "platform-engineer", xp: 100 },
-      { track: "sre", xp: 50 },
-    ],
-    topics: ["infrastructure", "problems", "dql"],
-    category: "configuration",
-    apps: ["Infrastructure & Operations", "Problems"],
-    checkpoints: [
-      {
-        id: "cp1",
-        title: "Find the Host Entity ID",
-        instruction:
-          "Navigate to the Hosts app and open 'frontend-high-cpu'. What is the Dynatrace entity ID for this host? Check the browser URL or Properties and tags tab.",
-        hint: "The entity ID appears in the URL bar when you open any host. It starts with HOST- followed by a hex string.",
-        type: "multiple-choice",
-        choices: [
-          "HOST-07DAB01EB3E1AD56",
-          "HOST-6C058190F4B22DD1",
-          "HOST-BBDC2098409B0274",
-          "HOST-3672868CCC50B397",
-        ],
-        correctChoice: "HOST-07DAB01EB3E1AD56",
-        points: 150,
-      },
-      {
-        id: "cp2",
-        title: "Count the Open Problems on This Host",
-        instruction:
-          "On the frontend-high-cpu host detail page, how many open problems are shown in the red badge in the tab strip?",
-        hint: "The red badge next to 'Properties and tags' in the host detail tab strip shows the count of active problems for this entity.",
-        type: "multiple-choice",
-        choices: ["1", "2", "3", "4"],
-        correctChoice: "3",
-        points: 150,
-      },
-      {
-        id: "cp3",
-        title: "Identify the Grail Metric in the Newer Disk Alert",
-        instruction:
-          "Open the disk alert that opened on March 4 (distinct from the February one). A Grail DQL query is shown on the problem detail page. What is the metric function used in the first line of the DQL?",
-        hint: "In the Problems app set timeframe to Last 7 days and find the disk problem that opened on March 4. The Grail query block shows a DQL statement — read the timeseries keyword on line 1.",
-        type: "multiple-choice",
-        choices: [
-          "timeseries disk_free=min(dt.host.disk.free)",
-          "timeseries disk_used=max(dt.host.disk.used)",
-          "timeseries disk_available=avg(dt.host.disk.avail.percent)",
-          "fetch dt.host.disk.free",
-        ],
-        correctChoice: "timeseries disk_free=min(dt.host.disk.free)",
-        points: 200,
-      },
-      {
-        id: "cp4",
-        title: "Confirm the Host OS Version",
-        instruction:
-          "On the frontend-high-cpu Properties and tags page, what Ubuntu version is this host running?",
-        hint: "The OS version is listed in Properties and tags. Look for the OS type or OS version row. The kernel string includes -aws.",
-        type: "multiple-choice",
-        choices: [
-          "Ubuntu 22.04.1 LTS",
-          "Ubuntu 22.04.3 LTS",
-          "Ubuntu 24.04.3 LTS",
-          "Amazon Linux 2023",
-        ],
-        correctChoice: "Ubuntu 24.04.3 LTS",
-        points: 150,
-      },
-    ],
-  },
-  {
     id: "mission-silent-query",
     title: "Investigate the Database Failure",
     codename: "SILENT QUERY",
@@ -920,7 +760,7 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
-    id: "mission-orient-platform",
+    id: "mission-the-dock",
     title: "Orient the Platform",
     codename: "GROUND ZERO",
     role: "IT Ops / Admin",
@@ -1227,115 +1067,6 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
-    id: "mission-find-your-answers",
-    title: "Find Your Answers",
-    codename: "OPEN SOURCE",
-    role: "All Roles",
-    difficulty: "rookie",
-    description:
-      "Dynatrace Assist won't know everything. The community will. Learn where to go before you're stuck at 2am.",
-    briefing:
-      "Every operator eventually hits a wall — something Assist can't explain, something the docs don't cover, something only someone who's been there can answer. The Dynatrace ecosystem has three lifelines: the community, the university, and the documentation. This mission teaches you where they live and how to reach them — from inside the platform and from the browser. You don't need the Playground for all of this, just a browser and the Dock.",
-    timerSeconds: 360,
-    status: "available",
-    prerequisites: ["mission-ask-the-ai"],
-    disciplines: [
-      { track: "sre", xp: 50 },
-      { track: "platform-engineer", xp: 50 },
-    ],
-    topics: ["community"],
-    category: "configuration",
-    apps: [],
-    checkpoints: [
-      {
-        id: "cp1",
-        title: "Support Resources in the Dock",
-        instruction:
-          "Open the Support menu at the bottom of the Dock in the Playground. How many items are listed under Support resources (not Developer resources)?",
-        hint: "The Support menu has two groups. Count only the items in the first group — Support resources. Live chat counts as one item.",
-        type: "multiple-choice",
-        choices: ["3", "4", "5", "6"],
-        correctChoice: "5",
-        points: 100,
-      },
-      {
-        id: "cp2",
-        title: "Find the Community",
-        instruction:
-          "Navigate to community.dynatrace.com. In the top navigation, what is the name of the section specifically for new Dynatrace users getting started?",
-        hint: "Look at the Learn section in the community navigation. There is a dedicated space for users who are just beginning their Dynatrace journey.",
-        type: "multiple-choice",
-        choices: [
-          "Start with Dynatrace",
-          "Open Q&A",
-          "Troubleshooting",
-          "Product News",
-        ],
-        correctChoice: "Start with Dynatrace",
-        points: 100,
-      },
-      {
-        id: "cp3",
-        title: "Where to Ask a Question",
-        instruction:
-          "On community.dynatrace.com, what is the name of the forum section for questions that don't fit a specific category?",
-        hint: "Look under the Ask section in the community navigation. There is a catch-all Q&A section for general questions.",
-        type: "multiple-choice",
-        choices: ["Open Q&A", "Troubleshooting", "Start with Dynatrace", "Ask Moderators"],
-        correctChoice: "Open Q&A",
-        points: 100,
-      },
-      {
-        id: "cp4",
-        title: "Dynatrace University",
-        instruction:
-          "Navigate to university.dynatrace.com. What is the primary navigation tab for all learning content?",
-        hint: "Look at the main tabs across the top of the DTU homepage. The primary tab covers both courses and structured learning plans.",
-        type: "multiple-choice",
-        choices: [
-          "Courses and learning plans",
-          "Certifications",
-          "Hands-on labs",
-          "Live training",
-        ],
-        correctChoice: "Courses and learning plans",
-        points: 150,
-      },
-      {
-        id: "cp5",
-        title: "Developer Resources",
-        instruction:
-          "Back in the Dock Support menu — which of these is listed under Developer resources, not Support resources?",
-        hint: "Developer resources are for building on the platform — extensions, apps, APIs. Support resources are for users getting help with the product.",
-        type: "multiple-choice",
-        choices: [
-          "Dynatrace Developer",
-          "Documentation",
-          "Community",
-          "University",
-        ],
-        correctChoice: "Dynatrace Developer",
-        points: 150,
-      },
-      {
-        id: "cp6",
-        title: "Live Help",
-        instruction:
-          "If you need to speak directly with a Dynatrace product expert in real time, which Support resource do you use?",
-        hint: "This option puts you in touch with a real human — not a chatbot. It's listed at the bottom of the Support resources section in the Dock.",
-        type: "multiple-choice",
-        choices: [
-          "Live chat",
-          "Community",
-          "University",
-          "Dynatrace Developer",
-        ],
-        correctChoice: "Live chat",
-        points: 150,
-      },
-    ],
-  },
-  {
     id: "mission-follow-the-error",
     title: "Follow the Error",
     codename: "WIRE TRACE",
@@ -1347,7 +1078,7 @@ export const MISSIONS: Mission[] = [
       "Users are hitting errors on the Astroshop frontend but nobody has looked at them yet. Your job is to find the error in Experience Vitals, drill into Error Inspector, follow a session, then trace the backend call to root cause. No guessing — follow the chain. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 480,
     status: "available",
-    prerequisites: ["mission-orient-platform"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "developer", xp: 125 },
       { track: "sre", xp: 50 },
@@ -1419,7 +1150,7 @@ export const MISSIONS: Mission[] = [
       "Application Security is flagging vulnerabilities in the Playground environment. Before anything gets patched, you need to understand what's exposed — library name, severity, which process it's running in, and how many instances are affected. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 420,
     status: "available",
-    prerequisites: ["mission-orient-platform"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "developer", xp: 100 },
       { track: "platform-engineer", xp: 75 },
@@ -1703,7 +1434,7 @@ export const MISSIONS: Mission[] = [
       "Dynatrace Workflows let you automate responses to events — problems, deployments, schedule-based triggers. Before you write your own, you need to understand what's already running and how the trigger → action chain works. Use the Dynatrace Playground at https://playground.apps.dynatrace.com to complete this mission.",
     timerSeconds: 420,
     status: "available",
-    prerequisites: ["mission-orient-platform"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "platform-engineer", xp: 125 },
       { track: "sre", xp: 75 },
@@ -1943,207 +1674,6 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
-    id: "mission-deploy-agent",
-    title: "Deploy Your First Agent",
-    codename: "FIRST CONTACT",
-    role: "Platform Engineer",
-    difficulty: "rookie",
-    description:
-      "No data without an agent. Learn where OneAgent lives in Dynatrace and how to get it onto your infrastructure.",
-    briefing:
-      "Everything in Dynatrace starts with data — and data starts with OneAgent. Before you can monitor anything in your own environment, you need to know how to deploy the agent, what it does when it lands, and where to track your deployments. This mission uses the Playground to show you what a healthy deployment looks like, then sends you to the docs to learn how to do it yourself. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
-    timerSeconds: 360,
-    status: "available",
-    prerequisites: ["mission-orient-platform"],
-    disciplines: [
-      { track: "platform-engineer", xp: 75 },
-      { track: "sre", xp: 25 },
-    ],
-    topics: ["infrastructure", "settings"],
-    category: "configuration",
-    apps: ["Deployment Status"],
-    checkpoints: [
-      {
-        id: "cp1",
-        title: "Find Deployment Status",
-        instruction:
-          "Open the Deployment Status app in the Playground (Apps → Manage → Deployment Status). How many OneAgent-monitored hosts are listed?",
-        hint: "Deployment Status is under Apps → Manage. The page header shows the total host count — look for 'Showing X hosts' or similar text at the top of the table.",
-        type: "multiple-choice",
-        choices: ["8", "12", "16", "20 or more"],
-        correctChoice: "16",
-        points: 100,
-      },
-      {
-        id: "cp2",
-        title: "Read an Agent Entry",
-        instruction:
-          "Look at the first host in the Deployment Status list. What are the three column headers shown in the table?",
-        hint: "Look at the table header row across the top of the OneAgents list. There are three column headers.",
-        type: "multiple-choice",
-        choices: [
-          "OS, Host name, Version",
-          "Host, Status, Last Seen",
-          "Name, IP Address, Version",
-          "Host, Agent, Monitoring Mode",
-        ],
-        correctChoice: "OS, Host name, Version",
-        points: 100,
-      },
-      {
-        id: "cp3",
-        title: "Understand Monitoring Modes",
-        instruction:
-          "In Deployment Status, click into any host entry. What monitoring mode is shown for hosts in the Playground?",
-        hint: "Click a host row to expand its details. Look for the 'Monitoring mode' field — the Playground runs agents in the most comprehensive mode available.",
-        type: "multiple-choice",
-        choices: [
-          "Full stack",
-          "Infrastructure only",
-          "Application only",
-          "Discovery only",
-        ],
-        correctChoice: "Full stack",
-        points: 150,
-      },
-      {
-        id: "cp4",
-        title: "Find the OneAgent Installation Page",
-        instruction:
-          "In your own Dynatrace tenant (not the Playground), where do you go to download the OneAgent installer?",
-        hint: "In any Dynatrace environment, open the Apps menu and look under Manage. The deployment and installation page is where you generate installer scripts with your environment's token pre-filled.",
-        type: "multiple-choice",
-        choices: [
-          "Apps → Manage → Deployment Status → OneAgent installation",
-          "Settings → Infrastructure → OneAgent",
-          "Apps → Infrastructure → Hosts → Install",
-          "Account Management → Downloads",
-        ],
-        correctChoice: "Apps → Manage → Deployment Status → OneAgent installation",
-        points: 150,
-      },
-      {
-        id: "cp5",
-        title: "The Host Group Parameter",
-        instruction:
-          "When installing OneAgent on Linux, which command-line parameter assigns the host to a host group at install time?",
-        hint: "Navigate to docs.dynatrace.com and search for 'OneAgent host group'. The parameter is passed to the installer script and uses double dashes.",
-        type: "multiple-choice",
-        choices: [
-          "--set-host-group=",
-          "--host-group=",
-          "--group=",
-          "--set-group=",
-        ],
-        correctChoice: "--set-host-group=",
-        points: 200,
-      },
-    ],
-  },
-  {
-    id: "mission-organize-fleet",
-    title: "Organize Your Fleet",
-    codename: "GRID ORDER",
-    role: "Platform Engineer",
-    difficulty: "rookie",
-    description:
-      "Ungrouped hosts are unmanageable at scale. Learn how host groups work before your fleet grows past the point of control.",
-    briefing:
-      "When you have 10 hosts, naming them well is enough. When you have 1,000, you need structure. Host groups let you apply settings, alerting thresholds, and OneAgent update policies to entire fleets at once — instead of host by host. This mission teaches you how host groups work in Dynatrace using the Playground, and how to assign them at install time in your own environment. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
-    timerSeconds: 360,
-    status: "available",
-    prerequisites: ["mission-deploy-agent"],
-    disciplines: [
-      { track: "platform-engineer", xp: 100 },
-      { track: "sre", xp: 25 },
-    ],
-    topics: ["infrastructure", "settings"],
-    category: "configuration",
-    apps: ["Infrastructure & Operations", "Deployment Status"],
-    checkpoints: [
-      {
-        id: "cp1",
-        title: "Find Host Groups in Infrastructure & Operations",
-        instruction:
-          "Open the Infrastructure & Operations app in the Playground. In the left sidebar, what are the five entity types listed?",
-        hint: "Open Apps → Infrastructure Observability → Infrastructure & Operations. Look at the left sidebar — it lists the entity types you can navigate to. Count all five.",
-        type: "multiple-choice",
-        choices: [
-          "Hosts, Processes, Network, Containers, Technologies",
-          "Hosts, Network devices, Other, VMware, Cloud",
-          "Hosts, Kubernetes, Services, Databases, Network",
-          "Hosts, Processes, Services, Applications, Cloud",
-        ],
-        correctChoice: "Hosts, Network devices, Other, VMware, Cloud",
-        points: 100,
-      },
-      {
-        id: "cp2",
-        title: "What Host Groups Do",
-        instruction:
-          "Which of these is something you can configure at the host group level in Dynatrace?",
-        hint: "Think about what makes host groups useful for fleet management — the point is to apply a setting once and have it apply to all hosts in the group, rather than configuring each host individually.",
-        type: "multiple-choice",
-        choices: [
-          "OneAgent update settings and anomaly detection thresholds",
-          "DQL query execution permissions",
-          "Dashboard visibility and sharing",
-          "User access and role assignments",
-        ],
-        correctChoice: "OneAgent update settings and anomaly detection thresholds",
-        points: 150,
-      },
-      {
-        id: "cp3",
-        title: "Assign a Host Group at Install Time",
-        instruction:
-          "When installing OneAgent on Linux, what is the correct syntax to assign a host to a group called 'production-web' at install time?",
-        hint: "The parameter is passed to the installer script. You've seen this parameter in a previous mission — it uses double dashes and the set- prefix.",
-        type: "multiple-choice",
-        choices: [
-          "./Dynatrace-OneAgent.sh --set-host-group=production-web",
-          "./Dynatrace-OneAgent.sh --host-group=production-web",
-          "./Dynatrace-OneAgent.sh --group=production-web",
-          "./Dynatrace-OneAgent.sh --set-group=production-web",
-        ],
-        correctChoice: "./Dynatrace-OneAgent.sh --set-host-group=production-web",
-        points: 150,
-      },
-      {
-        id: "cp4",
-        title: "Change a Host Group After Install",
-        instruction:
-          "If you need to move a host to a different host group after OneAgent is already installed, which tool do you use?",
-        hint: "After installation, OneAgent configuration changes are made using a command-line tool that ships with the agent. Check docs.dynatrace.com and search for 'change host group after installation'.",
-        type: "multiple-choice",
-        choices: [
-          "oneagentctl --set-host-group=",
-          "dt-agent --move-group=",
-          "Dynatrace Settings UI only — cannot be changed via CLI",
-          "Reinstall OneAgent with the new parameter",
-        ],
-        correctChoice: "oneagentctl --set-host-group=",
-        points: 150,
-      },
-      {
-        id: "cp5",
-        title: "How Many Host Groups Can a Host Belong To",
-        instruction:
-          "How many host groups can a single OneAgent-monitored host belong to at one time?",
-        hint: "Host groups are statically assigned — this is by design to keep configuration predictable. Think about what 'group' means structurally.",
-        type: "multiple-choice",
-        choices: [
-          "Exactly one",
-          "Up to three",
-          "Unlimited",
-          "Two — one primary, one secondary",
-        ],
-        correctChoice: "Exactly one",
-        points: 150,
-      },
-    ],
-  },
-  {
     id: "mission-first-alert",
     title: "Your First Alert",
     codename: "SIGNAL FIRE",
@@ -2155,7 +1685,7 @@ export const MISSIONS: Mission[] = [
       "Davis AI detects anomalies and opens problems without any configuration — but getting those problems in front of the right people requires alerting setup. This mission walks you through where alerting lives in Dynatrace, how the trigger-to-notification chain works, and what your options are for getting alerted when something breaks. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-orient-platform"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "platform-engineer", xp: 75 },
       { track: "incident-commander", xp: 75 },
