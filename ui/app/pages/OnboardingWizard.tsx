@@ -277,6 +277,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         minHeight: "100vh",
         padding: step === 0 ? "0" : "24px 24px",
         overflow: step === 0 ? "hidden" : undefined,
+        backgroundColor: step === 0 ? "#05060f" : undefined,
       }}
     >
       {step === 0 ? (
@@ -289,6 +290,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
             backgroundImage: "url(/ui/assets/ft-car.png)",
             backgroundSize: "cover",
             backgroundPosition: "center center",
+            backgroundColor: "#05060f",
             overflow: "hidden",
           }}
         >
