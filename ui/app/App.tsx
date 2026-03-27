@@ -81,6 +81,7 @@ const ShellLayout = () => {
         {activeTab === "missions" && (
           <MissionsTab
             filters={filters}
+            onFilterChange={setFilters}
             onSwitchTab={() => handleTabChange(TAB_ORDER.indexOf("progress"))}
           />
         )}
