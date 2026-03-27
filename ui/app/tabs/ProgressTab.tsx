@@ -28,9 +28,10 @@ import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { ALL_BADGES } from "../data/badges";
 import { useUserStateContext } from "../context/UserStateContext";
-import type { Discipline, ExperienceLevel } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
 import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
+import { ChangeDriverModal } from "../components/ChangeDriverModal";
 
 // --- Icon lookup ---
 
@@ -231,24 +232,6 @@ const TOPIC_DOMAIN_GROUPS: { label: string; topics: TopicId[] }[] = [
   { label: "EXPLORE", topics: ["community", "bizevents", "dem", "security", "notebooks", "smartscape"] },
 ];
 
-// --- Driver picker options ---
-
-interface DriverPickerOption {
-  discipline: Discipline;
-  experienceLevel: ExperienceLevel;
-  name: string;
-  tier: string;
-  description: string;
-  helmet: string;
-}
-
-const DRIVER_PICKER_OPTIONS: DriverPickerOption[] = [
-  { discipline: "incident-commander", experienceLevel: "new", name: "Arvid Lindblad", tier: "Rookie", description: "Just arrived. Learn the platform and find your feet.", helmet: "/ui/assets/helmets/lindblad.png" },
-  { discipline: "developer", experienceLevel: "learning", name: "Liam Lawson", tier: "Intermediate", description: "You know the basics. Now push harder.", helmet: "/ui/assets/helmets/lawson.png" },
-  { discipline: "platform-engineer", experienceLevel: "experienced", name: "Isack Hadjar", tier: "Advanced", description: "Comfortable under pressure. Build on solid foundations.", helmet: "/ui/assets/helmets/hadjar.png" },
-  { discipline: "sre", experienceLevel: "experienced", name: "Max Verstappen", tier: "Elite", description: "No hand-holding. Full stack, full pressure.", helmet: "/ui/assets/helmets/verstappen.png" },
-];
-
 // --- Main ProgressTab ---
 
 interface ProgressTabProps {
@@ -353,105 +336,15 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
           </Button>
         </div>
 
-        {/* Driver picker modal */}
-        {driverPickerOpen && (
-          <div style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(0, 0, 0, 0.6)",
+        <ChangeDriverModal
+          isOpen={driverPickerOpen}
+          onClose={() => setDriverPickerOpen(false)}
+          currentDiscipline={userState?.startingDiscipline ?? "incident-commander"}
+          onSelect={(discipline, experienceLevel) => {
+            void updateUserState({ startingDiscipline: discipline, experienceLevel });
+            setDriverPickerOpen(false);
           }}
-          onClick={() => setDriverPickerOpen(false)}
-          >
-            <div
-              style={{
-                background: "var(--dt-colors-background-container-neutral-default, #1a1a2e)",
-                border: "1px solid var(--dt-colors-border-neutral-default)",
-                borderRadius: "12px",
-                padding: "24px",
-                maxWidth: "560px",
-                width: "90%",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div style={{ textAlign: "center", marginBottom: "8px" }}>
-                <Heading level={4}>Pick your driver.</Heading>
-              </div>
-              <div style={{ textAlign: "center", opacity: 0.6, fontSize: "13px", marginBottom: "20px" }}>
-                This changes your starting discipline and experience level.
-              </div>
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}>
-                {DRIVER_PICKER_OPTIONS.map((driver) => {
-                  const isSelected = userState?.startingDiscipline === driver.discipline;
-                  return (
-                    <div
-                      key={driver.discipline}
-                      onClick={() => {
-                        void updateUserState({
-                          startingDiscipline: driver.discipline,
-                          experienceLevel: driver.experienceLevel,
-                        });
-                        setDriverPickerOpen(false);
-                      }}
-                      style={{
-                        padding: "16px 20px",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        border: isSelected
-                          ? "2px solid var(--dt-colors-charts-categorical-default-12, #1496ff)"
-                          : "1px solid var(--dt-colors-border-neutral-default)",
-                        background: isSelected
-                          ? "var(--dt-colors-background-container-neutral-default)"
-                          : "transparent",
-                        transition: "all 0.15s",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isSelected) e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSelected) e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                          {driver.name}
-                        </div>
-                        <div style={{ fontSize: "11px", opacity: 0.5, marginTop: "2px" }}>
-                          {driver.tier}
-                        </div>
-                        <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "6px" }}>
-                          {driver.description}
-                        </div>
-                      </div>
-                      <img
-                        src={driver.helmet}
-                        alt=""
-                        style={{
-                          width: "64px",
-                          height: "64px",
-                          objectFit: "contain",
-                          flexShrink: 0,
-                          opacity: isSelected ? 0.9 : 0.5,
-                          pointerEvents: "none",
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+        />
 
         <div style={{ marginTop: "8px" }}>
           {(["incident-commander", "developer", "platform-engineer", "sre"] as Discipline[]).map((disc) => {
@@ -463,7 +356,14 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
               "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
               "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
             };
+            const difficultyTierMap: Record<Discipline, string> = {
+              "incident-commander": "Rookie",
+              developer: "Intermediate",
+              "platform-engineer": "Advanced",
+              sre: "Elite",
+            };
             const info = driverInfo[disc];
+            const difficultyTier = difficultyTierMap[disc];
             const isStarting = userState.startingDiscipline === disc;
             const currentThresholdXP =
               XP_THRESHOLDS.slice().reverse().find((t) => progress.xp >= t.xp)?.xp ?? 0;
@@ -502,12 +402,13 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   />
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{info.name}</span>
-                    <span style={{ fontSize: "11px", opacity: 0.5 }}>{meta.label}</span>
-                    <span style={{ fontSize: "10px", opacity: 0.35 }}>{info.driverName}</span>
+                    <span style={{ fontSize: "11px", opacity: 0.5 }}>
+                      {info.driverName} &middot; {difficultyTier}
+                    </span>
+                    <span style={{ fontSize: "11px", color: meta.color, fontWeight: 500 }}>
+                      {progress.levelName} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                    </span>
                   </div>
-                  <span style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>
-                    {progress.levelName}
-                  </span>
                 </div>
                 <div style={{ padding: "0 16px" }}>
                   <div

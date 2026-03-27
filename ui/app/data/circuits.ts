@@ -7,6 +7,25 @@ export interface Circuit {
   countryCode: string;
 }
 
+export type DriverTier = "rookie" | "intermediate" | "advanced" | "elite";
+
+export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
+  "ground-zero": "rookie",
+  "operator-readiness": "intermediate",
+  "speed-driver": "intermediate",
+  "strategist": "advanced",
+  "builder": "advanced",
+  "reliability-driver": "elite",
+  "race-day": "elite",
+};
+
+export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
+  "rookie": 0,
+  "intermediate": 500,
+  "advanced": 1500,
+  "elite": 3000,
+};
+
 export const CIRCUITS: Circuit[] = [
   // ─── PRE-SEASON TESTING ───────────────────────────────────────────
   {
@@ -16,6 +35,9 @@ export const CIRCUITS: Circuit[] = [
     missionIds: [
       "mission-the-dock",
       "mission-what-are-you",
+      "mission-know-your-wheel",
+      "mission-ask-the-ai",
+      "mission-first-alert",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
     countryCode: "au",
@@ -25,8 +47,9 @@ export const CIRCUITS: Circuit[] = [
     name: "Operator Readiness",
     description: "Core tools, AI, and support resources every operator needs",
     missionIds: [
-      "mission-ask-the-ai",
-      "mission-first-alert",
+      "mission-read-the-room",
+      "mission-follow-the-signal",
+      "mission-map-the-service",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
     countryCode: "bh",
@@ -36,12 +59,13 @@ export const CIRCUITS: Circuit[] = [
     name: "Reliability Driver",
     description: "SRE missions using Dynatrace Assist for incident response, root cause analysis, and proactive reliability",
     missionIds: [
-      "mission-first-briefing",
-      "mission-blast-radius",
       "mission-causal-chain",
       "mission-slo-burn",
       "mission-predict-failure",
       "mission-operator-debrief",
+      "mission-code-fix-brief",
+      "mission-command-postmortem",
+      "mission-approval-gate",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
     countryCode: "gb",
@@ -51,12 +75,10 @@ export const CIRCUITS: Circuit[] = [
     name: "The Strategist",
     description: "Incident Commander missions using Dynatrace Assist to lead, communicate, and close incidents with data",
     missionIds: [
-      "mission-war-room-brief",
       "mission-timeline-reconstruction",
       "mission-customer-impact",
       "mission-escalation-decision",
       "mission-all-clear",
-      "mission-command-postmortem",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
     countryCode: "mc",
@@ -71,7 +93,6 @@ export const CIRCUITS: Circuit[] = [
       "mission-deployment-correlation",
       "mission-log-story",
       "mission-error-budget-dev",
-      "mission-code-fix-brief",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
     countryCode: "it",
@@ -81,12 +102,9 @@ export const CIRCUITS: Circuit[] = [
     name: "The Builder",
     description: "Platform Engineer missions using Dynatrace Assist to forecast, automate, and manage infrastructure at scale",
     missionIds: [
-      "mission-fleet-report",
-      "mission-disk-forecast",
       "mission-otel-inventory",
       "mission-log-volume",
       "mission-workflow-builder",
-      "mission-approval-gate",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
     countryCode: "be",

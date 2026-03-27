@@ -22,7 +22,7 @@ import {
   GroupIcon,
   type SvgIconProps,
 } from "@dynatrace/strato-icons";
-import { TOPIC_META_ORDERED, TOPIC_META } from "../types/UserState";
+import { TOPIC_META } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
 import { MISSIONS } from "../data/missions";
 import { useUserStateContext } from "../context/UserStateContext";
@@ -80,7 +80,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [statusOpen, setStatusOpen] = useState(true);
-  const [difficultyOpen, setDifficultyOpen] = useState(true);
 
   const [topicOpen, setTopicOpen] = useState(true);
 
@@ -112,21 +111,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
     { value: null, label: "All", count: statusCounts.total },
     { value: "not_started", label: "Not Started", count: statusCounts.notStarted },
     { value: "completed", label: "Completed", count: statusCounts.completed },
-  ];
-
-  const difficultyCounts = useMemo(() => {
-    const total = MISSIONS.length;
-    const rookie = MISSIONS.filter((m) => m.difficulty === "rookie").length;
-    const operator = MISSIONS.filter((m) => m.difficulty === "operator").length;
-    const elite = MISSIONS.filter((m) => m.difficulty === "elite").length;
-    return { total, rookie, operator, elite };
-  }, []);
-
-  const difficultyOptions: { value: "rookie" | "operator" | "elite" | null; label: string; count: number }[] = [
-    { value: null, label: "All", count: difficultyCounts.total },
-    { value: "rookie", label: "Rookie", count: difficultyCounts.rookie },
-    { value: "operator", label: "Operator", count: difficultyCounts.operator },
-    { value: "elite", label: "Elite", count: difficultyCounts.elite },
   ];
 
   return (
@@ -181,97 +165,6 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                 <div
                   key={opt.value ?? "__all__"}
                   onClick={() => update("status", opt.value)}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "4px 8px",
-                    fontSize: "12px",
-                    cursor: "pointer",
-                    borderRadius: "4px",
-                    background: isActive
-                      ? "var(--dt-colors-background-container-neutral-default)"
-                      : "transparent",
-                    color: isActive
-                      ? "var(--dt-colors-text-primary-default, #fff)"
-                      : "var(--dt-colors-text-neutral-subdued)",
-                    fontWeight: isActive ? 600 : 400,
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background = "var(--dt-colors-background-container-neutral-subdued)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background = "transparent";
-                    }
-                  }}
-                >
-                  {opt.label}
-                  <span
-                    style={{
-                      background: "rgba(255, 255, 255, 0.08)",
-                      borderRadius: "10px",
-                      padding: "1px 7px",
-                      fontSize: "11px",
-                      fontWeight: 500,
-                      color: "inherit",
-                    }}
-                  >
-                    {opt.count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{
-              height: "1px",
-              background: "var(--dt-colors-border-neutral-default)",
-              margin: "8px 0 16px 0",
-            }}
-          />
-
-          {/* Difficulty section */}
-          <div style={{ marginBottom: "16px" }}>
-            <div
-              onClick={() => setDifficultyOpen((v) => !v)}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                cursor: "pointer",
-                fontSize: "12px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-                color: "var(--dt-colors-text-neutral-subdued)",
-                marginBottom: "6px",
-              }}
-            >
-              Difficulty
-              <span
-                style={{
-                  display: "inline-block",
-                  transition: "none",
-                  transform: difficultyOpen ? "rotate(0deg)" : "rotate(-90deg)",
-                  fontSize: "10px",
-                  lineHeight: 1,
-                }}
-              >
-                ▾
-              </span>
-            </div>
-            {difficultyOpen && difficultyOptions.map((opt) => {
-              const isActive = filters.difficulty === opt.value;
-              return (
-                <div
-                  key={opt.value ?? "__all__"}
-                  onClick={() => update("difficulty", opt.value)}
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
