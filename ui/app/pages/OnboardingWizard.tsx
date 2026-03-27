@@ -187,7 +187,9 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const currentUser = getCurrentUserDetails();
   const firstName =
     currentUser.name?.split(" ")[0] ?? currentUser.email?.split("@")[0] ?? "Operator";
-  const fullName = currentUser.name ?? currentUser.email ?? "Operator";
+  const fullName =
+    (currentUser.name && !currentUser.name.includes("dt.missing") && currentUser.name) ||
+    "Operator";
 
   const startingCircuitId = DRIVER_TO_CIRCUIT[selectedDiscipline] ?? undefined;
   const startingCircuit = useMemo(
@@ -319,7 +321,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           <div
             style={{
               position: "absolute",
-              top: "40px",
+              top: "60px",
               left: 0,
               right: 0,
               display: "flex",
@@ -354,7 +356,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           <div
             style={{
               position: "absolute",
-              bottom: "32px",
+              bottom: "48px",
               left: 0,
               right: 0,
               display: "flex",
@@ -369,7 +371,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 color: "#fff",
               }}
             >
-              {firstName}
+              {fullName}
             </span>
             <span
               style={{
