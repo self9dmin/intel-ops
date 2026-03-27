@@ -271,14 +271,18 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      style={{ minHeight: "100vh", padding: step === 0 ? "0" : "24px 24px" }}
+      style={{
+        minHeight: "100vh",
+        padding: step === 0 ? "0" : "24px 24px",
+        overflow: step === 0 ? "hidden" : undefined,
+      }}
     >
       {step === 0 ? (
         /* Full-bleed hero welcome */
         <div
           style={{
             width: "100%",
-            height: "420px",
+            minHeight: "calc(100vh - 48px)",
             position: "relative",
             backgroundImage: "url(/ui/assets/ft-car.png)",
             backgroundSize: "cover",
@@ -315,7 +319,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           <div
             style={{
               position: "absolute",
-              top: "24px",
+              top: "40px",
               left: 0,
               right: 0,
               display: "flex",
