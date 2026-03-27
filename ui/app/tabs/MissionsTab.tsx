@@ -6,9 +6,11 @@ import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
-import { CIRCUITS } from "../data/circuits";
+import { CIRCUITS, CIRCUIT_TIER_MAP, TIER_XP_THRESHOLDS } from "../data/circuits";
+import type { DriverTier } from "../data/circuits";
 import { TOPIC_META, XP_THRESHOLDS } from "../types/UserState";
 import type { Discipline } from "../types/UserState";
+import { getUnlockedTier, isTierUnlocked, getNextTierInfo } from "../utils/xp";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -21,6 +23,15 @@ import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
 import type { Mission } from "../types/mission.types";
+
+const TIER_ORDER: DriverTier[] = ["rookie", "intermediate", "advanced", "elite"];
+
+const NEXT_TIER_DRIVER_NAME: Record<DriverTier, string> = {
+  rookie: "Liam Lawson",
+  intermediate: "Isack Hadjar",
+  advanced: "Max Verstappen",
+  elite: "",
+};
 
 const DRIVER_INFO: Record<Discipline, { lastName: string; tier: string; helmet: string }> = {
   "incident-commander": { lastName: "Lindblad", tier: "Rookie", helmet: "/ui/assets/helmets/lindblad.png" },
@@ -138,6 +149,36 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
   );
 
   const totalXP = userState ? computeTotalXP(userState.disciplines) : 0;
+  const unlockedTier = getUnlockedTier(totalXP);
+
+  const missionTierMap = useMemo(() => {
+    const map = new Map<string, DriverTier>();
+    for (const circuit of CIRCUITS) {
+      const tier = CIRCUIT_TIER_MAP[circuit.id];
+      if (!tier) continue;
+      for (const missionId of circuit.missionIds) {
+        const existing = map.get(missionId);
+        if (!existing || TIER_ORDER.indexOf(tier) < TIER_ORDER.indexOf(existing)) {
+          map.set(missionId, tier);
+        }
+      }
+    }
+    return map;
+  }, []);
+
+  const getTierLockTooltip = (missionId: string): string | null => {
+    const tier = missionTierMap.get(missionId);
+    if (!tier) return null;
+    if (isTierUnlocked(tier, unlockedTier)) return null;
+    const labelMap: Record<DriverTier, string> = {
+      rookie: "Reach Recruit (0 XP) to unlock",
+      intermediate: "Reach Analyst (500 XP) to unlock",
+      advanced: "Reach Specialist (1500 XP) to unlock",
+      elite: "Reach Expert (3000 XP) to unlock",
+    };
+    return labelMap[tier];
+  };
+
   const globalRank = useMemo(() => {
     if (scores.length === 0) return null;
     const userTotals = new Map<string, number>();
@@ -245,6 +286,16 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
               <span style={{ fontSize: "9px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px" }}>
                 {levelName} &middot; {xp} / {isMax ? "MAX" : `${next.xp} XP`}
               </span>
+              {(() => {
+                const nextTierInfo = getNextTierInfo(unlockedTier);
+                if (!nextTierInfo) return null;
+                const driverName = NEXT_TIER_DRIVER_NAME[unlockedTier];
+                return (
+                  <span style={{ fontSize: "8px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px", textAlign: "center" }}>
+                    {totalXP} / {nextTierInfo.xpRequired} XP to unlock {driverName}
+                  </span>
+                );
+              })()}
             </div>
           );
         })()}
@@ -404,6 +455,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
                     isUnlocked={unlockedSet.has(mission.id)}
                     isCompleted={completedSet.has(mission.id)}
                     prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                    tierLocked={getTierLockTooltip(mission.id)}
                   />
                 ))}
               </div>
