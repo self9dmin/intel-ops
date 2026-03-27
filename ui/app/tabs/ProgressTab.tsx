@@ -463,7 +463,14 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
               "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
               "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
             };
+            const difficultyTierMap: Record<Discipline, string> = {
+              "incident-commander": "Rookie",
+              developer: "Intermediate",
+              "platform-engineer": "Advanced",
+              sre: "Elite",
+            };
             const info = driverInfo[disc];
+            const difficultyTier = difficultyTierMap[disc];
             const isStarting = userState.startingDiscipline === disc;
             const currentThresholdXP =
               XP_THRESHOLDS.slice().reverse().find((t) => progress.xp >= t.xp)?.xp ?? 0;
@@ -502,12 +509,13 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   />
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{info.name}</span>
-                    <span style={{ fontSize: "11px", opacity: 0.5 }}>{meta.label}</span>
-                    <span style={{ fontSize: "10px", opacity: 0.35 }}>{info.driverName}</span>
+                    <span style={{ fontSize: "11px", opacity: 0.5 }}>
+                      {info.driverName} &middot; {difficultyTier}
+                    </span>
+                    <span style={{ fontSize: "11px", color: meta.color, fontWeight: 500 }}>
+                      {progress.levelName} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                    </span>
                   </div>
-                  <span style={{ fontSize: "12px", color: meta.color, fontWeight: 500 }}>
-                    {progress.levelName}
-                  </span>
                 </div>
                 <div style={{ padding: "0 16px" }}>
                   <div
