@@ -6,8 +6,11 @@ import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
-import { CIRCUITS } from "../data/circuits";
-import { TOPIC_META } from "../types/UserState";
+import { CIRCUITS, CIRCUIT_TIER_MAP, TIER_XP_THRESHOLDS } from "../data/circuits";
+import type { DriverTier } from "../data/circuits";
+import { TOPIC_META, XP_THRESHOLDS } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
+import { getUnlockedTier, isTierUnlocked, getNextTierInfo } from "../utils/xp";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -15,10 +18,34 @@ import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
+import { ChangeDriverModal } from "../components/ChangeDriverModal";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
 import type { Mission } from "../types/mission.types";
+
+const TIER_ORDER: DriverTier[] = ["rookie", "intermediate", "advanced", "elite"];
+
+const NEXT_TIER_DRIVER_NAME: Record<DriverTier, string> = {
+  rookie: "Liam Lawson",
+  intermediate: "Isack Hadjar",
+  advanced: "Max Verstappen",
+  elite: "",
+};
+
+const DRIVER_INFO: Record<Discipline, { lastName: string; tier: string; helmet: string }> = {
+  "incident-commander": { lastName: "Lindblad", tier: "Rookie", helmet: "/ui/assets/helmets/lindblad.png" },
+  developer: { lastName: "Lawson", tier: "Intermediate", helmet: "/ui/assets/helmets/lawson.png" },
+  "platform-engineer": { lastName: "Hadjar", tier: "Advanced", helmet: "/ui/assets/helmets/hadjar.png" },
+  sre: { lastName: "Verstappen", tier: "Elite", helmet: "/ui/assets/helmets/verstappen.png" },
+};
+
+const DRIVER_CIRCUIT_MAP: Record<Discipline, string | null> = {
+  "incident-commander": "ground-zero",
+  developer: "operator-readiness",
+  "platform-engineer": "reliability-driver",
+  sre: null, // Race Day circuit not yet created
+};
 
 function getBadgeEmoji(icon: string): string {
   const map: Record<string, string> = {
@@ -37,6 +64,7 @@ function getBadgeEmoji(icon: string): string {
 
 interface MissionsTabProps {
   filters: SidebarFilters;
+  onFilterChange?: (filters: SidebarFilters) => void;
   onSwitchTab?: (tab: "progress") => void;
 }
 
@@ -86,10 +114,11 @@ function applyFilters(
   return result;
 }
 
-export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
+export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTabProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { userState } = useUserStateContext();
+  const { userState, updateUserState } = useUserStateContext();
   const { scores, loading: leaderboardLoading, fetchScores } = useLeaderboardContext();
+  const [driverModalOpen, setDriverModalOpen] = useState(false);
 
   const currentUser = getCurrentUserDetails();
   const displayName =
@@ -120,6 +149,36 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
   );
 
   const totalXP = userState ? computeTotalXP(userState.disciplines) : 0;
+  const unlockedTier = getUnlockedTier(totalXP);
+
+  const missionTierMap = useMemo(() => {
+    const map = new Map<string, DriverTier>();
+    for (const circuit of CIRCUITS) {
+      const tier = CIRCUIT_TIER_MAP[circuit.id];
+      if (!tier) continue;
+      for (const missionId of circuit.missionIds) {
+        const existing = map.get(missionId);
+        if (!existing || TIER_ORDER.indexOf(tier) < TIER_ORDER.indexOf(existing)) {
+          map.set(missionId, tier);
+        }
+      }
+    }
+    return map;
+  }, []);
+
+  const getTierLockTooltip = (missionId: string): string | null => {
+    const tier = missionTierMap.get(missionId);
+    if (!tier) return null;
+    if (isTierUnlocked(tier, unlockedTier)) return null;
+    const labelMap: Record<DriverTier, string> = {
+      rookie: "Reach Recruit (0 XP) to unlock",
+      intermediate: "Reach Analyst (500 XP) to unlock",
+      advanced: "Reach Specialist (1500 XP) to unlock",
+      elite: "Reach Expert (3000 XP) to unlock",
+    };
+    return labelMap[tier];
+  };
+
   const globalRank = useMemo(() => {
     if (scores.length === 0) return null;
     const userTotals = new Map<string, number>();
@@ -154,12 +213,93 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
+          gap: "20px",
           padding: "12px 0",
           borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
           marginBottom: "32px",
         }}
       >
+        {/* Driver helmet section */}
+        {(() => {
+          const disc = userState?.startingDiscipline ?? "incident-commander";
+          const driver = DRIVER_INFO[disc];
+          const progress = userState?.disciplines[disc];
+          const xp = progress?.xp ?? 0;
+          const currentThresholdXP =
+            XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.xp ?? 0;
+          const levelName =
+            XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.name ?? XP_THRESHOLDS[0]?.name ?? "—";
+          const next = XP_THRESHOLDS.find((t) => xp < t.xp);
+          const isMax = !next;
+          const progressPercent = isMax
+            ? 100
+            : ((xp - currentThresholdXP) / (next.xp - currentThresholdXP)) * 100;
+          return (
+            <div
+              onClick={() => setDriverModalOpen(true)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                flexShrink: 0,
+                minWidth: "72px",
+              }}
+            >
+              <img
+                src={driver.helmet}
+                alt=""
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  objectFit: "contain",
+                  borderRadius: "50%",
+                }}
+              />
+              <span style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginTop: "4px", fontWeight: 600 }}>
+                {driver.lastName}
+              </span>
+              <span style={{ fontSize: "10px", color: "var(--dt-colors-text-neutral-disabled)" }}>
+                {driver.tier}
+              </span>
+              <div
+                style={{
+                  width: "48px",
+                  height: "4px",
+                  borderRadius: "2px",
+                  background: "var(--dt-colors-background-container-neutral-default)",
+                  overflow: "hidden",
+                  marginTop: "4px",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${progressPercent}%`,
+                    borderRadius: "2px",
+                    background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: "9px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px" }}>
+                {levelName} &middot; {xp} / {isMax ? "MAX" : `${next.xp} XP`}
+              </span>
+              {(() => {
+                const nextTierInfo = getNextTierInfo(unlockedTier);
+                if (!nextTierInfo) return null;
+                const driverName = NEXT_TIER_DRIVER_NAME[unlockedTier];
+                return (
+                  <span style={{ fontSize: "8px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px", textAlign: "center" }}>
+                    {totalXP} / {nextTierInfo.xpRequired} XP to unlock {driverName}
+                  </span>
+                );
+              })()}
+            </div>
+          );
+        })()}
+        <div style={{ flex: 1 }}>
         <PlayerStatusStrip
           playerName={displayName}
           totalXP={totalXP}
@@ -208,7 +348,24 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             </div>
           }
         />
+        </div>
       </div>
+
+      <ChangeDriverModal
+        isOpen={driverModalOpen}
+        onClose={() => setDriverModalOpen(false)}
+        currentDiscipline={userState?.startingDiscipline ?? "incident-commander"}
+        onSelect={(discipline, experienceLevel) => {
+          void updateUserState({ startingDiscipline: discipline, experienceLevel });
+          if (onFilterChange) {
+            const difficultyFilter: SidebarFilters["difficulty"] =
+              discipline === "incident-commander" ? "rookie" : null;
+            onFilterChange({ ...filters, difficulty: difficultyFilter });
+          }
+          handlePathSelect(DRIVER_CIRCUIT_MAP[discipline]);
+          setDriverModalOpen(false);
+        }}
+      />
 
       {/* Grid: left column (chips + missions) / right column (CircuitPanel) */}
       <div
@@ -298,6 +455,7 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
                     isUnlocked={unlockedSet.has(mission.id)}
                     isCompleted={completedSet.has(mission.id)}
                     prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
+                    tierLocked={getTierLockTooltip(mission.id)}
                   />
                 ))}
               </div>

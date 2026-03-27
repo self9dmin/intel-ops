@@ -117,6 +117,7 @@ interface MissionCardProps {
   isUnlocked: boolean;
   isCompleted: boolean;
   prerequisiteNames?: string[];
+  tierLocked?: string | null;
 }
 
 export const MissionCard = ({
@@ -124,6 +125,7 @@ export const MissionCard = ({
   isUnlocked,
   isCompleted,
   prerequisiteNames,
+  tierLocked,
 }: MissionCardProps) => {
   const navigate = useNavigate();
   const hasUnmetPrereqs = !isUnlocked && prerequisiteNames && prerequisiteNames.length > 0;
@@ -169,6 +171,26 @@ export const MissionCard = ({
               Replay
             </Button>
           </Flex>
+        ) : tierLocked ? (
+          <Tooltip text={tierLocked}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "4px 12px",
+                fontSize: "12px",
+                fontWeight: 500,
+                borderRadius: "4px",
+                border: "1px solid var(--dt-colors-border-neutral-disabled)",
+                background: "transparent",
+                color: "var(--dt-colors-text-neutral-disabled)",
+                cursor: "not-allowed",
+              }}
+            >
+              {"\uD83D\uDD12"} Locked
+            </span>
+          </Tooltip>
         ) : (
           <Button
             variant="emphasized"
