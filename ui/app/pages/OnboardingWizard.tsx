@@ -2,7 +2,6 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import { getCurrentUserDetails } from "@dynatrace-sdk/app-environment";
 import { Flex } from "@dynatrace/strato-components/layouts";
-import { Surface } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
@@ -59,7 +58,12 @@ const EXPERIENCE_OPTIONS: ExperienceOption[] = [
   { id: "experienced", label: "Daily User", subtext: "I use Dynatrace regularly at work" },
 ];
 
-const PRE_SEASON_IDS = ["ground-zero", "operator-readiness"];
+const DRIVER_TO_CIRCUIT: Record<Discipline, string | null> = {
+  "incident-commander": "ground-zero",
+  developer: "operator-readiness",
+  "platform-engineer": "reliability-driver",
+  sre: null,
+};
 
 const COUNTRY_OPTIONS: { id: string; label: string; code: string | null }[] = [
   { id: "gb", label: "United Kingdom", code: "gb" },
@@ -90,25 +94,8 @@ const COUNTRY_OPTIONS: { id: string; label: string; code: string | null }[] = [
   { id: "other", label: "Other", code: null },
 ];
 
-const EXPERIENCE_TO_DEFAULT_CIRCUIT: Record<string, string> = {
-  new: "ground-zero",
-  learning: "ground-zero",
-  experienced: "operator-readiness",
-};
-
-function getCircuitTier(circuitId: string): string {
-  const preSeason = new Set(["terrain-recon", "ground-zero", "operator-readiness"]);
-  const qualifying = new Set(["first-response", "reliability-run", "cluster-control", "insight"]);
-  const raceDay = new Set(["signal-hunt", "root-cause-run"]);
-
-  if (preSeason.has(circuitId)) return "Pre-Season Testing";
-  if (qualifying.has(circuitId)) return "Qualifying";
-  if (raceDay.has(circuitId)) return "Race Day";
-  return "Qualifying";
-}
-
 function StepIndicator({ currentStep }: { currentStep: number }) {
-  const steps = [1, 2, 3, 4, 5];
+  const steps = [1, 2, 3, 4];
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "32px" }}>
       {steps.map((s) => {
@@ -147,16 +134,15 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [step, setStep] = useState(0);
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("incident-commander");
-  const [selectedCircuit, setSelectedCircuit] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [lightsOn, setLightsOn] = useState([false, false, false, false, false]);
   const [lightsExiting, setLightsExiting] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Entry: illuminate lights left-to-right when arriving at step 5
+  // Entry: illuminate lights left-to-right when arriving at confirm step (4)
   useEffect(() => {
-    if (step !== 5) return;
+    if (step !== 4) return;
     setLightsOn([false, false, false, false, false]);
     setLightsExiting(false);
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -203,18 +189,10 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     currentUser.name?.split(" ")[0] ?? currentUser.email?.split("@")[0] ?? "Operator";
   const fullName = currentUser.name ?? currentUser.email ?? "Operator";
 
+  const startingCircuitId = DRIVER_TO_CIRCUIT[selectedDiscipline] ?? undefined;
   const startingCircuit = useMemo(
-    () => CIRCUITS.find((c) => c.id === selectedCircuit),
-    [selectedCircuit]
-  );
-  const operatorReadiness = useMemo(
-    () => CIRCUITS.find((c) => c.id === "operator-readiness"),
-    []
-  );
-
-  const preSeasonCircuits = useMemo(
-    () => PRE_SEASON_IDS.map((id) => CIRCUITS.find((c) => c.id === id)).filter((c): c is NonNullable<typeof c> => c !== undefined),
-    []
+    () => CIRCUITS.find((c) => c.id === startingCircuitId) ?? null,
+    [startingCircuitId]
   );
 
   const circuitMissions = useMemo(() => {
@@ -237,14 +215,6 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       .map(([topic]) => topic);
   }, [circuitMissions]);
 
-  // Auto-select default circuit when arriving at step 3
-  const goToStep3 = useCallback(() => {
-    if (selectedExperience && !selectedCircuit) {
-      setSelectedCircuit(EXPERIENCE_TO_DEFAULT_CIRCUIT[selectedExperience] ?? "ground-zero");
-    }
-    setStep(3);
-  }, [selectedExperience, selectedCircuit]);
-
   // Keep ref in sync so the lights-exit callback always calls the latest version
   async function handleFinish() {
     setSaving(true);
@@ -263,7 +233,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         country: selectedCountry ?? undefined,
         selectedRole: undefined,
         selectedSubNeed: undefined,
-        startingCircuit: selectedCircuit ?? undefined,
+        startingCircuit: startingCircuitId,
       });
       navigate("/");
     } catch (err: unknown) {
@@ -308,7 +278,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         gap={12}
         style={{ maxWidth: "640px", width: "100%" }}
       >
-        {step >= 1 && step < 5 && <StepIndicator currentStep={step} />}
+        {step >= 1 && step < 4 && <StepIndicator currentStep={step} />}
 
         {/* Screen 1 — Welcome (pre-step) */}
         {step === 0 && (
@@ -427,7 +397,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </>
         )}
 
-        {/* Screen 2 — Experience level selector (step 1 of 3) */}
+        {/* Step 1 — Experience level */}
         {step === 1 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
@@ -472,7 +442,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 3 — Driver picker (step 2 of 5) */}
+        {/* Step 2 — Driver picker */}
         {step === 2 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
@@ -534,7 +504,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               <Button onClick={() => setStep(1)}>Back</Button>
               <Button
                 variant="emphasized"
-                onClick={goToStep3}
+                onClick={() => setStep(3)}
               >
                 Continue
               </Button>
@@ -542,76 +512,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 4 — Pre-Season circuit picker (step 3 of 5) */}
+        {/* Step 3 — Country picker */}
         {step === 3 && (
-          <Flex flexDirection="column" gap={24}>
-            <Flex flexDirection="column" alignItems="center" gap={8}>
-              <Heading level={2}>Pick your starting circuit.</Heading>
-              <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>
-                You can switch circuits at any time.
-              </Text>
-            </Flex>
-
-            <Flex flexDirection="column" gap={12}>
-              {preSeasonCircuits.map((circuit) => {
-                const isSelected = selectedCircuit === circuit.id;
-                const missionCount = circuit.missionIds.length;
-                return (
-                  <div
-                    key={circuit.id}
-                    onClick={() => setSelectedCircuit(circuit.id)}
-                    style={{
-                      ...cardStyle(isSelected),
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                    onMouseEnter={(e) => handleHover(e, isSelected, true)}
-                    onMouseLeave={(e) => handleHover(e, isSelected, false)}
-                  >
-                    <div>
-                      <div style={{ fontSize: "14px", fontWeight: isSelected ? 600 : 500 }}>
-                        {circuit.name}
-                      </div>
-                      <div style={{ fontSize: "12px", opacity: 0.6, marginTop: "4px" }}>
-                        {circuit.description}
-                      </div>
-                      <div style={{ fontSize: "11px", opacity: 0.45, marginTop: "4px" }}>
-                        {missionCount} {missionCount === 1 ? "mission" : "missions"}
-                      </div>
-                    </div>
-                    <img
-                      src={circuit.f1TrackSvgUrl}
-                      alt=""
-                      style={{
-                        width: "120px",
-                        height: "80px",
-                        objectFit: "contain",
-                        opacity: isSelected ? 0.85 : 0.4,
-                        filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)",
-                        pointerEvents: "none",
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </Flex>
-
-            <Flex justifyContent="center" gap={12}>
-              <Button onClick={() => setStep(2)}>Back</Button>
-              <Button
-                variant="emphasized"
-                disabled={selectedCircuit === null}
-                onClick={() => setStep(4)}
-              >
-                Continue
-              </Button>
-            </Flex>
-          </Flex>
-        )}
-
-        {/* Screen 5 — Country picker (step 4 of 5) */}
-        {step === 4 && (
           <Flex flexDirection="column" gap={24}>
             <Flex flexDirection="column" alignItems="center" gap={8}>
               <Heading level={2}>Which country are you representing?</Heading>
@@ -667,11 +569,11 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
             </div>
 
             <Flex justifyContent="center" gap={12}>
-              <Button onClick={() => setStep(3)}>Back</Button>
+              <Button onClick={() => setStep(2)}>Back</Button>
               <Button
                 variant="emphasized"
                 disabled={selectedCountry === null}
-                onClick={() => setStep(5)}
+                onClick={() => setStep(4)}
               >
                 Continue
               </Button>
@@ -679,8 +581,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
 
-        {/* Screen 6 — Starting path (step 5 of 5) */}
-        {step === 5 && startingCircuit && (
+        {/* Step 4 — Confirm */}
+        {step === 4 && (
           <Flex flexDirection="column" gap={24}>
             {/* Formation lights replace step indicator */}
             <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "8px" }}>
@@ -701,32 +603,19 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               <Heading level={2}>Your Grid Position, {firstName}</Heading>
             </Flex>
 
-            <Surface>
-              <Flex flexDirection="column" padding={20} gap={12}>
-                <div style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}>
-                  <Heading level={4}>{startingCircuit.name}</Heading>
-                  <span style={{
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    padding: "2px 10px",
-                    borderRadius: "4px",
-                    background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
-                    color: "#fff",
-                    letterSpacing: "0.5px",
-                  }}>
-                    {getCircuitTier(startingCircuit.id)}
-                  </span>
-                </div>
-                <Text textStyle="small" style={{ opacity: 0.7 }}>
+            {startingCircuit && (
+              <div style={{
+                padding: "20px",
+                borderRadius: "8px",
+                background: "var(--dt-colors-background-container-neutral-subdued)",
+                border: "1px solid var(--dt-colors-border-neutral-default)",
+              }}>
+                <Heading level={4}>{startingCircuit.name}</Heading>
+                <Text textStyle="small" style={{ opacity: 0.7, marginTop: "4px" }}>
                   {startingCircuit.description}
                 </Text>
 
-                <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
                   {startingCircuit.missionIds.map((mId) => {
                     const mission = MISSIONS.find((m) => m.id === mId);
                     if (!mission) return null;
@@ -740,7 +629,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                           alignItems: "center",
                           padding: "8px 12px",
                           borderRadius: "6px",
-                          background: "var(--dt-colors-background-container-neutral-subdued)",
+                          background: "var(--dt-colors-background-container-neutral-default)",
                           opacity: isLocked ? 0.45 : 1,
                         }}
                       >
@@ -754,22 +643,29 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                     );
                   })}
                 </div>
-              </Flex>
-            </Surface>
-
-            <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
-              You can change your path at any time from the Pace tab.
-            </Text>
-
-            {operatorReadiness && (
-              <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
-                All drivers complete <strong>{operatorReadiness.name}</strong> first &mdash; 3 short missions
-                that build your foundation.
-              </Text>
+              </div>
             )}
 
+            {!startingCircuit && (
+              <div style={{
+                padding: "20px",
+                borderRadius: "8px",
+                background: "var(--dt-colors-background-container-neutral-subdued)",
+                border: "1px solid var(--dt-colors-border-neutral-default)",
+                textAlign: "center",
+              }}>
+                <Text textStyle="small" style={{ opacity: 0.7 }}>
+                  All circuits unlocked. Choose your first mission from the grid.
+                </Text>
+              </div>
+            )}
+
+            <Text textStyle="small" style={{ textAlign: "center", opacity: 0.6 }}>
+              You can change your driver and circuit at any time.
+            </Text>
+
             <Flex justifyContent="center" gap={12}>
-              <Button onClick={() => setStep(4)}>Back</Button>
+              <Button onClick={() => setStep(3)}>Back</Button>
               <Button
                 variant="emphasized"
                 disabled={lightsExiting || saving}
