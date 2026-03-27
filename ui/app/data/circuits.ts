@@ -7,6 +7,25 @@ export interface Circuit {
   countryCode: string;
 }
 
+export type DriverTier = "rookie" | "intermediate" | "advanced" | "elite";
+
+export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
+  "ground-zero": "rookie",
+  "operator-readiness": "intermediate",
+  "speed-driver": "intermediate",
+  "strategist": "advanced",
+  "builder": "advanced",
+  "reliability-driver": "elite",
+  "race-day": "elite",
+};
+
+export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
+  "rookie": 0,
+  "intermediate": 500,
+  "advanced": 1500,
+  "elite": 3000,
+};
+
 export const CIRCUITS: Circuit[] = [
   // ─── PRE-SEASON TESTING ───────────────────────────────────────────
   {
