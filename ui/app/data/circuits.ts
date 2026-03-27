@@ -17,6 +17,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-the-dock",
       "mission-what-are-you",
       "mission-know-your-wheel",
+      "mission-ask-the-ai",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
     countryCode: "au",
@@ -26,7 +27,6 @@ export const CIRCUITS: Circuit[] = [
     name: "Operator Readiness",
     description: "Core tools, AI, and support resources every operator needs",
     missionIds: [
-      "mission-ask-the-ai",
       "mission-first-alert",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
