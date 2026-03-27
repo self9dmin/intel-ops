@@ -7,7 +7,8 @@ import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
-import { TOPIC_META } from "../types/UserState";
+import { TOPIC_META, XP_THRESHOLDS } from "../types/UserState";
+import type { Discipline } from "../types/UserState";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -15,10 +16,18 @@ import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
 import { MissionCard } from "../components/MissionCard";
 import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
+import { ChangeDriverModal } from "../components/ChangeDriverModal";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
 import type { Mission } from "../types/mission.types";
+
+const DRIVER_INFO: Record<Discipline, { lastName: string; tier: string; helmet: string }> = {
+  "incident-commander": { lastName: "Lindblad", tier: "Rookie", helmet: "/ui/assets/helmets/lindblad.png" },
+  developer: { lastName: "Lawson", tier: "Intermediate", helmet: "/ui/assets/helmets/lawson.png" },
+  "platform-engineer": { lastName: "Hadjar", tier: "Advanced", helmet: "/ui/assets/helmets/hadjar.png" },
+  sre: { lastName: "Verstappen", tier: "Elite", helmet: "/ui/assets/helmets/verstappen.png" },
+};
 
 function getBadgeEmoji(icon: string): string {
   const map: Record<string, string> = {
@@ -37,6 +46,7 @@ function getBadgeEmoji(icon: string): string {
 
 interface MissionsTabProps {
   filters: SidebarFilters;
+  onFilterChange?: (filters: SidebarFilters) => void;
   onSwitchTab?: (tab: "progress") => void;
 }
 
@@ -86,10 +96,11 @@ function applyFilters(
   return result;
 }
 
-export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
+export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTabProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { userState } = useUserStateContext();
+  const { userState, updateUserState } = useUserStateContext();
   const { scores, loading: leaderboardLoading, fetchScores } = useLeaderboardContext();
+  const [driverModalOpen, setDriverModalOpen] = useState(false);
 
   const currentUser = getCurrentUserDetails();
   const displayName =
@@ -154,12 +165,83 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
+          gap: "20px",
           padding: "12px 0",
           borderBottom: "1px solid var(--dt-colors-border-neutral-disabled)",
           marginBottom: "32px",
         }}
       >
+        {/* Driver helmet section */}
+        {(() => {
+          const disc = userState?.startingDiscipline ?? "incident-commander";
+          const driver = DRIVER_INFO[disc];
+          const progress = userState?.disciplines[disc];
+          const xp = progress?.xp ?? 0;
+          const currentThresholdXP =
+            XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.xp ?? 0;
+          const levelName =
+            XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.name ?? XP_THRESHOLDS[0]?.name ?? "—";
+          const next = XP_THRESHOLDS.find((t) => xp < t.xp);
+          const isMax = !next;
+          const progressPercent = isMax
+            ? 100
+            : ((xp - currentThresholdXP) / (next.xp - currentThresholdXP)) * 100;
+          return (
+            <div
+              onClick={() => setDriverModalOpen(true)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                flexShrink: 0,
+                minWidth: "72px",
+              }}
+            >
+              <img
+                src={driver.helmet}
+                alt=""
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  objectFit: "contain",
+                  borderRadius: "50%",
+                }}
+              />
+              <span style={{ fontSize: "11px", color: "var(--dt-colors-text-neutral-subdued)", marginTop: "4px", fontWeight: 600 }}>
+                {driver.lastName}
+              </span>
+              <span style={{ fontSize: "10px", color: "var(--dt-colors-text-neutral-disabled)" }}>
+                {driver.tier}
+              </span>
+              <div
+                style={{
+                  width: "48px",
+                  height: "4px",
+                  borderRadius: "2px",
+                  background: "var(--dt-colors-background-container-neutral-default)",
+                  overflow: "hidden",
+                  marginTop: "4px",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${progressPercent}%`,
+                    borderRadius: "2px",
+                    background: "var(--dt-colors-charts-categorical-default-12, #1496ff)",
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: "9px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px" }}>
+                {levelName} &middot; {xp} / {isMax ? "MAX" : `${next.xp} XP`}
+              </span>
+            </div>
+          );
+        })()}
+        <div style={{ flex: 1 }}>
         <PlayerStatusStrip
           playerName={displayName}
           totalXP={totalXP}
@@ -208,7 +290,23 @@ export const MissionsTab = ({ filters, onSwitchTab }: MissionsTabProps) => {
             </div>
           }
         />
+        </div>
       </div>
+
+      <ChangeDriverModal
+        isOpen={driverModalOpen}
+        onClose={() => setDriverModalOpen(false)}
+        currentDiscipline={userState?.startingDiscipline ?? "incident-commander"}
+        onSelect={(discipline, experienceLevel) => {
+          void updateUserState({ startingDiscipline: discipline, experienceLevel });
+          if (onFilterChange) {
+            const difficultyFilter: SidebarFilters["difficulty"] =
+              discipline === "incident-commander" ? "rookie" : null;
+            onFilterChange({ ...filters, difficulty: difficultyFilter });
+          }
+          setDriverModalOpen(false);
+        }}
+      />
 
       {/* Grid: left column (chips + missions) / right column (CircuitPanel) */}
       <div
