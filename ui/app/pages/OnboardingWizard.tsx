@@ -271,131 +271,145 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      style={{ minHeight: "100vh", padding: "24px 24px" }}
+      style={{ minHeight: "100vh", padding: step === 0 ? "0" : "24px 24px" }}
     >
+      {step === 0 ? (
+        /* Full-bleed hero welcome */
+        <div
+          style={{
+            width: "100%",
+            height: "420px",
+            position: "relative",
+            backgroundImage: "url(/ui/assets/ft-car.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            overflow: "hidden",
+          }}
+        >
+          {/* Top gradient */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "30%",
+              background: "linear-gradient(to bottom, rgba(10,10,20,0.7), transparent)",
+              pointerEvents: "none",
+            }}
+          />
+          {/* Bottom gradient */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "50%",
+              background: "linear-gradient(to top, rgba(10,10,20,0.95), transparent)",
+              pointerEvents: "none",
+            }}
+          />
+
+          {/* Top overlay content */}
+          <div
+            style={{
+              position: "absolute",
+              top: "24px",
+              left: 0,
+              right: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                fontVariant: "small-caps",
+                letterSpacing: "4px",
+                opacity: 0.7,
+                color: "#fff",
+              }}
+            >
+              MISSION CONTROL
+            </span>
+            <span
+              style={{
+                fontSize: "13px",
+                opacity: 0.5,
+                color: "#fff",
+                marginTop: "4px",
+              }}
+            >
+              Train Here. Perform Everywhere.
+            </span>
+          </div>
+
+          {/* Bottom overlay content */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "32px",
+              left: 0,
+              right: 0,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "32px",
+                fontWeight: 700,
+                color: "#fff",
+              }}
+            >
+              {firstName}
+            </span>
+            <span
+              style={{
+                fontSize: "14px",
+                opacity: 0.6,
+                color: "#fff",
+                marginTop: "4px",
+              }}
+            >
+              Your seat on the grid is ready.
+            </span>
+            <button
+              onClick={() => setStep(1)}
+              style={{
+                marginTop: "20px",
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.25)",
+                color: "#fff",
+                padding: "12px 32px",
+                borderRadius: "4px",
+                fontSize: "14px",
+                letterSpacing: "1px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              }}
+            >
+              Enter the Briefing Room &rarr;
+            </button>
+          </div>
+        </div>
+      ) : (
       <Flex
         flexDirection="column"
         gap={12}
         style={{ maxWidth: "640px", width: "100%" }}
       >
         {step >= 1 && step < 4 && <StepIndicator currentStep={step} />}
-
-        {/* Screen 1 — Welcome (pre-step) */}
-        {step === 0 && (
-          <>
-            <style>{`
-              @keyframes ctaPulse {
-                0%, 100% { box-shadow: 0 0 0 0 rgba(20, 150, 255, 0.4); }
-                50% { box-shadow: 0 0 16px 4px rgba(20, 150, 255, 0.15); }
-              }
-            `}</style>
-            <div style={{
-              borderTop: "3px solid var(--dt-colors-charts-blue-default, #1496ff)",
-              borderRadius: "8px",
-              background: "radial-gradient(ellipse at center, rgba(26, 154, 224, 0.05) 0%, transparent 70%)",
-              padding: "48px 24px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "24px",
-            }}>
-              <Heading level={1}>Mission Control</Heading>
-              <Text textStyle="base" style={{ textAlign: "center", opacity: 0.6 }}>
-                Train Here. Perform Everywhere.
-              </Text>
-
-              {/* Telemetry strip */}
-              <div style={{
-                display: "flex",
-                justifyContent: "space-evenly",
-                width: "100%",
-                maxWidth: "520px",
-                padding: "12px 16px",
-                borderRadius: "8px",
-                background: "var(--dt-colors-background-container-neutral-subdued)",
-                border: "1px solid var(--dt-colors-border-neutral-default)",
-                gap: "16px",
-              }}>
-                {([
-                  { label: "SESSION", value: "PRE-SEASON" },
-                  { label: "DRIVER", value: `#${firstName.toUpperCase()}` },
-                  { label: "STATUS", value: "READY" },
-                  { label: "CIRCUIT", value: "ASSIGNED" },
-                ] as const).map((field) => (
-                  <div key={field.label} style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "4px",
-                    fontFamily: "monospace",
-                  }}>
-                    <span style={{
-                      fontSize: "9px",
-                      fontWeight: 500,
-                      letterSpacing: "0.5px",
-                      opacity: 0.35,
-                      textTransform: "uppercase",
-                    }}>
-                      {field.label}
-                    </span>
-                    <span style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      opacity: 0.5,
-                      letterSpacing: "0.3px",
-                    }}>
-                      {field.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <img
-                src="/ui/assets/ft-car.png"
-                alt="Mission Control F1 Car"
-                style={{
-                  width: "100%",
-                  maxWidth: "360px",
-                  height: "auto",
-                  display: "block",
-                  margin: "0 auto",
-                  marginTop: "0px",
-                  marginBottom: "0px",
-                  opacity: 0.92,
-                }}
-              />
-
-              {/* Name treatment */}
-              <div style={{ textAlign: "center" }}>
-                <span style={{
-                  fontSize: "48px",
-                  fontWeight: 700,
-                  color: "var(--dt-colors-text-neutral-default)",
-                  lineHeight: 1.1,
-                }}>
-                  {fullName}
-                </span>
-              </div>
-
-              {/* System confirmation */}
-              <span style={{
-                fontFamily: "monospace",
-                fontSize: "13px",
-                opacity: 0.6,
-                textAlign: "center",
-              }}>
-                Your seat on the grid is ready.
-              </span>
-
-              {/* CTA with pulse */}
-              <div style={{ animation: "ctaPulse 2.5s ease-in-out infinite", borderRadius: "8px" }}>
-                <Button variant="emphasized" onClick={() => setStep(1)}>
-                  Enter the Briefing Room &rarr;
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
 
         {/* Step 1 — Experience level */}
         {step === 1 && (
@@ -678,6 +692,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </Flex>
         )}
       </Flex>
+      )}
     </Flex>
   );
 };
