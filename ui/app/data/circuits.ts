@@ -46,7 +46,11 @@ export const CIRCUITS: Circuit[] = [
     id: "operator-readiness",
     name: "Operator Readiness",
     description: "Core tools, AI, and support resources every operator needs",
-    missionIds: [],
+    missionIds: [
+      "mission-read-the-room",
+      "mission-follow-the-signal",
+      "mission-map-the-service",
+    ],
     f1TrackSvgUrl: "/ui/assets/circuits/bahrain.svg",
     countryCode: "bh",
   },
