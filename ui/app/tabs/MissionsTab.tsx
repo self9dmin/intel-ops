@@ -29,6 +29,13 @@ const DRIVER_INFO: Record<Discipline, { lastName: string; tier: string; helmet: 
   sre: { lastName: "Verstappen", tier: "Elite", helmet: "/ui/assets/helmets/verstappen.png" },
 };
 
+const DRIVER_CIRCUIT_MAP: Record<Discipline, string | null> = {
+  "incident-commander": "ground-zero",
+  developer: "operator-readiness",
+  "platform-engineer": "reliability-driver",
+  sre: null, // Race Day circuit not yet created
+};
+
 function getBadgeEmoji(icon: string): string {
   const map: Record<string, string> = {
     "lights-out": "\u{1F6A6}",
@@ -304,6 +311,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
               discipline === "incident-commander" ? "rookie" : null;
             onFilterChange({ ...filters, difficulty: difficultyFilter });
           }
+          handlePathSelect(DRIVER_CIRCUIT_MAP[discipline]);
           setDriverModalOpen(false);
         }}
       />
