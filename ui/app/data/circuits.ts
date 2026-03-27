@@ -109,4 +109,17 @@ export const CIRCUITS: Circuit[] = [
     f1TrackSvgUrl: "/ui/assets/circuits/spa.svg",
     countryCode: "be",
   },
+  {
+    id: "race-day",
+    name: "Race Day",
+    description: "Elite missions for operators who know the platform. No hand-holding. Full investigation, full pressure.",
+    missionIds: [
+      "mission-ghost-in-the-trace",
+      "mission-topology-under-fire",
+      "mission-silent-anomaly",
+      "mission-close-the-loop",
+    ],
+    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
+    countryCode: "ae",
+  },
 ];
