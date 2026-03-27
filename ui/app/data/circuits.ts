@@ -16,6 +16,7 @@ export const CIRCUITS: Circuit[] = [
     missionIds: [
       "mission-the-dock",
       "mission-what-are-you",
+      "mission-know-your-wheel",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
     countryCode: "au",
