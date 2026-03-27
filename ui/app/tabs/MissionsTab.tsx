@@ -139,13 +139,54 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
   const completedSet = useMemo(() => new Set(completedMissions), [completedMissions]);
   const earnedBadges = useMemo(() => new Set(userState?.badges ?? []), [userState?.badges]);
   const unlockedSet = useUnlockedMissions(completedMissions);
+  const visibleCircuits = useMemo(() => {
+    const tierIdx = TIER_ORDER.indexOf(unlockedTier);
+    return CIRCUITS.filter((c) => {
+      const circuitTier = CIRCUIT_TIER_MAP[c.id];
+      if (!circuitTier) return true;
+      return TIER_ORDER.indexOf(circuitTier) <= tierIdx;
+    });
+  }, [unlockedTier]);
+
+  const visibleCircuitIds = useMemo(
+    () => new Set(visibleCircuits.map((c) => c.id)),
+    [visibleCircuits]
+  );
+
+  const visibleMissionIds = useMemo(() => {
+    const circuitMissionIds = new Set<string>();
+    for (const c of visibleCircuits) {
+      for (const mId of c.missionIds) {
+        circuitMissionIds.add(mId);
+      }
+    }
+    const allCircuitMissionIds = new Set<string>();
+    for (const c of CIRCUITS) {
+      for (const mId of c.missionIds) {
+        allCircuitMissionIds.add(mId);
+      }
+    }
+    // Include orphaned missions (not in any circuit)
+    for (const m of MISSIONS) {
+      if (!allCircuitMissionIds.has(m.id)) {
+        circuitMissionIds.add(m.id);
+      }
+    }
+    return circuitMissionIds;
+  }, [visibleCircuits]);
+
   const selectedCircuit = useMemo(
     () => CIRCUITS.find((c) => c.id === selectedPath) ?? null,
     [selectedPath]
   );
   const filteredMissions = useMemo(
-    () => applyFilters(MISSIONS, filters, selectedPath, unlockedSet, completedSet),
-    [filters, selectedPath, unlockedSet, completedSet]
+    () => {
+      const base = selectedPath
+        ? MISSIONS
+        : MISSIONS.filter((m) => visibleMissionIds.has(m.id));
+      return applyFilters(base, filters, selectedPath, unlockedSet, completedSet);
+    },
+    [filters, selectedPath, unlockedSet, completedSet, visibleMissionIds]
   );
 
   const totalXP = userState ? computeTotalXP(userState.disciplines) : 0;
@@ -380,7 +421,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
           <div style={{ marginBottom: "16px" }}>
             <Heading level={5}>Circuits</Heading>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-              {CIRCUITS.map((path) => (
+              {visibleCircuits.map((path) => (
                 <Tooltip key={path.id} text={path.description}>
                   <Chip
                     color={selectedPath === path.id ? "primary" : "neutral"}
@@ -393,13 +434,15 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
                   </Chip>
                 </Tooltip>
               ))}
-              <Chip
-                color={selectedPath === null ? "primary" : "neutral"}
-                variant={selectedPath === null ? "emphasized" : undefined}
-                onClick={() => handlePathSelect(null)}
-              >
-                All
-              </Chip>
+              {visibleCircuits.length > 1 && (
+                <Chip
+                  color={selectedPath === null ? "primary" : "neutral"}
+                  variant={selectedPath === null ? "emphasized" : undefined}
+                  onClick={() => handlePathSelect(null)}
+                >
+                  All
+                </Chip>
+              )}
             </div>
           </div>
 
