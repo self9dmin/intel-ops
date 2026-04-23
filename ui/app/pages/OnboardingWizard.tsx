@@ -333,21 +333,21 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           >
             <span
               style={{
-                fontSize: "11px",
-                fontVariant: "small-caps",
-                letterSpacing: "4px",
-                opacity: 0.7,
-                color: "#fff",
+                fontSize: "32px",
+                fontWeight: 700,
+                color: "white",
+                letterSpacing: "6px",
+                textTransform: "uppercase" as const,
               }}
             >
               MISSION CONTROL
             </span>
             <span
               style={{
-                fontSize: "13px",
-                opacity: 0.5,
+                fontSize: "16px",
+                opacity: 0.6,
                 color: "#fff",
-                marginTop: "4px",
+                marginTop: "8px",
               }}
             >
               Train Here. Perform Everywhere.
