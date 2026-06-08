@@ -8,9 +8,9 @@
 
 ## What Is This
 
-Mission Control is a scenario-based training app that runs natively inside the Dynatrace platform. Instead of reading documentation, users complete real observability missions — navigating the actual Dynatrace UI, querying Grail, and investigating real problems — then earn XP, unlock achievements, and compete on a leaderboard.
+Mission Control is a scenario-based training app that runs inside Dynatrace. Instead of reading documentation, you complete missions on the real Playground — navigating the actual UI, querying Grail, investigating real problems — then earn XP, clear checkpoints, and land on a leaderboard.
 
-The app is designed around a single belief: **you learn Dynatrace by doing Dynatrace**. Every mission puts you inside the real platform, completing real tasks, against a clock.
+The idea is simple: **you learn Dynatrace by doing Dynatrace**. Every mission puts you in the real platform, doing real work, against a clock.
 
 **The core loop:**
 
