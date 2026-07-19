@@ -16,11 +16,12 @@ import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
 import { JourneysTab } from "./tabs/JourneysTab";
 import { Journey } from "./pages/Journey";
+import { ReviewPage } from "./pages/ReviewPage";
 import { InformationIcon, BugReportIcon } from "@dynatrace/strato-icons";
 import { APP_VERSION } from "./buildVersion";
 
-type TopTab = "missions" | "journeys" | "progress" | "leaderboard";
-const TAB_ORDER: TopTab[] = ["missions", "journeys", "progress", "leaderboard"];
+type TopTab = "missions" | "journeys" | "progress" | "leaderboard" | "review";
+const TAB_ORDER: TopTab[] = ["missions", "journeys", "progress", "leaderboard", "review"];
 
 const ShellLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -91,6 +92,7 @@ const ShellLayout = () => {
         {activeTab === "journeys" && <JourneysTab />}
         {activeTab === "progress" && <ProgressTab onSwitchTab={handleSwitchToMissions} />}
         {activeTab === "leaderboard" && <LeaderboardTab />}
+        {activeTab === "review" && <ReviewPage />}
       </main>
     </div>
   );
@@ -100,6 +102,7 @@ const ShellLayout = () => {
     journeys: "Track Walk",
     progress: "Progress",
     leaderboard: "Leaderboard",
+    review: "Content Review",
   };
 
   return (
@@ -289,6 +292,7 @@ const AppContent = () => {
       <Route path="/debrief/:id" element={<Debrief />} />
       <Route path="/journeys/:id" element={<Journey />} />
       <Route path="/progress" element={<Navigate to="/?tab=progress" replace />} />
+      <Route path="/review" element={<Navigate to="/?tab=review" replace />} />
     </Routes>
   );
 };

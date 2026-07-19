@@ -107,6 +107,15 @@ Product backlog for future content and authoring work. These are backlog commitm
 3. Add Cost Optimization once current billing terminology and safe sample data are confirmed.
 4. Prototype the Visual Mission Builder against the proven mission schema and quality rubric.
 
+## 5. Mission Review and Community Feedback
+
+- **Status:** First implementation shipped; CI and merge enforcement pending
+- **Complexity:** Medium
+- **Impact:** High
+- **Scope:** Govern mission content before merge and collect structured learner feedback after release.
+- **Implementation:** The Content Review surface supports a weighted internal rubric, evidence checks, Ready/Revise/Blocked decisions, and public community feedback persisted as `intelops-review` Document Service documents. See [Mission Review System](mission-review-system.md).
+- **Next hardening:** Add a repository validation script and CI/branch protection requirement for malformed content and missing reviewer approval. Keep community feedback advisory and separate from official scores.
+
 ## Source and evidence discipline
 
 Each mission proposal must carry a source URL, capture date, tenant/data mode, expected learner role, and whether the claim is official documentation, product behavior, community guidance, or an internal teaching interpretation. Competitor comparisons are context for prioritization, not evidence that a competitor lacks a capability.

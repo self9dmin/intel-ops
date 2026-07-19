@@ -357,6 +357,9 @@ export const Debrief = () => {
         <Button variant="default" onClick={() => navigate("/progress?tab=leaderboard")}>
           View Leaderboard
         </Button>
+        <Button variant="default" onClick={() => navigate(`/review?mission=${id}`)}>
+          Review Mission
+        </Button>
       </Flex>
     </Flex>
   );
