@@ -5,7 +5,7 @@
 
 ## Executive judgment
 
-The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation.
+The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation. The first strengthening pass is now implemented: Davis/Assist remains its own circuit, and a separate seven-mission AI Observability circuit covers workload signals, traces, token economics, agent topology, instrumentation, model health, and incident bridging. These missions are content-ready but still require target-tenant execution before publication-ready status.
 
 ## Use-case health by family
 
@@ -20,7 +20,7 @@ The library is a strong navigation and investigation foundation, but it is not y
 | Logs and DQL | Follow the Signal, Log Story, Log Volume Intelligence | Valid but query-light | The missions teach filtering and query recognition, but they need executable DQL checkpoints, schema awareness, and a “no results” diagnosis. |
 | Infrastructure and Kubernetes | Fleet Report, Disk Forecast, OTel Inventory, Map Kubernetes Cluster | Valid but shallow | Good orientation, limited remediation and capacity tradeoffs. Add resource saturation, workload ownership, and safe change verification. |
 | Automation and workflows | Workflow Builder, Approval Gate, Know Your Wheel | Valid | Approval and safety concepts are valuable. Add failure recovery, permissions, dry-run, and audit evidence. |
-| AI Observability | AI Grand Prix prototype using existing Intelligence missions | Weak / incomplete | Current circuit teaches Assist and Davis investigation, not observability of AI applications. It needs a separate AI workload track. |
+| AI Observability | AI Observability Grand Prix plus the Davis Intelligence circuit | Strengthened prototype | The new track covers workload telemetry, traces, tokens/cost, topology, instrumentation, model health, and incidents. It remains fixture-validation work until AI data is confirmed in the target Playground or tenant. |
 | Cost and consumption | Log Volume Intelligence only | Missing | No dedicated host-unit, DEM, DDU/DPS, usage, or billing workflow exists yet. |
 | Support, learning, and lifecycle | Track Walk journeys | Strong prototype | Best evidence-backed content currently. Needs authenticated University/LMS and support entitlement validation before being called complete. |
 
@@ -67,7 +67,7 @@ The backlog item is justified. Cost should not be taught as a generic licensing 
 ## Recommended strengthening order
 
 1. Revalidate all current Playground-dependent questions and labels.
-2. Upgrade the AI Grand Prix into a genuine AI Observability track; keep Davis Assist missions as an Intelligence sub-track.
+2. Execute and validate the new AI Observability Grand Prix against a tenant or fixture with AI telemetry; keep Davis Assist missions as an Intelligence sub-track.
 3. Add executable DQL and structured-evidence checkpoints to logs, traces, SLOs, and OTel.
 4. Build the Cost Optimization track against current Usage & Billing and consumption data.
 5. Add remediation and recovery outcomes to automation, Kubernetes, and infrastructure missions.

@@ -19,6 +19,7 @@ export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
   "race-day": "elite",
   "opentelemetry-grand-prix": "intermediate",
   "ai-grand-prix": "advanced",
+  "ai-observability-grand-prix": "advanced",
 };
 
 export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
@@ -118,8 +119,8 @@ export const CIRCUITS: Circuit[] = [
   },
   {
     id: "ai-grand-prix",
-    name: "AI Grand Prix",
-    description: "A staged circuit for using Dynatrace Intelligence in investigation, prediction, and operator debriefs",
+    name: "Davis Intelligence Grand Prix",
+    description: "A staged circuit for using Davis and Dynatrace Assist in investigation, prediction, and operator debriefs",
     missionIds: [
       "mission-ask-the-ai",
       "mission-first-briefing",
@@ -130,6 +131,22 @@ export const CIRCUITS: Circuit[] = [
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
     countryCode: "gb",
+  },
+  {
+    id: "ai-observability-grand-prix",
+    name: "AI Observability Grand Prix",
+    description: "A staged circuit for instrumenting, exploring, and troubleshooting AI agents and LLM workloads in Dynatrace",
+    missionIds: [
+      "mission-ai-signal-map",
+      "mission-ai-trace-investigation",
+      "mission-ai-token-economics",
+      "mission-ai-agent-topology",
+      "mission-ai-instrumentation-check",
+      "mission-ai-model-health",
+      "mission-ai-incident-bridge",
+    ],
+    f1TrackSvgUrl: "/ui/assets/circuits/suzuka.svg",
+    countryCode: "jp",
   },
   {
     id: "builder",
