@@ -110,7 +110,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "Dynatrace Assist is not a chatbot. It's an AI that knows your infrastructure, your services, your logs, and your problems — and can query all of it in plain English. Before you write a single line of DQL, learn what the machine already knows. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: duplicates the newer AI Observability and Davis Intelligence tracks while relying on entitlement-sensitive Assist behavior.",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "sre", xp: 50 },
@@ -486,7 +487,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "Your shift just started. Something may be wrong — or everything may be fine. The old way: open 5 dashboards, scan for red. The new way: open Assist and ask. This mission teaches you the difference between a vague prompt and an operator-grade prompt, and why it matters when every second counts. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: prompt-writing exercise overlaps with War Room Brief and does not produce a distinct operational artifact.",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "sre", xp: 75 },
@@ -571,7 +573,7 @@ export const MISSIONS: Mission[] = [
       "A problem opened on frontend-high-cpu. Your first instinct might be to SSH in and look around. Do not. First, understand the blast radius — what else is affected, what depends on this host, what is downstream. Assist can map this in seconds using Smartscape. This mission teaches you to scope before you act. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-first-briefing"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "sre", xp: 100 },
       { track: "incident-commander", xp: 50 },
@@ -808,7 +810,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "frontend-high-cpu has been running hot for weeks. The disk is filling. Nobody acted. This is the failure mode Dynatrace Intelligence is designed to prevent. The Forecasting Agent can predict when resources will exhaust based on historical trends — before the alert fires. This mission teaches you to use predictive AI for proactive operations. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: predictive-agent claims require current entitlement and fixture validation; the mission did not provide a sufficiently bounded learner outcome.",
     prerequisites: ["mission-slo-burn"],
     disciplines: [
       { track: "sre", xp: 150 },
@@ -882,8 +885,9 @@ export const MISSIONS: Mission[] = [
     briefing:
       "Every incident deserves a postmortem. Most do not get one because writing them takes time nobody has. Assist can reconstruct the timeline from Grail data and generate a stakeholder-ready summary in seconds. This is how modern SRE teams close the loop — not with a Confluence page written three days later, but with Grail-backed intelligence generated while the data is fresh. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 420,
-    status: "available",
-    prerequisites: ["mission-predict-failure"],
+    status: "retired",
+    retirementReason: "Retired: generic Assist postmortem exercise overlaps with Command Postmortem, which has the stronger incident-commander outcome.",
+    prerequisites: ["mission-all-clear"],
     disciplines: [
       { track: "sre", xp: 100 },
       { track: "incident-commander", xp: 150 },
@@ -956,7 +960,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "You are the Incident Commander. The war room is live. Everyone is looking at you. You have not been following the incident — you were just called in. The old way: ask five engineers to explain five different things. The new way: one prompt, full picture. Assist can give you an executive-level briefing across infrastructure, security, and performance in seconds. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: generic Assist briefing overlaps with First Briefing and lacks reproducible evidence beyond prompt selection.",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "incident-commander", xp: 100 },
@@ -1031,7 +1036,7 @@ export const MISSIONS: Mission[] = [
       "The hardest question in any incident is: what happened first? Engineers have different timelines. Logs contradict each other. Assist can reconstruct the sequence of events from Grail data — exact timestamps, entity transitions, and problem progressions — without anyone needing to remember. This mission teaches you to use Assist as your incident historian. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-war-room-brief"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 75 },
@@ -1178,7 +1183,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The hardest decision in incident command is escalation. Escalate too early and you burn out your team. Escalate too late and the customer impact grows. Assist can give you a rapid situation assessment — blast radius, severity, trend — so you can make a data-driven escalation decision. This mission teaches you the Assist-first escalation workflow. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: escalation advice is too generic without a verified evidence packet, impact threshold, or decision artifact.",
     prerequisites: ["mission-customer-impact"],
     disciplines: [
       { track: "incident-commander", xp: 150 },
@@ -1253,7 +1259,7 @@ export const MISSIONS: Mission[] = [
       "Declaring all-clear too early is as dangerous as not declaring it at all. Before you stand down the team, you need confirmation that the root cause is gone, affected entities have recovered, and no new problems have opened. Assist can verify resolution from Grail data and generate the stakeholder communication. This mission teaches you to close incidents with data, not assumptions. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-escalation-decision"],
+    prerequisites: ["mission-customer-impact"],
     disciplines: [
       { track: "incident-commander", xp: 125 },
       { track: "sre", xp: 75 },
@@ -1785,7 +1791,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The SRE has found the problem. Now they need to hand it off to you. In the old world: a Slack message with a screenshot and a prayer. In the new world: Assist generates a structured brief with root cause, affected code context, and a recommended fix direction — all from Grail data. No war room call. No context switching. Just the information you need to open the right file. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 480,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: generic AI code-fix guidance is not a reproducible Dynatrace workflow and belongs in a future developer delivery track.",
     prerequisites: ["mission-error-budget-dev"],
     disciplines: [
       { track: "developer", xp: 200 },
@@ -1932,7 +1939,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The disk alert on frontend-high-cpu has been open for 30 days. Nobody acted. That is the failure mode. The Forecasting Agent can predict disk exhaustion before it happens — giving you days to act instead of minutes. This mission teaches you to use predictive AI for proactive infrastructure management. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: duplicates predictive failure content and is too dependent on a specific forecast fixture to be a sound foundation mission.",
     prerequisites: ["mission-fleet-report"],
     disciplines: [
       { track: "platform-engineer", xp: 100 },
@@ -2007,7 +2015,7 @@ export const MISSIONS: Mission[] = [
       "Your organization has 100+ services. Some use OneAgent. Some use OpenTelemetry. Some use both. Some use neither. Before you can enforce observability standards or optimize ingestion costs, you need to know what is instrumented, how, and with which libraries. Assist can build that inventory in one prompt. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 420,
     status: "available",
-    prerequisites: ["mission-disk-forecast"],
+    prerequisites: ["mission-fleet-report"],
     disciplines: [
       { track: "platform-engineer", xp: 125 },
       { track: "developer", xp: 50 },
@@ -2317,7 +2325,8 @@ export const MISSIONS: Mission[] = [
     description: "Three alerts fire simultaneously. Before you touch anything, you need to understand what kind of problem you're dealing with and what it's affecting.",
     briefing: "Problems in Dynatrace are not all equal. An availability problem on a database is not the same as a slowdown on a frontend. Before you can triage, you need to know the severity categories, the impact layers, and how to read the problem feed like an operator — not a tourist. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: operator-level mission tests filter-label memorization rather than investigation; replace with a verified problem-triage exercise.",
     prerequisites: [],
     disciplines: [
       { track: "sre", xp: 100 },
@@ -2630,7 +2639,7 @@ export const MISSIONS: Mission[] = [
     briefing: "Open the Dynatrace AI Observability experience in a tenant with AI telemetry. Identify the surfaces used to understand an AI workload: overview, explorer, prompts, and agent topology. The goal is to recognize the workload's signals before asking an assistant to summarize them.",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-ask-the-ai"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [{ track: "developer", xp: 100 }, { track: "sre", xp: 50 }],
     topics: ["dt-intelligence", "traces", "metrics", "services"],
     category: "configuration",

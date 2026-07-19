@@ -5,7 +5,7 @@
 
 ## Executive judgment
 
-The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation. The first strengthening pass is now implemented: Davis/Assist remains its own circuit, and a separate seven-mission AI Observability circuit covers workload signals, traces, token economics, agent topology, instrumentation, model health, and incident bridging. These missions are content-ready but still require target-tenant execution before publication-ready status.
+The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation. The first strengthening pass is now implemented: Davis/Assist remains its own circuit, a separate seven-mission AI Observability circuit covers workload signals, traces, token economics, agent topology, instrumentation, model health, and incident bridging, and nine duplicative or weak missions have been retired. These missions are content-ready but still require target-tenant execution before publication-ready status.
 
 ## Use-case health by family
 

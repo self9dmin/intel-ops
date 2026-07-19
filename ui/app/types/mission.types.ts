@@ -48,7 +48,8 @@ export interface Mission {
   briefing: string;
   timerSeconds: number;
   checkpoints: Checkpoint[];
-  status: "available" | "locked";
+  status: "available" | "locked" | "retired";
+  retirementReason?: string;
   disciplines: MissionDisciplineXP[];
   prerequisites: string[];
   topics: string[];

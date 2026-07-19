@@ -77,6 +77,9 @@ function applyFilters(
 ): Mission[] {
   let result = [...missions];
 
+  // Retired missions remain addressable for historical scores, but are not part of active discovery.
+  result = result.filter((mission) => mission.status !== "retired");
+
   if (selectedPath) {
     const path = CIRCUITS.find((p) => p.id === selectedPath);
     const pathMissionIds = path?.missionIds ?? [];
