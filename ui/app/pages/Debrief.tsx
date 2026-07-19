@@ -74,23 +74,23 @@ export const Debrief = () => {
       completedAt: new Date().toISOString(),
     });
 
-    // Step 1: Update user state (completeMission + streak + XP)
-    completeMission(id);
-    updateStreak();
+    // A timeout still earns an after-action score, but it is not a completed race.
+    if (!state.timedOut) {
+      completeMission(id);
+      updateStreak();
 
-    // Step 2: Build XP grants from mission data
-    const xpGrants: XPGrant[] = [];
-    for (const disc of mission.disciplines) {
-      xpGrants.push({ discipline: disc.track, amount: disc.xp });
-    }
-    for (const topic of mission.topics ?? []) {
-      xpGrants.push({ topic, amount: 25 });
-    }
+      const xpGrants: XPGrant[] = [];
+      for (const disc of mission.disciplines) {
+        xpGrants.push({ discipline: disc.track, amount: disc.xp });
+      }
+      for (const topic of mission.topics ?? []) {
+        xpGrants.push({ topic, amount: 25 });
+      }
 
-    // Step 3: Award XP (writes user state)
-    awardXP(xpGrants).catch((xpError: unknown) => {
-      console.error("Failed to award XP for mission", id, xpError);
-    });
+      awardXP(xpGrants).catch((xpError: unknown) => {
+        console.error("Failed to award XP for mission", id, xpError);
+      });
+    }
 
     // Step 4: Save score document (fire once, no retry on timeout)
     const saveScore = async () => {
@@ -356,6 +356,9 @@ export const Debrief = () => {
         </Button>
         <Button variant="default" onClick={() => navigate("/progress?tab=leaderboard")}>
           View Leaderboard
+        </Button>
+        <Button variant="default" onClick={() => navigate(`/review?mission=${id}`)}>
+          Review Mission
         </Button>
       </Flex>
     </Flex>

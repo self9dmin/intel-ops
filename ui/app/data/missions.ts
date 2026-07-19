@@ -110,7 +110,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "Dynatrace Assist is not a chatbot. It's an AI that knows your infrastructure, your services, your logs, and your problems — and can query all of it in plain English. Before you write a single line of DQL, learn what the machine already knows. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: duplicates the newer AI Observability and Davis Intelligence tracks while relying on entitlement-sensitive Assist behavior.",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "sre", xp: 50 },
@@ -277,6 +278,267 @@ export const MISSIONS: Mission[] = [
         ],
         correctChoice: "Software Delivery",
         points: 125,
+      },
+    ],
+  },
+  {
+    id: "mission-ingest-first-signal",
+    title: "Ingest the First Signal",
+    codename: "SIGNAL IN",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Choose and complete the right first-data path: OneAgent for fast host coverage, or OpenTelemetry for instrumented, vendor-neutral signals.",
+    briefing:
+      "The official getting-started path begins with data. Open the Dynatrace Playground for a safe rehearsal, then repeat the decision in a trial or lab tenant when you have a host or service to instrument. Compare the OneAgent and OpenTelemetry routes, choose one for the scenario, and record what success should look like before you install or configure anything. Use https://playground.apps.dynatrace.com when no customer-like system is available.",
+    timerSeconds: 720,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [{ track: "platform-engineer", xp: 100 }],
+    topics: ["infrastructure", "opentelemetry", "settings"],
+    category: "configuration",
+    apps: ["Getting started", "OneAgent", "OpenTelemetry"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/discover-dynatrace/get-started",
+        "https://docs.dynatrace.com/docs/ingest-from/opentelemetry",
+        "https://docs.dynatrace.com/docs/ingest-from/dynatrace-oneagent/installation-and-operation/windows/installation/install-oneagent-on-windows",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Playground or trial tenant", "OneAgent or OpenTelemetry path"],
+      notes:
+        "The exercise is source-backed. Do not mark Playground-validated until the selected path is replayed against the target Playground or a documented tenant fixture.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Compare the Two Entry Paths",
+        instruction:
+          "Open the Playground getting-started experience and inspect the OneAgent and OpenTelemetry entry points. If you have a trial or lab host, also open the current OneAgent installation path without running it yet. Mark complete after you can explain which path you would use and why.",
+        hint:
+          "OneAgent is the fast path for broad host and full-stack coverage. OpenTelemetry is the vendor-neutral instrumentation path and can coexist with OneAgent.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Choose the Data Path",
+        instruction:
+          "A customer has Linux hosts and wants the fastest route to infrastructure and application visibility. Which starting path is the best fit, while keeping OpenTelemetry available for services that are already instrumented with it?",
+        hint:
+          "The answer is about the fastest initial coverage, not a claim that the two approaches are mutually exclusive.",
+        type: "multiple-choice",
+        choices: [
+          "Install OneAgent first; add OpenTelemetry where existing instrumentation or a vendor-neutral pipeline makes sense",
+          "Use OpenTelemetry only because OneAgent cannot collect host data",
+          "Build a dashboard before collecting any data",
+          "Configure notifications before choosing an ingestion path",
+        ],
+        correctChoice:
+          "Install OneAgent first; add OpenTelemetry where existing instrumentation or a vendor-neutral pipeline makes sense",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Run or Rehearse the First Collection",
+        instruction:
+          "In a trial or lab tenant, follow the current OneAgent or OpenTelemetry onboarding instructions far enough to identify the first verification step. If you do not have an installable system, use the Playground demo path and write down the exact signal you would verify instead. Mark complete only after recording the fallback or the first collected signal.",
+        hint:
+          "A good operator does not confuse ‘I copied an installer command’ with ‘the platform is receiving useful telemetry.’ Name the next observable result.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp4",
+        title: "Define Success Before Moving On",
+        instruction:
+          "Which pair of platform surfaces is the official getting-started path using to verify that the environment is becoming understandable after data ingestion?",
+        hint:
+          "One surface represents discovered services; the other shows relationships and dependencies across the digital ecosystem.",
+        type: "multiple-choice",
+        choices: [
+          "Services and Smartscape",
+          "Support and Community",
+          "Dashboards and Account Management",
+          "Problems and Upgrade to Paid",
+        ],
+        correctChoice: "Services and Smartscape",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-verify-the-data",
+    title: "Verify the Data",
+    codename: "PROOF OF LIFE",
+    role: "All Roles",
+    difficulty: "rookie",
+    description:
+      "Prove that telemetry is useful by checking services, relationships, and the signal you intended to collect.",
+    briefing:
+      "Ingest is only a beginning. Follow the current Dynatrace getting-started sequence into Services and Smartscape, then make a small evidence-based statement: what entity appeared, what relationship is visible, and what signal is still missing. Use the Playground for the rehearsal and a trial or customer-like tenant for the real onboarding pass.",
+    timerSeconds: 600,
+    status: "available",
+    prerequisites: ["mission-ingest-first-signal"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["services", "smartscape", "infrastructure", "traces", "logs"],
+    category: "performance",
+    apps: ["Services", "Smartscape", "Problems"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/discover-dynatrace/get-started",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/smartscape",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Services", "Smartscape", "A visible telemetry fixture"],
+      notes:
+        "The mission is designed around verifiable observations, but the expected entity names and signal availability must be captured per Playground or tenant fixture.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find a Service",
+        instruction:
+          "Open Services in the Playground or your lab tenant. Choose one service and record its name, one visible health or performance signal, and the time range you inspected. Mark complete after you have an observation you could show to a customer.",
+        hint:
+          "Do not report only that the app opened. A useful finding names an entity, a signal, and a time window.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Read the Relationship Map",
+        instruction:
+          "Open Smartscape and inspect the selected service or its surrounding topology. Which statement best describes what you should be verifying here?",
+        hint:
+          "Smartscape is about the digital ecosystem and its dependencies, not just a list of charts.",
+        type: "multiple-choice",
+        choices: [
+          "That the service has discoverable relationships to the components it depends on or serves",
+          "That every service has the same alert threshold",
+          "That the trial has been upgraded to a paid subscription",
+          "That all logs are automatically retained forever",
+        ],
+        correctChoice:
+          "That the service has discoverable relationships to the components it depends on or serves",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Separate Evidence from Assumption",
+        instruction:
+          "Return to the service or topology view and identify one missing signal or relationship. Record whether it is absent because the data is not being collected, the time range is wrong, the entity is filtered out, or the capability is not available in the fixture. Mark complete after choosing the next diagnostic step.",
+        hint:
+          "‘No data’ is not a diagnosis. First rule out time range, entity scope, and ingestion path.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp4",
+        title: "Choose the Verification Outcome",
+        instruction:
+          "What is the minimum useful handoff from this mission to the person building the first dashboard or notebook?",
+        hint:
+          "A strong handoff is small but specific: entity, signal, time window, and known gap.",
+        type: "multiple-choice",
+        choices: [
+          "A named entity, an observed signal, its time window, and one verified gap or next step",
+          "A screenshot of the home page with no notes",
+          "A statement that the agent installed, without checking any data",
+          "A list of every app visible in the launcher",
+        ],
+        correctChoice:
+          "A named entity, an observed signal, its time window, and one verified gap or next step",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-build-first-view",
+    title: "Build the First View",
+    codename: "FIRST LENS",
+    role: "Developer",
+    difficulty: "rookie",
+    description:
+      "Turn an observed signal into a reusable dashboard or notebook view, starting with Explore and learning where DQL comes from.",
+    briefing:
+      "The current Dynatrace guidance moves from finding data to making it useful. Start with a ready-made Getting started notebook or dashboard, use Explore to answer one concrete question, inspect the generated DQL, and save a view that another operator can reopen. This makes the lesson practical without forcing a new learner to write DQL from memory.",
+    timerSeconds: 720,
+    status: "available",
+    prerequisites: ["mission-verify-the-data"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "developer", xp: 75 },
+    ],
+    topics: ["dashboards", "notebooks", "dql", "services"],
+    category: "configuration",
+    apps: ["Dashboards", "Notebooks", "Explore"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/explore-data",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/notebooks",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/dashboards-new",
+        "https://docs.dynatrace.com/docs/shortlink/dql-use-queries",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Explore", "Dashboards or Notebooks", "DQL view"],
+      notes:
+        "The source-backed workflow is Explore -> inspect generated DQL -> save a reusable view. Query and permission details require fixture validation before publication-ready status.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Start with a Reusable Surface",
+        instruction:
+          "Open Dashboards or Notebooks and locate the ready-made Getting started content. Choose the surface that best fits a guided, repeatable investigation and record why. Mark complete after opening it and identifying one section you will reuse.",
+        hint:
+          "Notebooks are useful for a narrative investigation with sections; dashboards are useful for a reusable operational view.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Explore Before You Query",
+        instruction:
+          "Use Explore to answer one question about the service or signal you verified in the previous mission. Filter the data, inspect the result, and mark complete only after you can state what changed when you narrowed the scope.",
+        hint:
+          "The learning objective is not to click around. Capture the question, filter, time range, and result.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Show the Query",
+        instruction:
+          "In Explore, use the option that exposes the generated query and inspect the DQL before saving it. What is the correct relationship between Explore and DQL?",
+        hint:
+          "Explore can help a beginner discover the query, then the query can become an editable DQL tile or section.",
+        type: "multiple-choice",
+        choices: [
+          "Explore can generate a starting DQL view that you can inspect and turn into a DQL tile or section",
+          "Explore permanently hides the query so nobody can reproduce the result",
+          "DQL is only used for account administration and cannot query observability data",
+          "You must write a full DQL pipeline before Explore can display any data",
+        ],
+        correctChoice:
+          "Explore can generate a starting DQL view that you can inspect and turn into a DQL tile or section",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Save the First Lens",
+        instruction:
+          "Save the result as a dashboard tile or notebook section, add a useful title, and record the time range and entity scope. Mark complete after reopening the saved view and confirming that another operator could understand what it answers.",
+        hint:
+          "A reusable view needs an operational question, not just a chart title. Include the scope and time context in the description or surrounding notebook text.",
+        type: "action",
+        points: 150,
       },
     ],
   },
@@ -482,9 +744,9 @@ export const MISSIONS: Mission[] = [
     role: "SRE",
     difficulty: "rookie",
     description:
-      "Before you touch a single dashboard, ask Assist what's happening. This is how modern SREs start every shift.",
+      "Start a shift with a bounded evidence check before you begin deeper investigation.",
     briefing:
-      "Your shift just started. Something may be wrong — or everything may be fine. The old way: open 5 dashboards, scan for red. The new way: open Assist and ask. This mission teaches you the difference between a vague prompt and an operator-grade prompt, and why it matters when every second counts. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+      "Your shift just started. Something may be wrong — or everything may be fine. Start with the Problems view and a bounded question: establish the time window, severity, impact, and next investigation step. Use Assist to accelerate the briefing when it is available, but treat visible Problems and telemetry as the fallback evidence path. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
     status: "available",
     prerequisites: ["mission-the-dock"],
@@ -494,7 +756,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["problems", "dt-intelligence"],
     category: "incident-response",
-    apps: ["Dynatrace Assist"],
+    apps: ["Problems", "Dynatrace Assist"],
     checkpoints: [
       {
         id: "cp1",
@@ -564,7 +826,7 @@ export const MISSIONS: Mission[] = [
     title: "Blast Radius",
     codename: "CONTAIN THE BLAST",
     role: "SRE",
-    difficulty: "rookie",
+    difficulty: "operator",
     description:
       "An alert fired. Before you do anything else, use Assist to map what is affected. Scope first, fix second.",
     briefing:
@@ -808,7 +1070,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "frontend-high-cpu has been running hot for weeks. The disk is filling. Nobody acted. This is the failure mode Dynatrace Intelligence is designed to prevent. The Forecasting Agent can predict when resources will exhaust based on historical trends — before the alert fires. This mission teaches you to use predictive AI for proactive operations. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: predictive-agent claims require current entitlement and fixture validation; the mission did not provide a sufficiently bounded learner outcome.",
     prerequisites: ["mission-slo-burn"],
     disciplines: [
       { track: "sre", xp: 150 },
@@ -882,8 +1145,9 @@ export const MISSIONS: Mission[] = [
     briefing:
       "Every incident deserves a postmortem. Most do not get one because writing them takes time nobody has. Assist can reconstruct the timeline from Grail data and generate a stakeholder-ready summary in seconds. This is how modern SRE teams close the loop — not with a Confluence page written three days later, but with Grail-backed intelligence generated while the data is fresh. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 420,
-    status: "available",
-    prerequisites: ["mission-predict-failure"],
+    status: "retired",
+    retirementReason: "Retired: generic Assist postmortem exercise overlaps with Command Postmortem, which has the stronger incident-commander outcome.",
+    prerequisites: ["mission-all-clear"],
     disciplines: [
       { track: "sre", xp: 100 },
       { track: "incident-commander", xp: 150 },
@@ -956,7 +1220,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "You are the Incident Commander. The war room is live. Everyone is looking at you. You have not been following the incident — you were just called in. The old way: ask five engineers to explain five different things. The new way: one prompt, full picture. Assist can give you an executive-level briefing across infrastructure, security, and performance in seconds. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: generic Assist briefing overlaps with First Briefing and lacks reproducible evidence beyond prompt selection.",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "incident-commander", xp: 100 },
@@ -1031,7 +1296,7 @@ export const MISSIONS: Mission[] = [
       "The hardest question in any incident is: what happened first? Engineers have different timelines. Logs contradict each other. Assist can reconstruct the sequence of events from Grail data — exact timestamps, entity transitions, and problem progressions — without anyone needing to remember. This mission teaches you to use Assist as your incident historian. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-war-room-brief"],
+    prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "incident-commander", xp: 100 },
       { track: "sre", xp: 75 },
@@ -1178,7 +1443,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The hardest decision in incident command is escalation. Escalate too early and you burn out your team. Escalate too late and the customer impact grows. Assist can give you a rapid situation assessment — blast radius, severity, trend — so you can make a data-driven escalation decision. This mission teaches you the Assist-first escalation workflow. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: escalation advice is too generic without a verified evidence packet, impact threshold, or decision artifact.",
     prerequisites: ["mission-customer-impact"],
     disciplines: [
       { track: "incident-commander", xp: 150 },
@@ -1253,7 +1519,7 @@ export const MISSIONS: Mission[] = [
       "Declaring all-clear too early is as dangerous as not declaring it at all. Before you stand down the team, you need confirmation that the root cause is gone, affected entities have recovered, and no new problems have opened. Assist can verify resolution from Grail data and generate the stakeholder communication. This mission teaches you to close incidents with data, not assumptions. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-escalation-decision"],
+    prerequisites: ["mission-customer-impact"],
     disciplines: [
       { track: "incident-commander", xp: 125 },
       { track: "sre", xp: 75 },
@@ -1785,7 +2051,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The SRE has found the problem. Now they need to hand it off to you. In the old world: a Slack message with a screenshot and a prayer. In the new world: Assist generates a structured brief with root cause, affected code context, and a recommended fix direction — all from Grail data. No war room call. No context switching. Just the information you need to open the right file. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 480,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: generic AI code-fix guidance is not a reproducible Dynatrace workflow and belongs in a future developer delivery track.",
     prerequisites: ["mission-error-budget-dev"],
     disciplines: [
       { track: "developer", xp: 200 },
@@ -1932,7 +2199,8 @@ export const MISSIONS: Mission[] = [
     briefing:
       "The disk alert on frontend-high-cpu has been open for 30 days. Nobody acted. That is the failure mode. The Forecasting Agent can predict disk exhaustion before it happens — giving you days to act instead of minutes. This mission teaches you to use predictive AI for proactive infrastructure management. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: duplicates predictive failure content and is too dependent on a specific forecast fixture to be a sound foundation mission.",
     prerequisites: ["mission-fleet-report"],
     disciplines: [
       { track: "platform-engineer", xp: 100 },
@@ -2007,7 +2275,7 @@ export const MISSIONS: Mission[] = [
       "Your organization has 100+ services. Some use OneAgent. Some use OpenTelemetry. Some use both. Some use neither. Before you can enforce observability standards or optimize ingestion costs, you need to know what is instrumented, how, and with which libraries. Assist can build that inventory in one prompt. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 420,
     status: "available",
-    prerequisites: ["mission-disk-forecast"],
+    prerequisites: ["mission-fleet-report"],
     disciplines: [
       { track: "platform-engineer", xp: 125 },
       { track: "developer", xp: 50 },
@@ -2317,7 +2585,8 @@ export const MISSIONS: Mission[] = [
     description: "Three alerts fire simultaneously. Before you touch anything, you need to understand what kind of problem you're dealing with and what it's affecting.",
     briefing: "Problems in Dynatrace are not all equal. An availability problem on a database is not the same as a slowdown on a frontend. Before you can triage, you need to know the severity categories, the impact layers, and how to read the problem feed like an operator — not a tourist. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
-    status: "available",
+    status: "retired",
+    retirementReason: "Retired: operator-level mission tests filter-label memorization rather than investigation; replace with a verified problem-triage exercise.",
     prerequisites: [],
     disciplines: [
       { track: "sre", xp: 100 },
@@ -2534,6 +2803,237 @@ export const MISSIONS: Mission[] = [
         correctChoice: "DatabaseSimulation",
         points: 100,
       },
+    ],
+  },
+  {
+    id: "mission-otel-collector-validation",
+    title: "Validate the Collector",
+    codename: "PIPELINE CHECK",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description: "Read an OpenTelemetry Collector pipeline as a receiver, processor, exporter, and service boundary.",
+    briefing: "Use the Playground and the official Collector documentation to identify how telemetry moves into Dynatrace. Your first job is to prove that the pipeline is structurally valid before discussing production scale.",
+    timerSeconds: 420,
+    status: "available",
+    prerequisites: [],
+    disciplines: [{ track: "platform-engineer", xp: 125 }, { track: "developer", xp: 50 }],
+    topics: ["traces", "metrics", "logs", "dql"],
+    category: "configuration",
+    apps: ["OpenTelemetry", "Notebooks"],
+    checkpoints: [
+      { id: "cp1", title: "Find the OTel path", instruction: "Open the Dynatrace Playground launchpad and locate the OpenTelemetry entry point. Which Dynatrace surfaces are linked for downstream investigation?", hint: "Look for Distributed Tracing, Logs, Services, Kubernetes, and Notebooks.", type: "multiple-choice", choices: ["Only dashboards", "Tracing, logs, services, Kubernetes, and notebooks", "Only host monitoring", "Only Davis Problems"], correctChoice: "Tracing, logs, services, Kubernetes, and notebooks", points: 100 },
+      { id: "cp2", title: "Read the pipeline", instruction: "In the Collector configuration model, which sequence best describes the path from incoming OTLP data to Dynatrace?", hint: "The Collector's core model names the components directly.", type: "multiple-choice", choices: ["Exporter -> receiver -> processor", "Receiver -> processor -> exporter", "Processor -> exporter -> receiver", "Dashboard -> receiver -> exporter"], correctChoice: "Receiver -> processor -> exporter", points: 125 },
+      { id: "cp3", title: "Catch the metric trap", instruction: "A metric pipeline sends cumulative temporality where Dynatrace requires delta temporality. What should the learner investigate?", hint: "The Collector documentation calls out a conversion processor for this case.", type: "multiple-choice", choices: ["Change the dashboard color", "Use cumulative-to-delta conversion or configure the source for delta", "Delete the metric", "Switch to logs"], correctChoice: "Use cumulative-to-delta conversion or configure the source for delta", points: 150 },
+    ],
+  },
+  {
+    id: "mission-otel-trace-investigation",
+    title: "Follow the OTel Trace",
+    codename: "TRACE THREAD",
+    role: "Developer",
+    difficulty: "operator",
+    description: "Move from an OpenTelemetry-instrumented service to a trace-level investigation in Dynatrace.",
+    briefing: "Use the Playground's Distributed Tracing and Services surfaces. Prove which service is involved, read the trace's latency and failure signals, and avoid treating instrumentation presence as proof of application health.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-otel-collector-validation"],
+    disciplines: [{ track: "developer", xp: 150 }, { track: "sre", xp: 100 }],
+    topics: ["traces", "services", "dql"],
+    category: "performance",
+    apps: ["Distributed Tracing", "Services"],
+    checkpoints: [
+      { id: "cp1", title: "Start at the trace", instruction: "Open Distributed Tracing in the Playground and identify the first service boundary in a representative trace. What must you record before forming a hypothesis?", hint: "Record service, operation, time window, duration, and outcome.", type: "multiple-choice", choices: ["Only the trace color", "Service, operation, time window, duration, and outcome", "Only the hostname", "Only the dashboard title"], correctChoice: "Service, operation, time window, duration, and outcome", points: 100 },
+      { id: "cp2", title: "Separate signal from assumption", instruction: "A trace is present but slow. Which conclusion is supportable from the trace alone?", hint: "A trace can show where time was spent; it does not automatically explain why.", type: "multiple-choice", choices: ["The database is definitely the root cause", "The observed span path and latency are evidence; the cause needs correlation", "Instrumentation is broken", "The customer must scale the service"], correctChoice: "The observed span path and latency are evidence; the cause needs correlation", points: 125 },
+      { id: "cp3", title: "Correlate the service", instruction: "From the trace, pivot to the related service view and compare response time, throughput, and failure rate for the same window. What is the purpose of this step?", hint: "The pivot checks whether the trace is an isolated request or part of a service-level pattern.", type: "multiple-choice", choices: ["To replace trace analysis", "To test whether the trace represents a broader service pattern", "To change sampling", "To delete noisy spans"], correctChoice: "To test whether the trace represents a broader service pattern", points: 150 },
+    ],
+  },
+  {
+    id: "mission-otel-log-trace-correlation",
+    title: "Join the OTel Log Story",
+    codename: "CORRELATION BRIDGE",
+    role: "SRE",
+    difficulty: "operator",
+    description: "Correlate OpenTelemetry logs with trace and service context instead of investigating each signal in isolation.",
+    briefing: "A slow request has a trace and nearby logs. Build a bounded investigation: align time, service, and request context, then decide whether the evidence supports escalation or more data collection.",
+    timerSeconds: 540,
+    status: "available",
+    prerequisites: ["mission-otel-trace-investigation"],
+    disciplines: [{ track: "sre", xp: 175 }, { track: "developer", xp: 100 }],
+    topics: ["logs", "traces", "dql"],
+    category: "root-cause-analysis",
+    apps: ["Logs", "Distributed Tracing", "Notebooks"],
+    checkpoints: [
+      { id: "cp1", title: "Align the window", instruction: "Set the same time window for the trace and logs before comparing them. Why is this required?", hint: "Correlation without a shared time window creates false relationships.", type: "multiple-choice", choices: ["To make charts prettier", "To prevent unrelated events from being treated as one incident", "To increase retention", "To change log structure"], correctChoice: "To prevent unrelated events from being treated as one incident", points: 100 },
+      { id: "cp2", title: "Use context", instruction: "Which fields are the strongest starting points for correlating an OTel log with a trace?", hint: "Prefer identifiers and stable entity context over free-text similarity.", type: "multiple-choice", choices: ["Color and chart position", "Timestamp, service/resource context, and trace or span identifiers when present", "Browser theme", "Dashboard owner"], correctChoice: "Timestamp, service/resource context, and trace or span identifiers when present", points: 150 },
+      { id: "cp3", title: "Bound the conclusion", instruction: "The log contains an error near a slow span, but no causal link is proven. What is the correct next action?", hint: "Document the correlation as evidence, then test the hypothesis.", type: "multiple-choice", choices: ["Declare root cause immediately", "Record the correlation and investigate the error path or reproduce it", "Ignore the log", "Delete the span"], correctChoice: "Record the correlation and investigate the error path or reproduce it", points: 175 },
+    ],
+  },
+  {
+    id: "mission-otel-metrics-exploration",
+    title: "Read OTel Metrics",
+    codename: "METRIC SIGNAL",
+    role: "Platform Engineer",
+    difficulty: "elite",
+    description: "Explore OpenTelemetry metrics in Dynatrace and distinguish ingestion, temporality, aggregation, and service behavior.",
+    briefing: "Use a metric view or DQL-capable Playground workflow to evaluate an OTel metric. Explain what the metric proves, how its temporality affects interpretation, and what you would check before changing the pipeline.",
+    timerSeconds: 600,
+    status: "available",
+    prerequisites: ["mission-otel-log-trace-correlation"],
+    disciplines: [{ track: "platform-engineer", xp: 225 }, { track: "sre", xp: 125 }],
+    topics: ["metrics", "dql", "traces"],
+    category: "performance",
+    apps: ["Notebooks", "Metrics"],
+    checkpoints: [
+      { id: "cp1", title: "Name the metric contract", instruction: "Before interpreting an OTel metric, what should you confirm?", hint: "A metric name without unit, dimensions, time range, and aggregation is incomplete.", type: "multiple-choice", choices: ["Only its display label", "Name, unit, dimensions, time range, aggregation, and temporality", "Only its color", "Only its retention period"], correctChoice: "Name, unit, dimensions, time range, aggregation, and temporality", points: 125 },
+      { id: "cp2", title: "Spot ingestion versus behavior", instruction: "The metric appears in Dynatrace but its values reset unexpectedly. What should you check first?", hint: "Separate source semantics from backend visualization.", type: "multiple-choice", choices: ["Whether the dashboard is dark mode", "Source temporality, Collector processors, and aggregation semantics", "Whether traces are enabled", "Whether the service has a logo"], correctChoice: "Source temporality, Collector processors, and aggregation semantics", points: 175 },
+      { id: "cp3", title: "Choose the next query", instruction: "Which investigation best tests whether a metric change aligns with service degradation?", hint: "Use the same time window and a shared service dimension where possible.", type: "multiple-choice", choices: ["Compare unrelated hosts", "Compare the metric trend with service latency and failure signals for the same resource and window", "Read a release headline", "Change the metric name"], correctChoice: "Compare the metric trend with service latency and failure signals for the same resource and window", points: 200 },
+    ],
+  },
+  {
+    id: "mission-ai-signal-map",
+    title: "Map the AI Signal",
+    codename: "FIRST CONTACT",
+    role: "All Roles",
+    difficulty: "operator",
+    description: "Learn the difference between using AI to investigate telemetry and observing an AI workload itself.",
+    briefing: "Open the Dynatrace AI Observability experience in a tenant with AI telemetry. Identify the surfaces used to understand an AI workload: overview, explorer, prompts, and agent topology. The goal is to recognize the workload's signals before asking an assistant to summarize them.",
+    timerSeconds: 360,
+    status: "available",
+    prerequisites: ["mission-first-briefing"],
+    disciplines: [{ track: "developer", xp: 100 }, { track: "sre", xp: 50 }],
+    topics: ["dt-intelligence", "traces", "metrics", "services"],
+    category: "configuration",
+    apps: ["AI Observability", "Distributed Tracing", "Services"],
+    checkpoints: [
+      { id: "cp1", title: "Name the distinction", instruction: "Which statement best distinguishes AI assistance from AI observability?", hint: "One is a way to investigate. The other is visibility into an AI workload's behavior and dependencies.", type: "multiple-choice", choices: ["They are the same feature with different names", "AI assistance helps investigate; AI observability measures and explains the AI workload itself", "AI observability is only infrastructure monitoring", "AI assistance replaces instrumentation"], correctChoice: "AI assistance helps investigate; AI observability measures and explains the AI workload itself", points: 100 },
+      { id: "cp2", title: "Find the workload view", instruction: "Which set of surfaces is most useful for moving from a high-level AI workload view to prompt and agent detail?", hint: "Use the AI Observability app's purpose-built views, then pivot to traces when you need request-level evidence.", type: "multiple-choice", choices: ["Overview, Explorer, Prompts, and Agents topology", "Only host dashboards", "Only the billing page", "Only a service SLO"], correctChoice: "Overview, Explorer, Prompts, and Agents topology", points: 125 },
+      { id: "cp3", title: "Choose the first evidence", instruction: "Before diagnosing an AI workload, which baseline should you capture?", hint: "A useful baseline spans traffic, quality, latency, cost, and the workload's dependencies.", type: "multiple-choice", choices: ["Only the model name", "Volume, errors, latency, tokens or cost, and the affected agent or service context", "Only the prompt text", "Only CPU and memory"], correctChoice: "Volume, errors, latency, tokens or cost, and the affected agent or service context", points: 150 },
+    ],
+  },
+  {
+    id: "mission-ai-trace-investigation",
+    title: "Trace the Agent Run",
+    codename: "SPAN BY SPAN",
+    role: "Developer",
+    difficulty: "operator",
+    description: "Investigate an AI request as a trace of model calls, tool calls, and downstream service work.",
+    briefing: "Use a trace from an instrumented AI application. Follow the request from the agent or workflow span into model and tool calls, then identify where latency or failure was introduced. A trace shows the execution path; it does not by itself prove business impact or root cause.",
+    timerSeconds: 480,
+    status: "available",
+    prerequisites: ["mission-ai-signal-map"],
+    disciplines: [{ track: "developer", xp: 175 }, { track: "sre", xp: 75 }],
+    topics: ["traces", "services", "dql", "dt-intelligence"],
+    category: "performance",
+    apps: ["AI Observability", "Distributed Tracing", "Services"],
+    checkpoints: [
+      { id: "cp1", title: "Read the execution path", instruction: "What should you identify first when opening an AI request trace?", hint: "Start with the request boundary and the ordered spans beneath it.", type: "multiple-choice", choices: ["The dashboard color", "The agent or workflow boundary, model calls, tool calls, timing, and outcome", "Only the last log line", "Only the host CPU"], correctChoice: "The agent or workflow boundary, model calls, tool calls, timing, and outcome", points: 125 },
+      { id: "cp2", title: "Find the delay", instruction: "A model span is fast but the total agent run is slow. Which next step is most defensible?", hint: "Inspect the other spans and downstream dependencies before blaming the model.", type: "multiple-choice", choices: ["Assume the model is slow", "Compare tool-call and downstream-service durations in the same trace", "Disable tracing", "Increase the token limit immediately"], correctChoice: "Compare tool-call and downstream-service durations in the same trace", points: 150 },
+      { id: "cp3", title: "State the evidence", instruction: "What is a supportable conclusion when a tool-call span dominates the trace?", hint: "Describe what the trace establishes, then name what still needs testing.", type: "multiple-choice", choices: ["The tool is definitely defective", "The tool call is the largest observed contributor to this request's duration; its cause needs further investigation", "The model caused the delay", "The user prompt is invalid"], correctChoice: "The tool call is the largest observed contributor to this request's duration; its cause needs further investigation", points: 175 },
+    ],
+  },
+  {
+    id: "mission-ai-token-economics",
+    title: "Measure Token Economics",
+    codename: "COST OF ANSWERS",
+    role: "Platform Engineer",
+    difficulty: "operator",
+    description: "Use AI workload metrics to connect request volume, tokens, latency, errors, and cost.",
+    briefing: "AI workloads can be healthy from an uptime perspective and still be too expensive or too slow. Compare workload and prompt-level measurements over a bounded time window. Separate a change in traffic from a change in model behavior or prompt size.",
+    timerSeconds: 540,
+    status: "available",
+    prerequisites: ["mission-ai-trace-investigation"],
+    disciplines: [{ track: "platform-engineer", xp: 200 }, { track: "developer", xp: 100 }],
+    topics: ["metrics", "dql", "dt-intelligence", "services"],
+    category: "cost-optimization",
+    apps: ["AI Observability", "Metrics", "Notebooks"],
+    checkpoints: [
+      { id: "cp1", title: "Choose the comparison", instruction: "Token usage increases 40%. Which comparison best tests whether the increase is caused by traffic or by larger requests?", hint: "Compare tokens with request volume and per-request token distribution.", type: "multiple-choice", choices: ["Compare tokens with CPU only", "Compare total tokens, request volume, and tokens per request for the same window", "Look only at the largest prompt", "Change the model first"], correctChoice: "Compare total tokens, request volume, and tokens per request for the same window", points: 150 },
+      { id: "cp2", title: "Avoid false savings", instruction: "A cheaper model reduces cost but increases latency and error rate. What should the operator do next?", hint: "Cost is one dimension of service quality, not the only dimension.", type: "multiple-choice", choices: ["Declare success because cost fell", "Compare cost, latency, errors, and workload outcome against the intended service objective", "Hide the error metric", "Disable AI monitoring"], correctChoice: "Compare cost, latency, errors, and workload outcome against the intended service objective", points: 175 },
+      { id: "cp3", title: "Explain the finding", instruction: "Which statement is precise enough for a cost review?", hint: "Name the measured change, window, scope, and the trade-off observed.", type: "multiple-choice", choices: ["AI is expensive", "In the selected window, cost per request rose with tokens per request while latency remained within or outside the target; validate the trade-off before changing configuration", "The model is bad", "Reduce all token limits"], correctChoice: "In the selected window, cost per request rose with tokens per request while latency remained within or outside the target; validate the trade-off before changing configuration", points: 200 },
+    ],
+  },
+  {
+    id: "mission-ai-agent-topology",
+    title: "Follow the Agent Topology",
+    codename: "TOOL CHAIN",
+    role: "SRE",
+    difficulty: "operator",
+    description: "Understand how agents, tools, models, and services form a dependency graph.",
+    briefing: "An agentic system is more than one model endpoint. Use the agent topology view and related traces to identify the agent, its tools, model providers, and downstream services. Treat topology as a map for investigation, not as proof that every dependency is healthy.",
+    timerSeconds: 540,
+    status: "available",
+    prerequisites: ["mission-ai-trace-investigation"],
+    disciplines: [{ track: "sre", xp: 200 }, { track: "platform-engineer", xp: 100 }],
+    topics: ["services", "traces", "smartscape", "dt-intelligence"],
+    category: "root-cause-analysis",
+    apps: ["AI Observability", "Smartscape", "Distributed Tracing"],
+    checkpoints: [
+      { id: "cp1", title: "Read the graph", instruction: "What does an agent topology view help you understand?", hint: "Look for relationships among agents, model calls, tools, and dependent services.", type: "multiple-choice", choices: ["Only user permissions", "The relationships and execution context among AI agents, models, tools, and services", "Only host disk usage", "Only prompt wording"], correctChoice: "The relationships and execution context among AI agents, models, tools, and services", points: 125 },
+      { id: "cp2", title: "Investigate the tool edge", instruction: "An MCP-backed tool begins failing while model calls remain healthy. Which evidence should you collect?", hint: "Use the tool span, error details, timing, agent context, and downstream dependency state.", type: "multiple-choice", choices: ["Only model temperature", "Tool-call errors and latency, agent context, MCP or service dependency health, and the affected time window", "Only the browser version", "Only token count"], correctChoice: "Tool-call errors and latency, agent context, MCP or service dependency health, and the affected time window", points: 175 },
+      { id: "cp3", title: "Bound the blast radius", instruction: "How should you validate whether the failing tool affects customers?", hint: "Connect the agent path to the user-facing service or business outcome.", type: "multiple-choice", choices: ["Assume every agent is affected", "Compare affected traces and downstream service or user-impact signals against a control window", "Delete the tool span", "Ask the model to decide"], correctChoice: "Compare affected traces and downstream service or user-impact signals against a control window", points: 200 },
+    ],
+  },
+  {
+    id: "mission-ai-instrumentation-check",
+    title: "Prove the Instrumentation",
+    codename: "SIGNAL CONTRACT",
+    role: "Platform Engineer",
+    difficulty: "elite",
+    description: "Troubleshoot missing or misleading AI telemetry across OpenTelemetry-based instrumentation.",
+    briefing: "Use the AI observability onboarding and instrumentation guidance to validate a telemetry pipeline. Check whether the application emits the expected AI spans and attributes, whether the exporter reaches Dynatrace, and whether the resulting data is queryable. Do not treat an empty dashboard as proof that the workload is idle.",
+    timerSeconds: 660,
+    status: "available",
+    prerequisites: ["mission-ai-agent-topology"],
+    disciplines: [{ track: "platform-engineer", xp: 250 }, { track: "developer", xp: 125 }],
+    topics: ["traces", "metrics", "logs", "dql", "settings"],
+    category: "configuration",
+    apps: ["AI Observability", "OpenTelemetry", "Notebooks", "Settings"],
+    checkpoints: [
+      { id: "cp1", title: "Verify the path", instruction: "What is the correct first diagnostic sequence when AI traces are missing?", hint: "Verify the source, transport, exporter, time range, and query before changing application logic.", type: "multiple-choice", choices: ["Change the model", "Confirm instrumentation emits data, OTLP transport and exporter configuration, Dynatrace arrival, and the query window", "Delete the dashboard", "Increase the timer"], correctChoice: "Confirm instrumentation emits data, OTLP transport and exporter configuration, Dynatrace arrival, and the query window", points: 175 },
+      { id: "cp2", title: "Check semantic meaning", instruction: "Why are consistent AI span attributes important?", hint: "Standardized attributes allow the platform to identify and analyze model, agent, tool, token, and cost behavior.", type: "multiple-choice", choices: ["They change the model's answer", "They make AI telemetry discoverable and comparable across traces, prompts, agents, and metrics", "They reduce all storage costs", "They replace a collector"], correctChoice: "They make AI telemetry discoverable and comparable across traces, prompts, agents, and metrics", points: 200 },
+      { id: "cp3", title: "Troubleshoot the empty view", instruction: "The exporter is connected but the AI Observability view is empty. What should you test next?", hint: "An authenticated exporter can still send unsupported, incomplete, or differently named data.", type: "multiple-choice", choices: ["Assume the app is broken", "Check emitted signal type, semantic attributes, resource context, time range, and permissions or feature availability", "Restart every host", "Disable sampling everywhere"], correctChoice: "Check emitted signal type, semantic attributes, resource context, time range, and permissions or feature availability", points: 225 },
+    ],
+  },
+  {
+    id: "mission-ai-model-health",
+    title: "Guard the Model Experience",
+    codename: "QUALITY UNDER LOAD",
+    role: "SRE",
+    difficulty: "elite",
+    description: "Evaluate model and agent health as a production service with latency, errors, guardrails, and user impact.",
+    briefing: "A model can be available while the AI experience is failing. Use workload, prompt, agent, and service evidence to distinguish transport availability from useful outcomes. Include guardrail or quality signals where the workload exposes them, and state any measurement limitation explicitly.",
+    timerSeconds: 660,
+    status: "available",
+    prerequisites: ["mission-ai-token-economics", "mission-ai-instrumentation-check"],
+    disciplines: [{ track: "sre", xp: 250 }, { track: "developer", xp: 150 }],
+    topics: ["metrics", "traces", "logs", "slo", "dt-intelligence"],
+    category: "performance",
+    apps: ["AI Observability", "Services", "Logs", "SLOs"],
+    checkpoints: [
+      { id: "cp1", title: "Separate availability", instruction: "Why is a successful model response not enough to declare an AI feature healthy?", hint: "A response can be slow, costly, unsafe, incomplete, or unusable even when the request technically succeeds.", type: "multiple-choice", choices: ["It is enough in every case", "Health also requires acceptable latency, errors, cost, guardrails, and workload-specific outcome signals", "Only CPU matters", "Only prompt length matters"], correctChoice: "Health also requires acceptable latency, errors, cost, guardrails, and workload-specific outcome signals", points: 175 },
+      { id: "cp2", title: "Choose the slice", instruction: "Model quality degrades only for one agent version. Which slice is most useful?", hint: "Filter by the version or deployment dimension, then compare against a known-good period or version.", type: "multiple-choice", choices: ["All data without dimensions", "Agent or model version, prompt or workflow, time window, and outcome or error dimensions", "Only the current host", "Only total token count"], correctChoice: "Agent or model version, prompt or workflow, time window, and outcome or error dimensions", points: 200 },
+      { id: "cp3", title: "Report the limit", instruction: "If the platform has latency and error telemetry but no direct quality score, what should the operator report?", hint: "Do not invent a quality metric from operational data alone.", type: "multiple-choice", choices: ["Claim quality is good", "Report the measured operational signals and identify the missing quality measurement as a limitation", "Ignore the missing signal", "Use CPU as a quality score"], correctChoice: "Report the measured operational signals and identify the missing quality measurement as a limitation", points: 225 },
+    ],
+  },
+  {
+    id: "mission-ai-incident-bridge",
+    title: "Bridge the AI Incident",
+    codename: "END TO END",
+    role: "Incident Commander",
+    difficulty: "elite",
+    description: "Run an evidence-based investigation from an AI symptom through agent telemetry, service dependencies, and user impact.",
+    briefing: "An AI feature is timing out for a subset of users. Lead a bounded investigation: establish impact, trace the agent path, inspect model and tool behavior, correlate downstream service evidence, and produce a decision with evidence and uncertainty. Davis or Assist can accelerate the investigation, but the operator owns the evidence and the decision.",
+    timerSeconds: 780,
+    status: "available",
+    prerequisites: ["mission-ai-model-health"],
+    disciplines: [{ track: "incident-commander", xp: 300 }, { track: "sre", xp: 200 }, { track: "developer", xp: 100 }],
+    topics: ["problems", "traces", "logs", "metrics", "services", "dt-intelligence"],
+    category: "incident-response",
+    apps: ["AI Observability", "Problems", "Distributed Tracing", "Services", "Logs", "Dynatrace Assist"],
+    checkpoints: [
+      { id: "cp1", title: "Frame the impact", instruction: "What should the incident commander establish before diagnosing the model?", hint: "Start with who is affected, when, what behavior changed, and which service or journey is at risk.", type: "multiple-choice", choices: ["Only the model name", "Affected users or journeys, start time, scope, symptom, and service objective", "Only the latest prompt", "Only the host list"], correctChoice: "Affected users or journeys, start time, scope, symptom, and service objective", points: 175 },
+      { id: "cp2", title: "Build the chain", instruction: "Which investigation chain best connects an AI timeout to a defensible action?", hint: "Move from impact to trace, agent or model/tool span, dependency evidence, and change or mitigation.", type: "multiple-choice", choices: ["Ask Assist and accept its first answer", "Impact -> trace -> agent/model/tool evidence -> downstream dependency -> change or mitigation", "Host CPU -> restart everything", "Prompt text -> blame the user"], correctChoice: "Impact -> trace -> agent/model/tool evidence -> downstream dependency -> change or mitigation", points: 225 },
+      { id: "cp3", title: "Close with uncertainty", instruction: "What belongs in the final incident brief?", hint: "A good brief separates facts, hypothesis, action, owner, and what remains unknown.", type: "multiple-choice", choices: ["Only the suspected root cause", "Observed impact, evidence, current hypothesis, mitigation, owner, next check, and known limitations", "Only a screenshot", "A generic AI summary without links to evidence"], correctChoice: "Observed impact, evidence, current hypothesis, mitigation, owner, next check, and known limitations", points: 250 },
     ],
   },
 ];

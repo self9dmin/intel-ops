@@ -58,7 +58,7 @@ export interface SidebarFilters {
 }
 
 interface AppSidebarProps {
-  activeTab: "missions" | "progress" | "leaderboard";
+  activeTab: "missions" | "journeys" | "progress" | "leaderboard" | "review";
   onFilterChange: (filters: SidebarFilters) => void;
   onSwitchToMissions: () => void;
 }
@@ -100,10 +100,11 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
   ];
 
   const statusCounts = useMemo(() => {
-    const total = MISSIONS.length;
+    const activeMissions = MISSIONS.filter((mission) => mission.status !== "retired");
+    const total = activeMissions.length;
     const completedMissions = userState?.completedMissions ?? [];
     const completedSet = new Set(completedMissions);
-    const completed = MISSIONS.filter((m) => completedSet.has(m.id)).length;
+    const completed = activeMissions.filter((m) => completedSet.has(m.id)).length;
     return { total, completed, notStarted: total - completed };
   }, [userState?.completedMissions]);
 

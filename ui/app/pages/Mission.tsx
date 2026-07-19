@@ -288,7 +288,7 @@ export const Mission = () => {
   );
 
   // ── Mission not found ──
-  if (!mission) {
+  if (!mission || mission.status === "retired") {
     return roomShell(
       <div
         style={{
@@ -302,9 +302,11 @@ export const Mission = () => {
           gap: 16,
         }}
       >
-        <div style={{ fontSize: 14, fontWeight: 600, color: "#d8e4f0" }}>Mission Not Found</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "#d8e4f0" }}>
+          {mission?.status === "retired" ? "Mission Retired" : "Mission Not Found"}
+        </div>
         <div style={{ fontSize: 11, color: "rgba(150,170,200,0.5)" }}>
-          The requested mission does not exist or has been decommissioned.
+          {mission?.retirementReason ?? "The requested mission does not exist or has been decommissioned."}
         </div>
         <button
           onClick={() => navigate("/missions")}
