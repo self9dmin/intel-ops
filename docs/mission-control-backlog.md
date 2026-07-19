@@ -41,11 +41,11 @@ Product backlog for future content and authoring work. These are backlog commitm
 
 ## 2. AI Observability Mission Track
 
-- **Status:** Backlog
+- **Status:** Prototype circuit added; AI workload monitoring missions pending
 - **Complexity:** Medium
 - **Impact:** High
 - **Dependencies:** None
-- **Circuit:** AI Grand Prix
+- **Circuit:** AI Grand Prix (prototype)
 - **Scope:** Create 5-7 missions covering Davis problem detection, AI-assisted investigation, Davis CoPilot usage, anomaly detection configuration, and monitoring AI/ML workloads including model-performance concerns.
 - **User stories:**
   - As an SRE, I want to investigate Davis-detected problems so I can respond faster when alerts fire in production.

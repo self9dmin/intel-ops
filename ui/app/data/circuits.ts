@@ -18,6 +18,7 @@ export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
   "reliability-driver": "elite",
   "race-day": "elite",
   "opentelemetry-grand-prix": "intermediate",
+  "ai-grand-prix": "advanced",
 };
 
 export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
@@ -110,6 +111,21 @@ export const CIRCUITS: Circuit[] = [
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
     countryCode: "it",
+  },
+  {
+    id: "ai-grand-prix",
+    name: "AI Grand Prix",
+    description: "A staged circuit for using Dynatrace Intelligence in investigation, prediction, and operator debriefs",
+    missionIds: [
+      "mission-ask-the-ai",
+      "mission-first-briefing",
+      "mission-causal-chain",
+      "mission-predict-failure",
+      "mission-operator-debrief",
+      "mission-read-the-room",
+    ],
+    f1TrackSvgUrl: "/ui/assets/circuits/silverstone.svg",
+    countryCode: "gb",
   },
   {
     id: "builder",
