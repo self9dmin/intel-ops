@@ -38,7 +38,9 @@ export const CIRCUITS: Circuit[] = [
     missionIds: [
       "mission-the-dock",
       "mission-what-are-you",
-      "mission-know-your-wheel",
+      "mission-ingest-first-signal",
+      "mission-verify-the-data",
+      "mission-build-first-view",
       "mission-first-briefing",
       "mission-first-alert",
     ],
@@ -51,6 +53,7 @@ export const CIRCUITS: Circuit[] = [
     description: "Core tools, AI, and support resources every operator needs",
     missionIds: [
       "mission-first-alert",
+      "mission-know-your-wheel",
       "mission-follow-the-signal",
       "mission-map-the-service",
     ],

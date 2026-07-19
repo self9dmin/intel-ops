@@ -4,6 +4,8 @@
 **Scope:** 43 missions in `ui/app/data/missions.ts` before decommissioning  
 **Score meaning:** Curriculum fitness, not merge approval. A mission can score well here and still fail the evidence gate until it is reproduced in the target Playground or tenant.
 
+The scorecard below is the pre-alignment review of the original 43 missions. The three foundation alignment missions added afterward (`Ingest the First Signal`, `Verify the Data`, and `Build the First View`) are intentionally tracked in [foundation-alignment-2026.md](./foundation-alignment-2026.md) until they complete Playground or tenant replay.
+
 ## Rubric
 
 - **90-100:** Strong learning outcome and good level fit; keep and validate.
@@ -72,12 +74,13 @@ Eight missions are marked `retired` in the mission data and removed from active 
 - Disk Forecast
 - Read the Room
 
-`First Briefing` was restored as a strengthened rookie bridge from orientation into evidence-based investigation. `Blast Radius` is now operator-level and follows it. The active library is now 35 missions, with the remaining content split between Keep and Revise rather than pretending all active missions are equally strong.
+`First Briefing` was restored as a strengthened rookie bridge from orientation into evidence-based investigation. `Blast Radius` is now operator-level and follows it. The active library was 35 missions at the time of this scorecard. Three documentation-backed foundation alignment missions were added afterward; they are not included in these original scores until Playground or tenant replay is complete.
 
 ## Next strengthening pass
 
 1. Add evidence metadata to every active mission.
 2. Move `Blast Radius` to operator difficulty and verify its Smartscape path.
+3. Replay and score the three documentation-backed foundation alignment missions before marking them Playground-validated.
 3. Replace retired problem triage with an evidence-based Problems mission.
 4. Add DQL/evidence checkpoints to logs, traces, OTel, and SLO missions.
 5. Re-run the review rubric after validation and require `Ready` before merge.

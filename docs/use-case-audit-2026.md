@@ -5,13 +5,13 @@
 
 ## Executive judgment
 
-The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation. The first strengthening pass is now implemented: Davis/Assist remains its own circuit, a separate seven-mission AI Observability circuit covers workload signals, traces, token economics, agent topology, instrumentation, model health, and incident bridging, and eight duplicative or weak missions have been retired. These missions are content-ready but still require target-tenant execution before publication-ready status.
+The library is a strong navigation and investigation foundation, but it is not yet a complete 2026 observability curriculum. The core use cases remain valid; the weak points are evidence freshness, excessive Dynatrace Assist framing, and missing production-grade workflows around AI observability, cost, governance, and remediation. The first strengthening pass is now implemented: Davis/Assist remains its own circuit, a separate seven-mission AI Observability circuit covers workload signals, traces, token economics, agent topology, instrumentation, model health, and incident bridging, eight duplicative or weak missions have been retired, and Ground Zero now follows the current official ingest -> verify -> explore -> visualize -> notify sequence through three new foundation missions. These missions are content-ready but still require target-tenant execution before publication-ready status.
 
 ## Use-case health by family
 
 | Family | Current missions | Status | Assessment |
 | --- | --- | --- | --- |
-| Orientation and platform navigation | Welcome to the Playground, Find Your Footing, Know Your Wheel | Valid but light | Useful for first access, but several checkpoints test location more than customer outcome. Add a “find, explain, and use” requirement. |
+| Orientation and platform navigation | Welcome to the Playground, Find Your Footing, Know Your Wheel, Ingest the First Signal, Verify the Data, Build the First View | Valid but light | Useful for first access, but several checkpoints test location more than customer outcome. Add a “find, explain, and use” requirement. The new Ground Zero sequence adds an evidence-based ingestion, verification, and first-view loop. |
 | Alerting and problem triage | Your First Alert, First Briefing, Read the Room, Blast Radius | Valid | Good foundation. Revalidate labels, permissions, and current Davis surfaces in Playground. |
 | Davis causal investigation | Causal Chain, Predict the Failure, SLO Burn, Operator Debrief | Valid but over-framed around Assist | The reasoning is strong, but missions need a visible evidence chain: problem, entity, causal evidence, query or chart, action, and verification. |
 | Incident command | War Room Brief, Timeline, Customer Impact, Escalation Decision, All-Clear, Command Postmortem | Valid but repetitive | Strong role fit, but several missions use a similar prompt-and-interpret pattern. Add artifacts: timeline, stakeholder update, escalation record, and postmortem action item. |
@@ -66,12 +66,13 @@ The backlog item is justified. Cost should not be taught as a generic licensing 
 
 ## Recommended strengthening order
 
-1. Revalidate all current Playground-dependent questions and labels.
-2. Execute and validate the new AI Observability Grand Prix against a tenant or fixture with AI telemetry; keep Davis Assist missions as an Intelligence sub-track.
-3. Add executable DQL and structured-evidence checkpoints to logs, traces, SLOs, and OTel.
-4. Build the Cost Optimization track against current Usage & Billing and consumption data.
-5. Add remediation and recovery outcomes to automation, Kubernetes, and infrastructure missions.
-6. Only then expand the Visual Mission Builder, because the builder should encode the strengthened checkpoint types and evidence requirements.
+1. Replay and validate the new foundation sequence against the current Playground and a trial-like tenant.
+2. Revalidate all current Playground-dependent questions and labels.
+3. Execute and validate the new AI Observability Grand Prix against a tenant or fixture with AI telemetry; keep Davis Assist missions as an Intelligence sub-track.
+4. Add executable DQL and structured-evidence checkpoints to logs, traces, SLOs, and OTel.
+5. Build the Cost Optimization track against current Usage & Billing and consumption data.
+6. Add remediation and recovery outcomes to automation, Kubernetes, and infrastructure missions.
+7. Only then expand the Visual Mission Builder, because the builder should encode the strengthened checkpoint types and evidence requirements.
 
 ## Publication gates
 

@@ -282,6 +282,267 @@ export const MISSIONS: Mission[] = [
     ],
   },
   {
+    id: "mission-ingest-first-signal",
+    title: "Ingest the First Signal",
+    codename: "SIGNAL IN",
+    role: "Platform Engineer",
+    difficulty: "rookie",
+    description:
+      "Choose and complete the right first-data path: OneAgent for fast host coverage, or OpenTelemetry for instrumented, vendor-neutral signals.",
+    briefing:
+      "The official getting-started path begins with data. Open the Dynatrace Playground for a safe rehearsal, then repeat the decision in a trial or lab tenant when you have a host or service to instrument. Compare the OneAgent and OpenTelemetry routes, choose one for the scenario, and record what success should look like before you install or configure anything. Use https://playground.apps.dynatrace.com when no customer-like system is available.",
+    timerSeconds: 720,
+    status: "available",
+    prerequisites: ["mission-what-are-you"],
+    disciplines: [{ track: "platform-engineer", xp: 100 }],
+    topics: ["infrastructure", "opentelemetry", "settings"],
+    category: "configuration",
+    apps: ["Getting started", "OneAgent", "OpenTelemetry"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/discover-dynatrace/get-started",
+        "https://docs.dynatrace.com/docs/ingest-from/opentelemetry",
+        "https://docs.dynatrace.com/docs/ingest-from/dynatrace-oneagent/installation-and-operation/windows/installation/install-oneagent-on-windows",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Playground or trial tenant", "OneAgent or OpenTelemetry path"],
+      notes:
+        "The exercise is source-backed. Do not mark Playground-validated until the selected path is replayed against the target Playground or a documented tenant fixture.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Compare the Two Entry Paths",
+        instruction:
+          "Open the Playground getting-started experience and inspect the OneAgent and OpenTelemetry entry points. If you have a trial or lab host, also open the current OneAgent installation path without running it yet. Mark complete after you can explain which path you would use and why.",
+        hint:
+          "OneAgent is the fast path for broad host and full-stack coverage. OpenTelemetry is the vendor-neutral instrumentation path and can coexist with OneAgent.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Choose the Data Path",
+        instruction:
+          "A customer has Linux hosts and wants the fastest route to infrastructure and application visibility. Which starting path is the best fit, while keeping OpenTelemetry available for services that are already instrumented with it?",
+        hint:
+          "The answer is about the fastest initial coverage, not a claim that the two approaches are mutually exclusive.",
+        type: "multiple-choice",
+        choices: [
+          "Install OneAgent first; add OpenTelemetry where existing instrumentation or a vendor-neutral pipeline makes sense",
+          "Use OpenTelemetry only because OneAgent cannot collect host data",
+          "Build a dashboard before collecting any data",
+          "Configure notifications before choosing an ingestion path",
+        ],
+        correctChoice:
+          "Install OneAgent first; add OpenTelemetry where existing instrumentation or a vendor-neutral pipeline makes sense",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Run or Rehearse the First Collection",
+        instruction:
+          "In a trial or lab tenant, follow the current OneAgent or OpenTelemetry onboarding instructions far enough to identify the first verification step. If you do not have an installable system, use the Playground demo path and write down the exact signal you would verify instead. Mark complete only after recording the fallback or the first collected signal.",
+        hint:
+          "A good operator does not confuse ‘I copied an installer command’ with ‘the platform is receiving useful telemetry.’ Name the next observable result.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp4",
+        title: "Define Success Before Moving On",
+        instruction:
+          "Which pair of platform surfaces is the official getting-started path using to verify that the environment is becoming understandable after data ingestion?",
+        hint:
+          "One surface represents discovered services; the other shows relationships and dependencies across the digital ecosystem.",
+        type: "multiple-choice",
+        choices: [
+          "Services and Smartscape",
+          "Support and Community",
+          "Dashboards and Account Management",
+          "Problems and Upgrade to Paid",
+        ],
+        correctChoice: "Services and Smartscape",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-verify-the-data",
+    title: "Verify the Data",
+    codename: "PROOF OF LIFE",
+    role: "All Roles",
+    difficulty: "rookie",
+    description:
+      "Prove that telemetry is useful by checking services, relationships, and the signal you intended to collect.",
+    briefing:
+      "Ingest is only a beginning. Follow the current Dynatrace getting-started sequence into Services and Smartscape, then make a small evidence-based statement: what entity appeared, what relationship is visible, and what signal is still missing. Use the Playground for the rehearsal and a trial or customer-like tenant for the real onboarding pass.",
+    timerSeconds: 600,
+    status: "available",
+    prerequisites: ["mission-ingest-first-signal"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "sre", xp: 50 },
+    ],
+    topics: ["services", "smartscape", "infrastructure", "traces", "logs"],
+    category: "performance",
+    apps: ["Services", "Smartscape", "Problems"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/discover-dynatrace/get-started",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/smartscape",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Services", "Smartscape", "A visible telemetry fixture"],
+      notes:
+        "The mission is designed around verifiable observations, but the expected entity names and signal availability must be captured per Playground or tenant fixture.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Find a Service",
+        instruction:
+          "Open Services in the Playground or your lab tenant. Choose one service and record its name, one visible health or performance signal, and the time range you inspected. Mark complete after you have an observation you could show to a customer.",
+        hint:
+          "Do not report only that the app opened. A useful finding names an entity, a signal, and a time window.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Read the Relationship Map",
+        instruction:
+          "Open Smartscape and inspect the selected service or its surrounding topology. Which statement best describes what you should be verifying here?",
+        hint:
+          "Smartscape is about the digital ecosystem and its dependencies, not just a list of charts.",
+        type: "multiple-choice",
+        choices: [
+          "That the service has discoverable relationships to the components it depends on or serves",
+          "That every service has the same alert threshold",
+          "That the trial has been upgraded to a paid subscription",
+          "That all logs are automatically retained forever",
+        ],
+        correctChoice:
+          "That the service has discoverable relationships to the components it depends on or serves",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Separate Evidence from Assumption",
+        instruction:
+          "Return to the service or topology view and identify one missing signal or relationship. Record whether it is absent because the data is not being collected, the time range is wrong, the entity is filtered out, or the capability is not available in the fixture. Mark complete after choosing the next diagnostic step.",
+        hint:
+          "‘No data’ is not a diagnosis. First rule out time range, entity scope, and ingestion path.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp4",
+        title: "Choose the Verification Outcome",
+        instruction:
+          "What is the minimum useful handoff from this mission to the person building the first dashboard or notebook?",
+        hint:
+          "A strong handoff is small but specific: entity, signal, time window, and known gap.",
+        type: "multiple-choice",
+        choices: [
+          "A named entity, an observed signal, its time window, and one verified gap or next step",
+          "A screenshot of the home page with no notes",
+          "A statement that the agent installed, without checking any data",
+          "A list of every app visible in the launcher",
+        ],
+        correctChoice:
+          "A named entity, an observed signal, its time window, and one verified gap or next step",
+        points: 150,
+      },
+    ],
+  },
+  {
+    id: "mission-build-first-view",
+    title: "Build the First View",
+    codename: "FIRST LENS",
+    role: "Developer",
+    difficulty: "rookie",
+    description:
+      "Turn an observed signal into a reusable dashboard or notebook view, starting with Explore and learning where DQL comes from.",
+    briefing:
+      "The current Dynatrace guidance moves from finding data to making it useful. Start with a ready-made Getting started notebook or dashboard, use Explore to answer one concrete question, inspect the generated DQL, and save a view that another operator can reopen. This makes the lesson practical without forcing a new learner to write DQL from memory.",
+    timerSeconds: 720,
+    status: "available",
+    prerequisites: ["mission-verify-the-data"],
+    disciplines: [
+      { track: "platform-engineer", xp: 100 },
+      { track: "developer", xp: 75 },
+    ],
+    topics: ["dashboards", "notebooks", "dql", "services"],
+    category: "configuration",
+    apps: ["Dashboards", "Notebooks", "Explore"],
+    evidence: {
+      status: "documentation-backed",
+      sourceUrls: [
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/explore-data",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/notebooks",
+        "https://docs.dynatrace.com/docs/analyze-explore-automate/dashboards-and-notebooks/dashboards-new",
+        "https://docs.dynatrace.com/docs/shortlink/dql-use-queries",
+      ],
+      dataMode: "documentation",
+      requiredCapabilities: ["Explore", "Dashboards or Notebooks", "DQL view"],
+      notes:
+        "The source-backed workflow is Explore -> inspect generated DQL -> save a reusable view. Query and permission details require fixture validation before publication-ready status.",
+    },
+    checkpoints: [
+      {
+        id: "cp1",
+        title: "Start with a Reusable Surface",
+        instruction:
+          "Open Dashboards or Notebooks and locate the ready-made Getting started content. Choose the surface that best fits a guided, repeatable investigation and record why. Mark complete after opening it and identifying one section you will reuse.",
+        hint:
+          "Notebooks are useful for a narrative investigation with sections; dashboards are useful for a reusable operational view.",
+        type: "action",
+        points: 100,
+      },
+      {
+        id: "cp2",
+        title: "Explore Before You Query",
+        instruction:
+          "Use Explore to answer one question about the service or signal you verified in the previous mission. Filter the data, inspect the result, and mark complete only after you can state what changed when you narrowed the scope.",
+        hint:
+          "The learning objective is not to click around. Capture the question, filter, time range, and result.",
+        type: "action",
+        points: 125,
+      },
+      {
+        id: "cp3",
+        title: "Show the Query",
+        instruction:
+          "In Explore, use the option that exposes the generated query and inspect the DQL before saving it. What is the correct relationship between Explore and DQL?",
+        hint:
+          "Explore can help a beginner discover the query, then the query can become an editable DQL tile or section.",
+        type: "multiple-choice",
+        choices: [
+          "Explore can generate a starting DQL view that you can inspect and turn into a DQL tile or section",
+          "Explore permanently hides the query so nobody can reproduce the result",
+          "DQL is only used for account administration and cannot query observability data",
+          "You must write a full DQL pipeline before Explore can display any data",
+        ],
+        correctChoice:
+          "Explore can generate a starting DQL view that you can inspect and turn into a DQL tile or section",
+        points: 150,
+      },
+      {
+        id: "cp4",
+        title: "Save the First Lens",
+        instruction:
+          "Save the result as a dashboard tile or notebook section, add a useful title, and record the time range and entity scope. Mark complete after reopening the saved view and confirming that another operator could understand what it answers.",
+        hint:
+          "A reusable view needs an operational question, not just a chart title. Include the scope and time context in the description or surrounding notebook text.",
+        type: "action",
+        points: 150,
+      },
+    ],
+  },
+  {
     id: "mission-know-your-wheel",
     title: "Know Your Wheel",
     codename: "WHEEL CHECK",
