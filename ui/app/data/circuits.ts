@@ -102,8 +102,12 @@ export const CIRCUITS: Circuit[] = [
   {
     id: "opentelemetry-grand-prix",
     name: "OpenTelemetry Grand Prix",
-    description: "A validated starting circuit for investigating OTel traces, DQL, deployments, and correlated logs in Dynatrace",
+    description: "A staged circuit for learning OpenTelemetry collection, traces, metrics, logs, and investigation in Dynatrace",
     missionIds: [
+      "mission-otel-collector-validation",
+      "mission-otel-trace-investigation",
+      "mission-otel-log-trace-correlation",
+      "mission-otel-metrics-exploration",
       "mission-otel-query",
       "mission-deployment-correlation",
       "mission-log-story",
