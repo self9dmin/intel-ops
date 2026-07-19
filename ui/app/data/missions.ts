@@ -483,12 +483,11 @@ export const MISSIONS: Mission[] = [
     role: "SRE",
     difficulty: "rookie",
     description:
-      "Before you touch a single dashboard, ask Assist what's happening. This is how modern SREs start every shift.",
+      "Start a shift with a bounded evidence check before you begin deeper investigation.",
     briefing:
-      "Your shift just started. Something may be wrong — or everything may be fine. The old way: open 5 dashboards, scan for red. The new way: open Assist and ask. This mission teaches you the difference between a vague prompt and an operator-grade prompt, and why it matters when every second counts. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
+      "Your shift just started. Something may be wrong — or everything may be fine. Start with the Problems view and a bounded question: establish the time window, severity, impact, and next investigation step. Use Assist to accelerate the briefing when it is available, but treat visible Problems and telemetry as the fallback evidence path. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 300,
-    status: "retired",
-    retirementReason: "Retired: prompt-writing exercise overlaps with War Room Brief and does not produce a distinct operational artifact.",
+    status: "available",
     prerequisites: ["mission-the-dock"],
     disciplines: [
       { track: "sre", xp: 75 },
@@ -496,7 +495,7 @@ export const MISSIONS: Mission[] = [
     ],
     topics: ["problems", "dt-intelligence"],
     category: "incident-response",
-    apps: ["Dynatrace Assist"],
+    apps: ["Problems", "Dynatrace Assist"],
     checkpoints: [
       {
         id: "cp1",
@@ -566,14 +565,14 @@ export const MISSIONS: Mission[] = [
     title: "Blast Radius",
     codename: "CONTAIN THE BLAST",
     role: "SRE",
-    difficulty: "rookie",
+    difficulty: "operator",
     description:
       "An alert fired. Before you do anything else, use Assist to map what is affected. Scope first, fix second.",
     briefing:
       "A problem opened on frontend-high-cpu. Your first instinct might be to SSH in and look around. Do not. First, understand the blast radius — what else is affected, what depends on this host, what is downstream. Assist can map this in seconds using Smartscape. This mission teaches you to scope before you act. Use the Dynatrace Playground at https://playground.apps.dynatrace.com",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-the-dock"],
+    prerequisites: ["mission-first-briefing"],
     disciplines: [
       { track: "sre", xp: 100 },
       { track: "incident-commander", xp: 50 },
@@ -2634,12 +2633,12 @@ export const MISSIONS: Mission[] = [
     title: "Map the AI Signal",
     codename: "FIRST CONTACT",
     role: "All Roles",
-    difficulty: "rookie",
+    difficulty: "operator",
     description: "Learn the difference between using AI to investigate telemetry and observing an AI workload itself.",
     briefing: "Open the Dynatrace AI Observability experience in a tenant with AI telemetry. Identify the surfaces used to understand an AI workload: overview, explorer, prompts, and agent topology. The goal is to recognize the workload's signals before asking an assistant to summarize them.",
     timerSeconds: 360,
     status: "available",
-    prerequisites: ["mission-the-dock"],
+    prerequisites: ["mission-first-briefing"],
     disciplines: [{ track: "developer", xp: 100 }, { track: "sre", xp: 50 }],
     topics: ["dt-intelligence", "traces", "metrics", "services"],
     category: "configuration",

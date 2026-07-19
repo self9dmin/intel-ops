@@ -39,6 +39,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-the-dock",
       "mission-what-are-you",
       "mission-know-your-wheel",
+      "mission-first-briefing",
       "mission-first-alert",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/melbourne.svg",
@@ -118,6 +119,7 @@ export const CIRCUITS: Circuit[] = [
     name: "Davis Intelligence Grand Prix",
     description: "A staged circuit for using Davis and Dynatrace Assist in investigation, prediction, and operator debriefs",
     missionIds: [
+      "mission-first-briefing",
       "mission-blast-radius",
       "mission-causal-chain",
       "mission-slo-burn",

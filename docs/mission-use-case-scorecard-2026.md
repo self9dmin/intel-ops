@@ -20,7 +20,7 @@
 | Find Your Footing | 74 | Keep | Good orientation value; support and developer-resource claims still need refresh checks. |
 | Know Your Wheel | 68 | Revise | Valuable breadth, but shortcuts, workflows, investigations, and log ingestion are too much for one rookie mission. |
 | Your First Alert | 73 | Keep | Strong alerting foundation; needs current Settings labels and a real notification outcome. |
-| First Briefing | 45 | Retire | Prompt-writing exercise overlaps with stronger incident and AI tracks. |
+| First Briefing | 68 | Keep / strengthen | The shift-start briefing is a good foundation when grounded in Problems evidence; reduce Assist-only prompt trivia and retain a fallback path. |
 | Blast Radius | 66 | Revise | Sound reasoning, but Smartscape/Assist investigation belongs at operator level, not rookie. |
 | The Causal Chain | 78 | Keep | Good causal reasoning; add visible evidence and a verification step. |
 | SLO Burn Rate | 72 | Revise | Useful SRE concept, but current mission is too prompt-dependent and query-light. |
@@ -61,10 +61,9 @@
 
 ## Decommissioned now
 
-Nine missions are marked `retired` in the mission data and removed from active circuits. Their IDs remain resolvable so historical scores and links do not break:
+Eight missions are marked `retired` in the mission data and removed from active circuits. Their IDs remain resolvable so historical scores and links do not break:
 
 - Ask the Machine
-- First Briefing
 - Predict the Failure
 - The Postmortem
 - The War Room Brief
@@ -73,7 +72,7 @@ Nine missions are marked `retired` in the mission data and removed from active c
 - Disk Forecast
 - Read the Room
 
-`Blast Radius` was retained but its current rookie classification should be changed to operator when its evidence pass is completed. The active library is now 34 missions, with the remaining content split between Keep and Revise rather than pretending all active missions are equally strong.
+`First Briefing` was restored as a strengthened rookie bridge from orientation into evidence-based investigation. `Blast Radius` is now operator-level and follows it. The active library is now 35 missions, with the remaining content split between Keep and Revise rather than pretending all active missions are equally strong.
 
 ## Next strengthening pass
 
