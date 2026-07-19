@@ -17,6 +17,7 @@ export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
   "builder": "advanced",
   "reliability-driver": "elite",
   "race-day": "elite",
+  "opentelemetry-grand-prix": "intermediate",
 };
 
 export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
@@ -93,6 +94,19 @@ export const CIRCUITS: Circuit[] = [
       "mission-deployment-correlation",
       "mission-log-story",
       "mission-error-budget-dev",
+    ],
+    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
+    countryCode: "it",
+  },
+  {
+    id: "opentelemetry-grand-prix",
+    name: "OpenTelemetry Grand Prix",
+    description: "A validated starting circuit for investigating OTel traces, DQL, deployments, and correlated logs in Dynatrace",
+    missionIds: [
+      "mission-otel-query",
+      "mission-deployment-correlation",
+      "mission-log-story",
+      "mission-why-is-it-slow",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
     countryCode: "it",

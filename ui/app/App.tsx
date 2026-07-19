@@ -14,10 +14,13 @@ import { AppSidebar, type SidebarFilters } from "./components/AppSidebar";
 import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
+import { JourneysTab } from "./tabs/JourneysTab";
+import { Journey } from "./pages/Journey";
 import { InformationIcon, BugReportIcon } from "@dynatrace/strato-icons";
+import { APP_VERSION } from "./buildVersion";
 
-type TopTab = "missions" | "progress" | "leaderboard";
-const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
+type TopTab = "missions" | "journeys" | "progress" | "leaderboard";
+const TAB_ORDER: TopTab[] = ["missions", "journeys", "progress", "leaderboard"];
 
 const ShellLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,10 +59,10 @@ const ShellLayout = () => {
   );
 
   const handleSwitchToMissions = useCallback(
-    (tab?: "missions", params?: Record<string, string>) => {
-      setActiveTab("missions");
+    (tab?: "missions" | "journeys", params?: Record<string, string>) => {
+      setActiveTab(tab ?? "missions");
       const newParams = new URLSearchParams();
-      newParams.set("tab", "missions");
+      newParams.set("tab", tab ?? "missions");
       if (params) {
         for (const [k, v] of Object.entries(params)) {
           newParams.set(k, v);
@@ -85,6 +88,7 @@ const ShellLayout = () => {
             onSwitchTab={() => handleTabChange(TAB_ORDER.indexOf("progress"))}
           />
         )}
+        {activeTab === "journeys" && <JourneysTab />}
         {activeTab === "progress" && <ProgressTab onSwitchTab={handleSwitchToMissions} />}
         {activeTab === "leaderboard" && <LeaderboardTab />}
       </main>
@@ -93,6 +97,7 @@ const ShellLayout = () => {
 
   const TAB_LABELS: Record<TopTab, string> = {
     missions: "Race Control",
+    journeys: "Track Walk",
     progress: "Progress",
     leaderboard: "Leaderboard",
   };
@@ -206,7 +211,7 @@ const ShellLayout = () => {
                     opacity: 0.7,
                   }}
                 >
-                  Built by Dan Quintero · v0.1.45
+                  Built by Dan Quintero · v{APP_VERSION}
                 </div>
               </div>
             )}
@@ -282,6 +287,7 @@ const AppContent = () => {
       <Route path="/missions" element={<Navigate to="/?tab=missions" replace />} />
       <Route path="/missions/:id" element={<Mission />} />
       <Route path="/debrief/:id" element={<Debrief />} />
+      <Route path="/journeys/:id" element={<Journey />} />
       <Route path="/progress" element={<Navigate to="/?tab=progress" replace />} />
     </Routes>
   );

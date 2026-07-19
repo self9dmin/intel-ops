@@ -178,6 +178,15 @@ Every mission has:
 - Mission re-validation against latest Playground data
 - OpenTelemetry mission track — instrument an app, ingest OTel data, query spans
 - Dynatrace Assist mission — use AI to investigate a problem end-to-end
+
+## Maintainer Documentation
+
+- [Mission Control system design](docs/mission-control-system-design.md) - canonical mission qualification, scoring, XP, circuits, and leaderboard rules
+- [Mission Control backlog](docs/mission-control-backlog.md) - tracked content and authoring work
+- [Track Walk discovery curriculum](docs/track-walk-discovery-curriculum-2026.md) - CSM discovery and source-finding curriculum
+- [Track Walk screenshot catalog](docs/track-walk-screenshot-catalog-2026.md) - dated audit evidence and learner tests
+
+The current OpenTelemetry Grand Prix is an evidence-backed prototype. Its trace path has been validated against Playground data; Collector, log-correlation, and metrics missions remain explicitly marked for fixture-level validation before they are treated as production content.
 - Cost optimization mission — use DQL to identify expensive queries and unused resources
 - AI Observability mission — observe LLM/agent workloads with the AI Observability app
 

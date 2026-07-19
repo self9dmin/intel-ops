@@ -6,6 +6,8 @@
 /dist
 /build
 /tmp
+ui/app/buildVersion.ts
+**/.dt-app/*
 
 # Deployment artifact
 /out

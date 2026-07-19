@@ -58,7 +58,7 @@ export interface SidebarFilters {
 }
 
 interface AppSidebarProps {
-  activeTab: "missions" | "progress" | "leaderboard";
+  activeTab: "missions" | "journeys" | "progress" | "leaderboard";
   onFilterChange: (filters: SidebarFilters) => void;
   onSwitchToMissions: () => void;
 }

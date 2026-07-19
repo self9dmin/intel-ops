@@ -1,9 +1,9 @@
 {
   "name": "intel-ops",
-  "version": "0.0.0",
+  "version": "0.1.45",
   "description": "A starting project with routing, fetching data, and charting",
   "scripts": {
-    "build": "dt-app build",
+    "build": "node scripts/write-version.mjs && dt-app build",
     "start": "dt-app dev",
     "create:function": "dt-app function create",
     "create:action": "dt-app action create",
