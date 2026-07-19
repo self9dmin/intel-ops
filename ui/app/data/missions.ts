@@ -2550,7 +2550,7 @@ export const MISSIONS: Mission[] = [
     title: "Validate the Collector",
     codename: "PIPELINE CHECK",
     role: "Platform Engineer",
-    difficulty: "rookie",
+    difficulty: "operator",
     description: "Read an OpenTelemetry Collector pipeline as a receiver, processor, exporter, and service boundary.",
     briefing: "Use the Playground and the official Collector documentation to identify how telemetry moves into Dynatrace. Your first job is to prove that the pipeline is structurally valid before discussing production scale.",
     timerSeconds: 420,
