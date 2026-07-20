@@ -56,7 +56,7 @@ export const MissionBuilderPage = () => {
         <section style={{ display: "flex", flexDirection: "column", gap: 12, padding: 18, border: "1px solid var(--dt-colors-border-neutral-default)", borderRadius: 8 }}>
           <label>Title<input value={draft.title} onChange={(event) => update({ title: event.target.value })} placeholder="A useful mission title" /></label>
           <label>Role<input value={draft.role} onChange={(event) => update({ role: event.target.value })} /></label>
-          <label>Difficulty<select value={draft.difficulty} onChange={(event) => update({ difficulty: event.target.value as Mission["difficulty"] })}><option value="rookie">Rookie</option><option value="operator">Operator</option><option value="elite">Elite</option><option value="legend">Legend</option></select></label>
+          <label>Difficulty<select value={draft.difficulty} onChange={(event) => update({ difficulty: event.target.value as Mission["difficulty"] })}><option value="rookie">Soft (rookie)</option><option value="operator">Medium (operator)</option><option value="elite">Hard (elite)</option><option value="legend">Hard (legend)</option></select></label>
           <label>Category<select value={draft.category} onChange={(event) => update({ category: event.target.value as MissionCategory })}><option value="incident-response">Incident response</option><option value="performance">Performance</option><option value="root-cause-analysis">Root cause analysis</option><option value="configuration">Configuration</option><option value="cost-optimization">Cost optimization</option></select></label>
           <label>Description<textarea value={draft.description} onChange={(event) => update({ description: event.target.value })} rows={3} /></label>
           <label>Briefing<textarea value={draft.briefing} onChange={(event) => update({ briefing: event.target.value })} rows={4} /></label>
@@ -65,9 +65,9 @@ export const MissionBuilderPage = () => {
           <div style={{ display: "flex", gap: 8 }}><Button variant="emphasized" onClick={save}>Save draft</Button><Button variant="default" disabled={!canPublish} onClick={() => setSaved(true)}>Publish when reviewed</Button>{saved && <Chip color="success">Draft saved locally</Chip>}</div>
         </section>
         <aside style={{ padding: 18, border: "1px solid var(--dt-colors-border-neutral-default)", borderRadius: 8, alignSelf: "start" }}>
-          <Heading level={4}>Quality gate</Heading><Text textStyle="small" style={{ display: "block", opacity: .65, margin: "6px 0 14px" }}>The final rating check lives in Scrutineering. Builder checks are structural and evidence-based.</Text>
-          {builderChecks.map((check) => <div key={check.label} style={{ display: "grid", gridTemplateColumns: "24px 1fr", gap: 6, padding: "9px 0", borderTop: "1px solid var(--dt-colors-border-neutral-default)", fontSize: 12 }}><span style={{ color: check.passed ? "#1dbb7e" : "#e74c3c", fontWeight: 700 }}>{check.passed ? "OK" : "!"}</span><span><strong>{check.label}</strong><br /><span style={{ opacity: .65 }}>{check.detail}</span></span></div>)}
-          <div style={{ marginTop: 14 }}><Chip color={canPublish ? "success" : "warning"}>{canPublish ? "Ready for Scrutineering" : "Draft only"}</Chip></div>
+          <Heading level={4}>Scrutineering gate</Heading><Text textStyle="small" style={{ display: "block", opacity: .65, margin: "6px 0 14px" }}>The final rating check lives in Scrutineering. Builder checks are structural and evidence-based.</Text>
+          {builderChecks.map((check) => <div key={check.label} style={{ display: "grid", gridTemplateColumns: "24px 1fr", gap: 6, padding: "9px 0", borderTop: "1px solid var(--dt-colors-border-neutral-default)", fontSize: 12 }}><span style={{ width: 16, height: 16, borderRadius: "50%", display: "grid", placeItems: "center", color: check.passed ? "#1dbb7e" : "#e74c3c", fontWeight: 700 }}>{check.passed ? "✓" : "!"}</span><span><strong>{check.label}</strong><br /><span style={{ opacity: .65 }}>{check.detail}</span></span></div>)}
+          <div style={{ marginTop: 14 }}><Chip color={canPublish ? "success" : "warning"}>{canPublish ? "Ready for the inspection bay" : "Not cleared - resolve the checks above"}</Chip></div>
         </aside>
       </div>
     </div>

@@ -1,113 +1,36 @@
-import React, { useMemo } from "react";
-import { Heading, Text } from "@dynatrace/strato-components/typography";
+import React from "react";
 import { MISSIONS } from "../data/missions";
 import { CIRCUIT_TIER_MAP } from "../data/circuits";
 import type { Circuit, DriverTier } from "../data/circuits";
 
+const FORMULA_LABELS: Record<DriverTier, string> = { rookie: "F4 · ROOKIE CLASS", intermediate: "F3 · INTERMEDIATE", advanced: "F2 · ADVANCED", elite: "F1 · ELITE" };
 
-interface CircuitPanelProps {
-  circuit: Circuit;
-  completedMissionIds: Set<string>;
-}
-
-function getCircuitTier(circuitId: string): DriverTier {
-  return CIRCUIT_TIER_MAP[circuitId] ?? "rookie";
-}
-
-function getTierColors(tier: DriverTier): { bg: string; text: string } {
-  if (tier === "rookie") return { bg: "rgba(255,255,255,0.08)", text: "rgba(255,255,255,0.6)" };
-  if (tier === "elite") return { bg: "rgba(232,0,30,0.15)", text: "#e8001e" };
-  return { bg: "rgba(20,150,255,0.15)", text: "#1496ff" };
-}
-
-const FORMULA_LABELS: Record<DriverTier, string> = { rookie: "F4", intermediate: "F3", advanced: "F2", elite: "F1" };
-
-export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps) {
-  const tier = getCircuitTier(circuit.id);
-  const tierColors = getTierColors(tier);
-
-  const totalXP = useMemo(() => {
-    return circuit.missionIds.reduce((sum, mId) => {
-      const m = MISSIONS.find((mission) => mission.id === mId);
-      if (!m) return sum;
-      return sum + m.checkpoints.reduce((s, cp) => s + cp.points, 0);
-    }, 0);
-  }, [circuit]);
-
-  const completedCount = circuit.missionIds.filter((id) =>
-    completedMissionIds.has(id)
-  ).length;
-
+export function CircuitPanel({ circuit, completedMissionIds }: { circuit: Circuit; completedMissionIds: Set<string> }) {
+  const tier = CIRCUIT_TIER_MAP[circuit.id] ?? "rookie";
+  const completed = circuit.missionIds.filter((id) => completedMissionIds.has(id)).length;
+  const estimatedMinutes = circuit.missionIds.reduce((sum, id) => sum + Math.round((MISSIONS.find((m) => m.id === id)?.timerSeconds ?? 0) / 60), 0);
   return (
-    <div
-      style={{
-        borderLeft: "2px solid var(--dt-colors-border-neutral-default)",
-        paddingLeft: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <span
-          style={{
-            fontSize: "11px",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            padding: "2px 8px",
-            borderRadius: "4px",
-            background: tierColors.bg,
-            color: tierColors.text,
-          }}
-        >
-          {FORMULA_LABELS[tier]}
-        </span>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <img
-          src={`/ui/assets/flags/${circuit.countryCode}.png`}
-          alt={circuit.countryCode}
-          style={{
-            width: "28px",
-            height: "auto",
-            borderRadius: "2px",
-            opacity: 0.9,
-            flexShrink: 0,
-          }}
-        />
-        <Heading level={3}>{circuit.name}</Heading>
-      </div>
-
-      <Text textStyle="small" style={{ opacity: 0.7 }}>
-        {circuit.description}
-      </Text>
-
-      <div style={{ display: "flex", gap: "24px", marginTop: "8px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <span style={{ fontSize: "20px", fontWeight: 600 }}>{circuit.missionIds.length}</span>
-          <span style={{ fontSize: "11px", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.5px" }}>Missions</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <span style={{ fontSize: "20px", fontWeight: 600 }}>{totalXP}</span>
-          <span style={{ fontSize: "11px", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.5px" }}>XP Available</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <span style={{ fontSize: "20px", fontWeight: 600 }}>{completedCount}/{circuit.missionIds.length}</span>
-          <span style={{ fontSize: "11px", opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.5px" }}>Completed</span>
+    <section style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.5fr) minmax(280px, 1fr) 220px", alignItems: "center", gap: 24, padding: "20px 24px", borderRadius: 8, background: "var(--dt-colors-background-container-neutral-subdued)", border: "1px solid var(--dt-colors-border-neutral-disabled)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div>
+          <div style={{ display: "inline-block", padding: "4px 8px", borderRadius: 5, background: "rgba(20, 150, 255, .14)", color: "#72bfff", fontSize: 10, fontWeight: 700, letterSpacing: ".05em" }}>{FORMULA_LABELS[tier]}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+            <img src={`/ui/assets/flags/${circuit.countryCode}.png`} alt="" style={{ width: 28, height: 19, objectFit: "cover", borderRadius: 2 }} />
+            <strong style={{ fontSize: 24, fontWeight: 600 }}>{circuit.name}</strong>
+          </div>
+          <p style={{ margin: "8px 0 0", color: "var(--dt-colors-text-neutral-subdued)", fontSize: 12.5, lineHeight: 1.5 }}>{circuit.description}</p>
         </div>
       </div>
-
-      {circuit.f1TrackSvgUrl && (
-        <div style={{ marginTop: "16px", opacity: 0.15 }}>
-          <img
-            src={circuit.f1TrackSvgUrl}
-            alt={circuit.name}
-            style={{ width: "70%", height: "auto", display: "block", filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)" }}
-          />
-        </div>
-      )}
-    </div>
+      <div style={{ display: "flex", gap: 28 }}>
+        <Stat label="Missions" value={String(circuit.missionIds.length)} />
+        <Stat label="Est. time" value={`${estimatedMinutes} min`} />
+        <Stat label="Completed" value={`${completed}/${circuit.missionIds.length}`} />
+      </div>
+      {circuit.f1TrackSvgUrl && <img src={circuit.f1TrackSvgUrl} alt="" style={{ width: 200, height: 110, objectFit: "contain", opacity: .28, filter: "invert(1) sepia(1) saturate(5) hue-rotate(190deg)" }} />}
+    </section>
   );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return <div><div style={{ fontSize: 22, fontWeight: 700 }}>{value}</div><div style={{ marginTop: 4, fontSize: 10, color: "var(--dt-colors-text-neutral-disabled)", textTransform: "uppercase", letterSpacing: ".06em" }}>{label}</div></div>;
 }

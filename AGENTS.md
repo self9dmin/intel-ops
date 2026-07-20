@@ -18,7 +18,7 @@ Before using any Strato UI component, always use the knowledge base tools to sea
 **Mission Control** is a gamified Dynatrace observability training app built on Dynatrace AppEngine. It teaches Dynatrace skills through mission-based challenges, XP tracks, and checkpoint validation.
 
 - **Repo**: `github.com/self9dmin/intel-ops`
-- **Deployed at**: `https://nom24698.apps.dynatrace.com`
+- **Deployed at**: `https://meg46195.apps.dynatrace.com`
 - **Stack**: dt-app CLI, React, TypeScript, Strato Design System, Document Service
 
 ### App Identity
@@ -233,7 +233,7 @@ git push origin feat/your-feature
 
 | Environment | URL | Purpose |
 |---|---|---|
-| Trial tenant | `https://nom24698.apps.dynatrace.com` | Deployment target, user data |
+| Trial tenant | `https://meg46195.apps.dynatrace.com` | Deployment target, user data |
 | Playground tenant | `https://playground.apps.dynatrace.com` | Playground mission data (public, no login) |
 
 Playground tenant contains: 11 open problems, 16 hosts, EKS cluster `aws-eks-3`, AKS cluster `aks-playground`, apps: easytrade, hipstershop, astroshop, unguard.

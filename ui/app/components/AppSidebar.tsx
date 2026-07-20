@@ -81,6 +81,8 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
 
   const [statusOpen, setStatusOpen] = useState(true);
 
+  const [compoundOpen, setCompoundOpen] = useState(true);
+
   const [topicOpen, setTopicOpen] = useState(true);
 
   const isMissions = activeTab === "missions";
@@ -209,6 +211,25 @@ export const AppSidebar = ({ activeTab, onFilterChange, onSwitchToMissions }: Ap
                   </span>
                 </div>
               );
+            })}
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <div onClick={() => setCompoundOpen((v) => !v)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--dt-colors-text-neutral-subdued)", marginBottom: 6 }}>
+              Compound <span style={{ transform: compoundOpen ? "none" : "rotate(-90deg)", fontSize: 10 }}>▾</span>
+            </div>
+            {compoundOpen && ([
+              { value: null, label: "All", color: "transparent" },
+              { value: "rookie" as const, label: "Soft", color: "#ff8a85" },
+              { value: "operator" as const, label: "Medium", color: "#ffd75e" },
+              { value: "elite" as const, label: "Hard", color: "#ececf4" },
+            ]).map((opt) => {
+              const active = filters.difficulty === opt.value;
+              const tooltip = opt.value === "rookie" ? "Soft compound - quick entry-level run" : opt.value === "operator" ? "Medium compound - working-operator demand" : opt.value === "elite" ? "Hard compound - the most demanding runs" : "All compounds";
+              return <div key={opt.label} title={tooltip} onClick={() => update("difficulty", opt.value)} style={{ display: "flex", alignItems: "center", gap: 7, padding: "4px 8px", borderRadius: 4, cursor: "pointer", background: active ? "var(--dt-colors-background-container-neutral-default)" : "transparent", color: active ? "var(--dt-colors-text-primary-default, #fff)" : "var(--dt-colors-text-neutral-subdued)", fontWeight: active ? 600 : 400 }}>
+                {opt.value && <span style={{ width: 7, height: 7, borderRadius: "50%", border: `1.5px solid ${opt.color}` }} />}
+                {opt.label}
+              </div>;
             })}
           </div>
 

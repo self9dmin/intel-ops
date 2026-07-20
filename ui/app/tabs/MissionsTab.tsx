@@ -10,7 +10,7 @@ import { CIRCUITS, CIRCUIT_TIER_MAP } from "../data/circuits";
 import type { DriverTier } from "../data/circuits";
 import { TOPIC_META, XP_THRESHOLDS } from "../types/UserState";
 import type { Discipline } from "../types/UserState";
-import { getUnlockedTier, isTierUnlocked, getNextTierInfo } from "../utils/xp";
+import { getUnlockedTier, isTierUnlocked } from "../utils/xp";
 import { useUserStateContext } from "../context/UserStateContext";
 import { useLeaderboardContext } from "../context/LeaderboardContext";
 import { useUnlockedMissions } from "../hooks/useUnlockedMissions";
@@ -27,13 +27,6 @@ import type { SidebarFilters } from "../components/AppSidebar";
 import type { Mission } from "../types/mission.types";
 
 const TIER_ORDER: DriverTier[] = ["rookie", "intermediate", "advanced", "elite"];
-
-const NEXT_TIER_DRIVER_NAME: Record<DriverTier, string> = {
-  rookie: "Liam Lawson",
-  intermediate: "Isack Hadjar",
-  advanced: "Max Verstappen",
-  elite: "",
-};
 
 const DRIVER_INFO: Record<Discipline, { lastName: string; tier: string; helmet: string }> = {
   "incident-commander": { lastName: "Lindblad", tier: "Rookie", helmet: "/ui/assets/helmets/lindblad.png" },
@@ -166,10 +159,10 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
     if (!tier) return null;
     if (isTierUnlocked(tier, unlockedTier)) return null;
     const labelMap: Record<DriverTier, string> = {
-      rookie: "Reach Recruit (0 XP) to unlock",
-      intermediate: "Reach Analyst (500 XP) to unlock",
-      advanced: "Reach Specialist (1500 XP) to unlock",
-      elite: "Reach Expert (3000 XP) to unlock",
+      rookie: "Reach F4 · Rookie (0 XP) to unlock",
+      intermediate: "Reach F3 · Intermediate (500 XP) to unlock",
+      advanced: "Reach F2 · Advanced (1500 XP) to unlock",
+      elite: "Reach F1 · Elite (3000 XP) to unlock",
     };
     return labelMap[tier];
   };
@@ -290,16 +283,6 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
               <span style={{ fontSize: "9px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px" }}>
                 {levelName} &middot; {xp} / {isMax ? "MAX" : `${next.xp} XP`}
               </span>
-              {(() => {
-                const nextTierInfo = getNextTierInfo(unlockedTier);
-                if (!nextTierInfo) return null;
-                const driverName = NEXT_TIER_DRIVER_NAME[unlockedTier];
-                return (
-                  <span style={{ fontSize: "8px", color: "var(--dt-colors-text-neutral-disabled)", marginTop: "2px", textAlign: "center" }}>
-                    {totalXP} / {nextTierInfo.xpRequired} XP to unlock {driverName}
-                  </span>
-                );
-              })()}
             </div>
           );
         })()}
@@ -374,14 +357,8 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
         }}
       />
 
-      {/* Grid: left column (chips + missions) / right column (CircuitPanel) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: selectedPath !== null ? "3fr 2fr" : "1fr",
-          gap: "24px",
-        }}
-      >
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        {selectedPath !== null && selectedCircuit && selectedPath !== "track-walk" && <CircuitPanel circuit={selectedCircuit} completedMissionIds={completedSet} />}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {/* Circuits */}
           <div style={{ marginBottom: "16px" }}>
@@ -451,8 +428,8 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                  gap: "12px",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                  gap: "16px",
                   marginTop: "8px",
                 }}
               >
@@ -464,6 +441,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
                     isCompleted={completedSet.has(mission.id)}
                     prerequisiteNames={getPrerequisiteNames(mission.prerequisites)}
                     tierLocked={getTierLockTooltip(mission.id)}
+                    stageLine={selectedCircuit ? `${selectedCircuit.name} · step ${selectedCircuit.missionIds.indexOf(mission.id) + 1} of ${selectedCircuit.missionIds.length}` : `${CIRCUITS.find((c) => c.missionIds.includes(mission.id))?.name ?? "Mission"} · ${mission.role}`}
                   />
                 ))}
               </div>
@@ -472,15 +450,6 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
           )}
         </div>
 
-        {/* Right column — CircuitPanel */}
-        {selectedPath !== null && selectedCircuit && selectedPath !== "track-walk" && (
-          <div>
-            <CircuitPanel
-              circuit={selectedCircuit}
-              completedMissionIds={completedSet}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
