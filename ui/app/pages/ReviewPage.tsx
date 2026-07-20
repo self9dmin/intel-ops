@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { Flex } from "@dynatrace/strato-components/layouts";
@@ -129,7 +129,7 @@ export const ReviewPage = () => {
   return (
     <Flex flexDirection="column" gap={20} style={{ maxWidth: 1050, margin: "0 auto" }}>
       <div>
-        <Heading level={2}>Mission Review</Heading>
+        <Heading level={2}>Scrutineering</Heading>
         <Paragraph style={{ opacity: 0.72, maxWidth: 780 }}>
           Internal reviews decide whether content is ready to merge. Community reviews capture learner experience and reported friction; they never silently change the official score or publish content.
         </Paragraph>

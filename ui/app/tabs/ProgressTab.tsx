@@ -32,6 +32,7 @@ import type { Discipline } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
 import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 import { ChangeDriverModal } from "../components/ChangeDriverModal";
+import { getBadgeMonogram } from "../data/badgeMonograms";
 
 // --- Icon lookup ---
 
@@ -60,6 +61,11 @@ const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
 
 // --- Skill Row ---
 
+function getFormulaLevel(xp: number, thresholds: { xp: number }[]): string {
+  const index = thresholds.reduce((current, threshold, thresholdIndex) => xp >= threshold.xp ? thresholdIndex : current, 0);
+  return ["F4", "F3", "F2", "F1", "F1"][Math.min(index, 4)];
+}
+
 function SkillRow({
   icon,
   label,
@@ -77,11 +83,7 @@ function SkillRow({
   missionCount: number;
   onClickRow: () => void;
 }) {
-  const levelName =
-    thresholds
-      .slice()
-      .reverse()
-      .find((t) => xp >= t.xp)?.name ?? thresholds[0]?.name ?? "—";
+  const levelName = getFormulaLevel(xp, thresholds);
 
   const currentThresholdXP =
     thresholds
@@ -174,21 +176,6 @@ function SkillRow({
 
 // --- Badge emoji helper ---
 
-function getBadgeEmoji(icon: string): string {
-  const map: Record<string, string> = {
-    "lights-out": "\u{1F6A6}",
-    "in-the-window": "\u{1F50B}",
-    "boost-mode": "\u26A1",
-    "in-the-points": "\u{1F3C6}",
-    "graduated-q2": "\u23F1\uFE0F",
-    "race-winner": "\u{1F3C1}",
-    "understeer-proof": "\u{1F3AF}",
-    "grand-slam": "\u{1F4A5}",
-    "overtake-mode": "\u{1F680}",
-  };
-  return map[icon] ?? "\u{1F3C6}";
-}
-
 // --- CSV Export ---
 
 function buildCSV(
@@ -201,10 +188,7 @@ function buildCSV(
   for (const disc of disciplines) {
     const meta = DISCIPLINE_META[disc];
     const progress = userState.disciplines[disc];
-    const levelName =
-      XP_THRESHOLDS.slice()
-        .reverse()
-        .find((t) => progress.xp >= t.xp)?.name ?? "—";
+    const levelName = getFormulaLevel(progress.xp, XP_THRESHOLDS);
     lines.push(`Discipline,${meta.label},${progress.xp},${levelName}`);
   }
 
@@ -212,10 +196,7 @@ function buildCSV(
   for (const topicId of Object.keys(TOPIC_META) as TopicId[]) {
     const meta = TOPIC_META[topicId];
     const xp = topicXP[topicId] ?? 0;
-    const levelName =
-      XP_THRESHOLDS.slice()
-        .reverse()
-        .find((t) => xp >= t.xp)?.name ?? "—";
+    const levelName = getFormulaLevel(xp, XP_THRESHOLDS);
     lines.push(`Topic,${meta.label},${xp},${levelName}`);
   }
 
@@ -315,7 +296,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   }}
                 >
                   <span style={{ fontSize: "18px", flexShrink: 0 }}>
-                    {getBadgeEmoji(badge.icon)}
+                    {getBadgeMonogram(badge.icon)}
                   </span>
                   <span style={{ fontSize: "13px", fontWeight: isEarned ? 600 : 400 }}>
                     {badge.name}
@@ -352,9 +333,9 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
             const meta = DISCIPLINE_META[disc];
             const driverInfo: Record<Discipline, { name: string; driverName: string; helmet: string }> = {
               sre: { name: "Reliability Driver", driverName: "Max Verstappen", helmet: "/ui/assets/helmets/verstappen.png" },
-              developer: { name: "Speed Driver", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
-              "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
-              "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
+              developer: { name: "Developer", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
+              "incident-commander": { name: "Incident Command Grand Prix", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
+              "platform-engineer": { name: "Platform Ops Grand Prix", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
             };
             const difficultyTierMap: Record<Discipline, string> = {
               "incident-commander": "Rookie",
@@ -406,7 +387,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                       {info.driverName} &middot; {difficultyTier}
                     </span>
                     <span style={{ fontSize: "11px", color: meta.color, fontWeight: 500 }}>
-                      {progress.levelName} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                      {getFormulaLevel(progress.xp, XP_THRESHOLDS)} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
                     </span>
                   </div>
                 </div>

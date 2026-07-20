@@ -76,7 +76,7 @@ export function evaluateMissionQuality(
       label: "Answer integrity",
       passed: mission.checkpoints.every((checkpoint) =>
         checkpoint.type === "action" ||
-        (Boolean(checkpoint.correctChoice) && Boolean(checkpoint.choices?.includes(checkpoint.correctChoice)))
+        (Boolean(checkpoint.correctChoice) && Boolean(checkpoint.choices?.includes(checkpoint.correctChoice ?? "")))
       ),
       blocking: true,
       detail: "Every multiple-choice checkpoint must have a valid answer in its choices.",

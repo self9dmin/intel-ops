@@ -35,7 +35,7 @@ export const DataModeToggle = () => {
         <Flex alignItems="center" gap={4}>
           <Switch
             value={isLive}
-            onChange={handleToggle}
+            onChange={(checked) => { void handleToggle(checked); }}
             disabled={scanning}
           >
             {isLive ? "Live Mode" : "Playground"}

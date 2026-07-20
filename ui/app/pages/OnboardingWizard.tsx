@@ -5,7 +5,7 @@ import { Flex } from "@dynatrace/strato-components/layouts";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Button } from "@dynatrace/strato-components/buttons";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
-import type { Discipline, DisciplineProgress, TopicId, ExperienceLevel } from "../types/UserState";
+import type { Discipline, DisciplineProgress, TopicId, ExperienceLevel, Department } from "../types/UserState";
 import { createDefaultDisciplines } from "../types/UserState";
 import { MISSIONS } from "../data/missions";
 import { CIRCUITS } from "../data/circuits";
@@ -25,6 +25,7 @@ export interface OnboardingPartial {
   selectedRole?: string;
   selectedSubNeed?: string;
   startingCircuit?: string;
+  department: Department;
 }
 
 interface OnboardingWizardProps {
@@ -135,6 +136,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
   const [selectedDiscipline, setSelectedDiscipline] = useState<Discipline>("incident-commander");
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department>("engineering");
   const [saving, setSaving] = useState(false);
   const [lightsOn, setLightsOn] = useState([false, false, false, false, false]);
   const [lightsExiting, setLightsExiting] = useState(false);
@@ -236,6 +238,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         selectedRole: undefined,
         selectedSubNeed: undefined,
         startingCircuit: startingCircuitId,
+        department: selectedDepartment,
       });
       navigate("/");
     } catch (err: unknown) {
@@ -537,6 +540,26 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         {/* Step 3 — Country picker */}
         {step === 3 && (
           <Flex flexDirection="column" gap={24}>
+            <Flex flexDirection="column" gap={8}>
+              <Heading level={4} style={{ marginTop: "10px" }}>Which department are you joining?</Heading>
+              <Text textStyle="small" style={{ opacity: 0.7 }}>
+                D1 (Insights · ACE · CS) unlocks Track Walk customer-lifecycle practice. Engineering sees the platform circuits.
+              </Text>
+              <Flex gap={8}>
+                {([
+                  ["d1", "D1 (Insights · ACE · CS)"],
+                  ["engineering", "Engineering"],
+                ] as const).map(([id, label]) => (
+                  <Button
+                    key={id}
+                    variant={selectedDepartment === id ? "emphasized" : "default"}
+                    onClick={() => setSelectedDepartment(id)}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </Flex>
+            </Flex>
             <Flex flexDirection="column" alignItems="center" gap={8}>
               <Heading level={2}>Which country are you representing?</Heading>
               <Text textStyle="small" style={{ opacity: 0.7, textAlign: "center" }}>

@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { MISSIONS } from "../data/missions";
-import type { Circuit } from "../data/circuits";
+import { CIRCUIT_TIER_MAP } from "../data/circuits";
+import type { Circuit, DriverTier } from "../data/circuits";
 
 
 interface CircuitPanelProps {
@@ -9,19 +10,17 @@ interface CircuitPanelProps {
   completedMissionIds: Set<string>;
 }
 
-function getCircuitTier(circuitId: string): string {
-  const preSeason = new Set(["terrain-recon", "ground-zero", "operator-readiness"]);
-  const raceDay = new Set(["signal-hunt", "root-cause-run"]);
-  if (preSeason.has(circuitId)) return "Pre-Season Testing";
-  if (raceDay.has(circuitId)) return "Race Day";
-  return "Qualifying";
+function getCircuitTier(circuitId: string): DriverTier {
+  return CIRCUIT_TIER_MAP[circuitId] ?? "rookie";
 }
 
-function getTierColors(tier: string): { bg: string; text: string } {
-  if (tier === "Pre-Season Testing") return { bg: "rgba(255,255,255,0.08)", text: "rgba(255,255,255,0.6)" };
-  if (tier === "Race Day") return { bg: "rgba(232,0,30,0.15)", text: "#e8001e" };
+function getTierColors(tier: DriverTier): { bg: string; text: string } {
+  if (tier === "rookie") return { bg: "rgba(255,255,255,0.08)", text: "rgba(255,255,255,0.6)" };
+  if (tier === "elite") return { bg: "rgba(232,0,30,0.15)", text: "#e8001e" };
   return { bg: "rgba(20,150,255,0.15)", text: "#1496ff" };
 }
+
+const FORMULA_LABELS: Record<DriverTier, string> = { rookie: "F4", intermediate: "F3", advanced: "F2", elite: "F1" };
 
 export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps) {
   const tier = getCircuitTier(circuit.id);
@@ -62,7 +61,7 @@ export function CircuitPanel({ circuit, completedMissionIds }: CircuitPanelProps
             color: tierColors.text,
           }}
         >
-          {tier}
+          {FORMULA_LABELS[tier]}
         </span>
       </div>
 

@@ -6,7 +6,7 @@ import { Heading, Text } from "@dynatrace/strato-components/typography";
 import { Chip } from "@dynatrace/strato-components-preview/content";
 import { Tooltip } from "@dynatrace/strato-components-preview/overlays";
 import { MISSIONS } from "../data/missions";
-import { CIRCUITS, CIRCUIT_TIER_MAP, TIER_XP_THRESHOLDS } from "../data/circuits";
+import { CIRCUITS, CIRCUIT_TIER_MAP } from "../data/circuits";
 import type { DriverTier } from "../data/circuits";
 import { TOPIC_META, XP_THRESHOLDS } from "../types/UserState";
 import type { Discipline } from "../types/UserState";
@@ -19,6 +19,8 @@ import { MissionCard } from "../components/MissionCard";
 import { CircuitPanel } from "../components/CircuitPanel";
 import { PlayerStatusStrip } from "../components/PlayerStatusStrip";
 import { ChangeDriverModal } from "../components/ChangeDriverModal";
+import { TrackWalkBoard } from "../components/TrackWalkBoard";
+import { getBadgeMonogram } from "../data/badgeMonograms";
 import { computeTotalXP } from "../types/UserState";
 import { ALL_BADGES } from "../data/badges";
 import type { SidebarFilters } from "../components/AppSidebar";
@@ -47,19 +49,9 @@ const DRIVER_CIRCUIT_MAP: Record<Discipline, string | null> = {
   sre: null, // Race Day circuit not yet created
 };
 
-function getBadgeEmoji(icon: string): string {
-  const map: Record<string, string> = {
-    "lights-out": "\u{1F6A6}",
-    "in-the-window": "\u{1F50B}",
-    "boost-mode": "\u26A1",
-    "in-the-points": "\u{1F3C6}",
-    "graduated-q2": "\u23F1\uFE0F",
-    "race-winner": "\u{1F3C1}",
-    "understeer-proof": "\u{1F3AF}",
-    "grand-slam": "\u{1F4A5}",
-    "overtake-mode": "\u{1F680}",
-  };
-  return map[icon] ?? "\u{1F3C6}";
+function getFormulaLevel(xp: number): string {
+  const index = XP_THRESHOLDS.reduce((current, threshold, thresholdIndex) => xp >= threshold.xp ? thresholdIndex : current, 0);
+  return ["F4", "F3", "F2", "F1", "F1"][Math.min(index, 4)];
 }
 
 interface MissionsTabProps {
@@ -130,7 +122,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
     currentUser.id;
 
   const initPath = searchParams.get("path") ?? userState?.startingCircuit ?? null;
-  const [selectedPath, setSelectedPath] = useState<string | null>(initPath);
+  const [selectedPath, setSelectedPath] = useState<string | null>(userState?.department === "engineering" && initPath === "track-walk" ? null : initPath);
 
   useEffect(() => {
     if (scores.length === 0 && !leaderboardLoading) {
@@ -200,6 +192,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
   };
 
   const handlePathSelect = (pathId: string | null) => {
+    if (pathId === "track-walk" && userState?.department !== "d1") return;
     setSelectedPath(pathId);
     const newParams = new URLSearchParams(searchParams);
     if (pathId) {
@@ -209,6 +202,15 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
     }
     setSearchParams(newParams, { replace: true });
   };
+
+  useEffect(() => {
+    if (userState?.department !== "d1" && selectedPath === "track-walk") {
+      setSelectedPath(null);
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("path");
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [userState?.department, selectedPath, searchParams, setSearchParams]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -231,8 +233,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
           const xp = progress?.xp ?? 0;
           const currentThresholdXP =
             XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.xp ?? 0;
-          const levelName =
-            XP_THRESHOLDS.slice().reverse().find((t) => xp >= t.xp)?.name ?? XP_THRESHOLDS[0]?.name ?? "—";
+          const levelName = getFormulaLevel(xp);
           const next = XP_THRESHOLDS.find((t) => xp < t.xp);
           const isMax = !next;
           const progressPercent = isMax
@@ -309,6 +310,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
           globalRank={globalRank}
           missionsCompleted={completedMissions.length}
           streakDays={userState?.streakDays ?? 0}
+          department={userState?.department}
           rightContent={
             <div
               onClick={() => onSwitchTab?.("progress")}
@@ -344,7 +346,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
                       transition: "opacity 0.2s",
                     }}
                   >
-                    {getBadgeEmoji(badge.icon)}
+                    <span style={{ display: "grid", placeItems: "center", width: 26, height: 26, borderRadius: "50%", border: "1px solid currentColor", fontSize: 9, fontWeight: 700 }}>{getBadgeMonogram(badge.icon)}</span>
                   </span>
                 );
               })}
@@ -358,6 +360,8 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
         isOpen={driverModalOpen}
         onClose={() => setDriverModalOpen(false)}
         currentDiscipline={userState?.startingDiscipline ?? "incident-commander"}
+        currentDepartment={userState?.department}
+        onDepartmentChange={(department) => void updateUserState({ department })}
         onSelect={(discipline, experienceLevel) => {
           void updateUserState({ startingDiscipline: discipline, experienceLevel });
           if (onFilterChange) {
@@ -383,7 +387,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
           <div style={{ marginBottom: "16px" }}>
             <Heading level={5}>Circuits</Heading>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
-              {CIRCUITS.map((path) => (
+              {CIRCUITS.filter((path) => path.id !== "track-walk" || userState?.department === "d1").map((path) => (
                 <Tooltip key={path.id} text={path.description}>
                   <Chip
                     color={selectedPath === path.id ? "primary" : "neutral"}
@@ -406,7 +410,8 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
             </div>
           </div>
 
-          {/* Mission Grid */}
+          {selectedPath === "track-walk" ? <TrackWalkBoard /> : (
+          /* Mission Grid */
           <div style={{ marginTop: "8px" }}>
             <Heading level={5}>
               All Missions{" "}
@@ -429,7 +434,7 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
                   No missions in{" "}
                   <strong>{CIRCUITS.find((c) => c.id === selectedPath)?.name ?? selectedPath}</strong>
                   {" "}match the{" "}
-                  <strong>{TOPIC_META[filters.topic as keyof typeof TOPIC_META]?.label ?? filters.topic}</strong>
+                  <strong>{TOPIC_META[filters.topic]?.label ?? filters.topic}</strong>
                   {" "}skill track.
                 </Text>
                 <div style={{ marginTop: "12px" }}>
@@ -464,10 +469,11 @@ export const MissionsTab = ({ filters, onFilterChange, onSwitchTab }: MissionsTa
               </div>
             )}
           </div>
+          )}
         </div>
 
         {/* Right column — CircuitPanel */}
-        {selectedPath !== null && selectedCircuit && (
+        {selectedPath !== null && selectedCircuit && selectedPath !== "track-walk" && (
           <div>
             <CircuitPanel
               circuit={selectedCircuit}
