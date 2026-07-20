@@ -1,6 +1,6 @@
 import React from "react";
 import { Heading } from "@dynatrace/strato-components/typography";
-import type { Discipline, ExperienceLevel } from "../types/UserState";
+import type { Department, Discipline, ExperienceLevel } from "../types/UserState";
 
 interface DriverPickerOption {
   discipline: Discipline;
@@ -23,6 +23,8 @@ interface ChangeDriverModalProps {
   onClose: () => void;
   currentDiscipline: Discipline;
   onSelect: (discipline: Discipline, experienceLevel: ExperienceLevel) => void;
+  currentDepartment?: Department;
+  onDepartmentChange?: (department: Department) => void;
 }
 
 export const ChangeDriverModal = ({
@@ -30,6 +32,8 @@ export const ChangeDriverModal = ({
   onClose,
   currentDiscipline,
   onSelect,
+  currentDepartment = "engineering",
+  onDepartmentChange,
 }: ChangeDriverModalProps) => {
   if (!isOpen) return null;
 
@@ -63,6 +67,32 @@ export const ChangeDriverModal = ({
         <div style={{ textAlign: "center", opacity: 0.6, fontSize: "13px", marginBottom: "20px" }}>
           This changes your starting discipline and experience level.
         </div>
+        {onDepartmentChange && (
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Department</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {(["engineering", "d1"] as Department[]).map((department) => (
+                <button
+                  key={department}
+                  type="button"
+                  onClick={() => onDepartmentChange(department)}
+                  style={{
+                    flex: 1,
+                    padding: "9px 10px",
+                    borderRadius: 5,
+                    border: currentDepartment === department ? "1px solid #65e0d3" : "1px solid var(--dt-colors-border-neutral-default)",
+                    background: currentDepartment === department ? "rgba(101,224,211,.12)" : "transparent",
+                    color: "inherit",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {department === "d1" ? "D1 · Insights / CS" : "Engineering"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div
           style={{
             display: "grid",

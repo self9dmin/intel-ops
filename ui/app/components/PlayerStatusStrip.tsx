@@ -7,6 +7,7 @@ interface PlayerStatusStripProps {
   missionsCompleted: number;
   streakDays: number;
   rightContent?: React.ReactNode;
+  department?: "d1" | "engineering";
 }
 
 function StatCell({ value, label }: { value: string; label: string }) {
@@ -37,11 +38,13 @@ export const PlayerStatusStrip = ({
   missionsCompleted,
   streakDays,
   rightContent,
+  department,
 }: PlayerStatusStripProps) => {
   return (
     <div>
-      <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "12px" }}>
-        {playerName}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "12px" }}>
+        <div style={{ fontSize: "18px", fontWeight: 700 }}>{playerName}</div>
+        {department && <span style={{ fontSize: 10, padding: "3px 7px", borderRadius: 12, background: department === "d1" ? "rgba(101,224,211,.16)" : "rgba(255,255,255,.08)", color: department === "d1" ? "#65e0d3" : "var(--dt-colors-text-neutral-subdued)", textTransform: "uppercase", letterSpacing: ".08em" }}>{department === "d1" ? "D1" : "Engineering"}</span>}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "16px", rowGap: "12px" }}>
         <div style={{ display: "flex", gap: "32px" }}>

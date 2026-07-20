@@ -71,7 +71,7 @@ export function useUserState(): UseUserStateResult {
         setDocumentId(doc.id ?? null);
         setDocumentVersion(String(doc.version ?? "0"));
         const content = await documentsClient.downloadDocumentContent({
-          id: doc.id!,
+          id: doc.id,
         });
         const text: string = await content.get("text");
         const parsed = JSON.parse(text) as Record<string, unknown>;
@@ -105,12 +105,12 @@ export function useUserState(): UseUserStateResult {
     }
 
     const doc = list.documents[0];
-    const content = await documentsClient.downloadDocumentContent({ id: doc.id! });
+    const content = await documentsClient.downloadDocumentContent({ id: doc.id });
     const text: string = await content.get("text");
     const parsed = JSON.parse(text) as Record<string, unknown>;
     const migrated = migrateUserState(parsed);
 
-    return { id: doc.id!, version: String(doc.version ?? "0"), state: migrated };
+    return { id: doc.id, version: String(doc.version ?? "0"), state: migrated };
   }, [currentUser.id]);
 
   const writeUserState = useCallback(
@@ -159,6 +159,7 @@ export function useUserState(): UseUserStateResult {
       const state: UserState = {
         userId: currentUser.id,
         userEmail: currentUser.email ?? "",
+        displayName: currentUser.name ?? currentUser.email?.split("@")[0] ?? "",
         onboardingComplete: true,
         createdAt: new Date().toISOString(),
         dataMode: 'playground',
@@ -178,7 +179,7 @@ export function useUserState(): UseUserStateResult {
       setDocumentVersion(String(result.version ?? "0"));
       setUserState(state);
     },
-    [currentUser.id, currentUser.email]
+    [currentUser.id, currentUser.email, currentUser.name]
   );
 
   const awardXP = useCallback(
@@ -186,7 +187,7 @@ export function useUserState(): UseUserStateResult {
       if (!userState || !documentId) return;
 
       const updatedDisciplines = { ...userState.disciplines };
-      const updatedTopicXP = { ...userState.topicXP };
+      const updatedTopicXP: Record<string, number> = { ...userState.topicXP };
 
       for (const grant of xpGrants) {
         if (grant.discipline) {
@@ -197,7 +198,8 @@ export function useUserState(): UseUserStateResult {
           updatedDisciplines[disc] = { xp: newXP, level, levelName };
         }
         if (grant.topic) {
-          updatedTopicXP[grant.topic] = (updatedTopicXP[grant.topic] ?? 0) + grant.amount;
+          const topic = grant.topic;
+          updatedTopicXP[topic] = (updatedTopicXP[topic] ?? 0) + grant.amount;
         }
       }
 

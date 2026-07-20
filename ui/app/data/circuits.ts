@@ -3,6 +3,7 @@ export interface Circuit {
   name: string;
   description: string;
   missionIds: string[];
+  journeyIds?: string[];
   f1TrackSvgUrl: string;
   countryCode: string;
 }
@@ -12,7 +13,6 @@ export type DriverTier = "rookie" | "intermediate" | "advanced" | "elite";
 export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
   "ground-zero": "rookie",
   "operator-readiness": "intermediate",
-  "speed-driver": "intermediate",
   "strategist": "advanced",
   "builder": "advanced",
   "reliability-driver": "elite",
@@ -20,6 +20,7 @@ export const CIRCUIT_TIER_MAP: Record<string, DriverTier> = {
   "opentelemetry-grand-prix": "intermediate",
   "ai-grand-prix": "advanced",
   "ai-observability-grand-prix": "advanced",
+  "track-walk": "rookie",
 };
 
 export const TIER_XP_THRESHOLDS: Record<DriverTier, number> = {
@@ -61,9 +62,23 @@ export const CIRCUITS: Circuit[] = [
     countryCode: "bh",
   },
   {
+    id: "track-walk",
+    name: "Track Walk",
+    description: "D1 customer-lifecycle practice: walk the journey before you race it",
+    missionIds: [],
+    journeyIds: [
+      "journey-first-login",
+      "journey-find-the-signal",
+      "journey-missing-signal",
+      "journey-broken-handoff",
+    ],
+    f1TrackSvgUrl: "/ui/assets/circuits/monaco.svg",
+    countryCode: "mc",
+  },
+  {
     id: "reliability-driver",
-    name: "Reliability Driver",
-    description: "SRE missions using Dynatrace Assist for incident response, root cause analysis, and proactive reliability",
+    name: "Reliability Grand Prix",
+    description: "The SRE circuit: incident response, root cause analysis, and proactive reliability",
     missionIds: [
       "mission-causal-chain",
       "mission-slo-burn",
@@ -75,8 +90,8 @@ export const CIRCUITS: Circuit[] = [
   },
   {
     id: "strategist",
-    name: "The Strategist",
-    description: "Incident Commander missions using Dynatrace Assist to lead, communicate, and close incidents with data",
+    name: "Incident Command Grand Prix",
+    description: "The Incident Commander circuit: lead, communicate, and close incidents with evidence",
     missionIds: [
       "mission-timeline-reconstruction",
       "mission-customer-impact",
@@ -87,24 +102,11 @@ export const CIRCUITS: Circuit[] = [
     countryCode: "mc",
   },
   {
-    id: "speed-driver",
-    name: "Speed Driver",
-    description: "Developer missions using Dynatrace Assist to investigate performance, OTel signals, and deploy with confidence",
+    id: "opentelemetry-grand-prix",
+    name: "OTel Grand Prix",
+    description: "The Developer circuit: OpenTelemetry collection, traces, metrics, and logs — investigate performance and deploy with confidence",
     missionIds: [
       "mission-why-is-it-slow",
-      "mission-otel-query",
-      "mission-deployment-correlation",
-      "mission-log-story",
-      "mission-error-budget-dev",
-    ],
-    f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
-    countryCode: "it",
-  },
-  {
-    id: "opentelemetry-grand-prix",
-    name: "OpenTelemetry Grand Prix",
-    description: "A staged circuit for learning OpenTelemetry collection, traces, metrics, logs, and investigation in Dynatrace",
-    missionIds: [
       "mission-otel-collector-validation",
       "mission-otel-trace-investigation",
       "mission-otel-log-trace-correlation",
@@ -112,7 +114,7 @@ export const CIRCUITS: Circuit[] = [
       "mission-otel-query",
       "mission-deployment-correlation",
       "mission-log-story",
-      "mission-why-is-it-slow",
+      "mission-error-budget-dev",
     ],
     f1TrackSvgUrl: "/ui/assets/circuits/monza.svg",
     countryCode: "it",
@@ -150,8 +152,8 @@ export const CIRCUITS: Circuit[] = [
   },
   {
     id: "builder",
-    name: "The Builder",
-    description: "Platform Engineer missions using Dynatrace Assist to forecast, automate, and manage infrastructure at scale",
+    name: "Platform Ops Grand Prix",
+    description: "The Platform Engineer circuit: forecast, automate, and manage infrastructure at scale",
     missionIds: [
       "mission-otel-inventory",
       "mission-log-volume",

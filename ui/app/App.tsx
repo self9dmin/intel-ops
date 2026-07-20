@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Route, Routes, Navigate, useSearchParams } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Flex } from "@dynatrace/strato-components/layouts";
 import { ProgressCircle } from "@dynatrace/strato-components/content";
 import { Button } from "@dynatrace/strato-components/buttons";
@@ -14,17 +14,18 @@ import { AppSidebar, type SidebarFilters } from "./components/AppSidebar";
 import { MissionsTab } from "./tabs/MissionsTab";
 import { ProgressTab } from "./tabs/ProgressTab";
 import { LeaderboardTab } from "./tabs/LeaderboardTab";
-import { JourneysTab } from "./tabs/JourneysTab";
 import { Journey } from "./pages/Journey";
-import { ReviewPage } from "./pages/ReviewPage";
-import { InformationIcon, BugReportIcon } from "@dynatrace/strato-icons";
+import { SettingsPage } from "./pages/SettingsPage";
+import { InformationIcon, BugReportIcon, SettingIcon } from "@dynatrace/strato-icons";
 import { APP_VERSION } from "./buildVersion";
 
-type TopTab = "missions" | "journeys" | "progress" | "leaderboard" | "review";
-const TAB_ORDER: TopTab[] = ["missions", "journeys", "progress", "leaderboard", "review"];
+type TopTab = "missions" | "progress" | "leaderboard";
+const TAB_ORDER: TopTab[] = ["missions", "progress", "leaderboard"];
 
 const ShellLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const initTab = (searchParams.get("tab") as TopTab) || "missions";
   const [activeTab, setActiveTab] = useState<TopTab>(
     TAB_ORDER.includes(initTab) ? initTab : "missions"
@@ -60,7 +61,7 @@ const ShellLayout = () => {
   );
 
   const handleSwitchToMissions = useCallback(
-    (tab?: "missions" | "journeys", params?: Record<string, string>) => {
+    (tab?: "missions", params?: Record<string, string>) => {
       setActiveTab(tab ?? "missions");
       const newParams = new URLSearchParams();
       newParams.set("tab", tab ?? "missions");
@@ -74,7 +75,8 @@ const ShellLayout = () => {
     [setSearchParams]
   );
 
-  const contentPanel = (
+  const isSettings = location.pathname.startsWith("/settings");
+  const contentPanel = isSettings ? <SettingsPage /> : (
     <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
       <AppSidebar
         activeTab={activeTab}
@@ -89,20 +91,16 @@ const ShellLayout = () => {
             onSwitchTab={() => handleTabChange(TAB_ORDER.indexOf("progress"))}
           />
         )}
-        {activeTab === "journeys" && <JourneysTab />}
         {activeTab === "progress" && <ProgressTab onSwitchTab={handleSwitchToMissions} />}
         {activeTab === "leaderboard" && <LeaderboardTab />}
-        {activeTab === "review" && <ReviewPage />}
       </main>
     </div>
   );
 
   const TAB_LABELS: Record<TopTab, string> = {
     missions: "Race Control",
-    journeys: "Track Walk",
     progress: "Progress",
     leaderboard: "Leaderboard",
-    review: "Content Review",
   };
 
   return (
@@ -153,6 +151,14 @@ const ShellLayout = () => {
           ))}
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+          <button
+            onClick={() => navigate("/settings/profile")}
+            style={{ background: isSettings ? "rgba(255,255,255,.08)" : "transparent", border: "none", cursor: "pointer", padding: "6px", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--dt-colors-text-neutral-subdued)" }}
+            aria-label="Settings"
+            title="Settings"
+          >
+            <SettingIcon size="small" />
+          </button>
           <div ref={infoRef} style={{ position: "relative" }}>
             <button
               onClick={() => setInfoOpen((prev) => !prev)}
@@ -221,8 +227,8 @@ const ShellLayout = () => {
           </div>
           <button
             onClick={() => {
-              window.location.href =
-                "mailto:daniel.quintero@dynatrace.com?subject=Mission%20Control%20%E2%80%94%20Bug%20Report&body=Describe%20the%20issue%3A%0A%0A%0ASteps%20to%20reproduce%3A%0A%0A%0AExpected%20behavior%3A%0A%0A";
+              const recipient = ["daniel", "quintero"].join(".");
+              window.location.href = `mailto:${recipient}@dynatrace.com`;
             }}
             style={{
               background: "transparent",
@@ -292,7 +298,8 @@ const AppContent = () => {
       <Route path="/debrief/:id" element={<Debrief />} />
       <Route path="/journeys/:id" element={<Journey />} />
       <Route path="/progress" element={<Navigate to="/?tab=progress" replace />} />
-      <Route path="/review" element={<Navigate to="/?tab=review" replace />} />
+      <Route path="/review" element={<Navigate to="/settings/scrutineering" replace />} />
+      <Route path="/settings/:page?" element={<ShellLayout />} />
     </Routes>
   );
 };

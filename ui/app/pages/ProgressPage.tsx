@@ -23,15 +23,6 @@ import { XP_THRESHOLDS, TOPIC_META } from "../types/UserState";
 
 // --- Skills Tab ---
 
-function getNextThreshold(xp: number): { nextXP: number; nextName: string } | null {
-  for (const threshold of XP_THRESHOLDS) {
-    if (xp < threshold.xp) {
-      return { nextXP: threshold.xp, nextName: threshold.name };
-    }
-  }
-  return null;
-}
-
 function SkillRow({
   label,
   color,
@@ -132,10 +123,6 @@ function SkillRow({
 function SkillsTab() {
   const { userState } = useUserStateContext();
 
-  if (!userState) return null;
-
-  const topicXP = userState.topicXP ?? {};
-
   const missionCountByTopic = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const m of MISSIONS) {
@@ -146,6 +133,10 @@ function SkillsTab() {
     return counts;
   }, []);
 
+  if (!userState) return null;
+
+  const topicXP = userState.topicXP ?? {};
+
   return (
     <Flex flexDirection="column" gap={20}>
       <Heading level={4}>Topic Tracks</Heading>
@@ -155,7 +146,7 @@ function SkillsTab() {
             key={topicId}
             label={meta.label}
             color="var(--dt-colors-text-neutral-disabled)"
-            xp={topicXP[topicId] ?? 0}
+            xp={topicXP[topicId as keyof typeof topicXP] ?? 0}
             thresholds={XP_THRESHOLDS}
             missionCount={missionCountByTopic[topicId] ?? 0}
             filterUrl={`/missions?topic=${topicId}`}
@@ -490,7 +481,7 @@ export const ProgressPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initTab = (searchParams.get("tab") as TabId) || "skills";
   const [activeTab, setActiveTab] = useState<TabId>(
-    TAB_IDS.includes(initTab as TabId) ? initTab : "skills"
+    TAB_IDS.includes(initTab) ? initTab : "skills"
   );
 
   const handleTabChange = (tab: TabId) => {

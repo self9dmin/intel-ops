@@ -32,6 +32,21 @@ import type { Discipline } from "../types/UserState";
 import type { TopicId } from "../types/UserState";
 import { XP_THRESHOLDS, DISCIPLINE_META, TOPIC_META } from "../types/UserState";
 import { ChangeDriverModal } from "../components/ChangeDriverModal";
+import { getBadgeMonogram } from "../data/badgeMonograms";
+
+const DISCIPLINE_CIRCUITS: Record<Discipline, string> = {
+  sre: "Reliability Grand Prix",
+  developer: "OTel Grand Prix",
+  "platform-engineer": "Platform Ops Grand Prix",
+  "incident-commander": "Incident Command Grand Prix",
+};
+
+const SEASON_STOPS = [
+  { formula: "F4", name: "Rookie", xp: 0 },
+  { formula: "F3", name: "Intermediate", xp: 500 },
+  { formula: "F2", name: "Advanced", xp: 1500 },
+  { formula: "F1", name: "Elite", xp: 3000 },
+];
 
 // --- Icon lookup ---
 
@@ -60,6 +75,11 @@ const TOPIC_ICON_MAP: Record<TopicId, React.ComponentType<SvgIconProps>> = {
 
 // --- Skill Row ---
 
+function getFormulaLevel(xp: number, thresholds: { xp: number }[]): string {
+  const index = thresholds.reduce((current, threshold, thresholdIndex) => xp >= threshold.xp ? thresholdIndex : current, 0);
+  return ["F4", "F3", "F2", "F1", "F1"][Math.min(index, 4)];
+}
+
 function SkillRow({
   icon,
   label,
@@ -77,11 +97,7 @@ function SkillRow({
   missionCount: number;
   onClickRow: () => void;
 }) {
-  const levelName =
-    thresholds
-      .slice()
-      .reverse()
-      .find((t) => xp >= t.xp)?.name ?? thresholds[0]?.name ?? "—";
+  const levelName = getFormulaLevel(xp, thresholds);
 
   const currentThresholdXP =
     thresholds
@@ -174,21 +190,6 @@ function SkillRow({
 
 // --- Badge emoji helper ---
 
-function getBadgeEmoji(icon: string): string {
-  const map: Record<string, string> = {
-    "lights-out": "\u{1F6A6}",
-    "in-the-window": "\u{1F50B}",
-    "boost-mode": "\u26A1",
-    "in-the-points": "\u{1F3C6}",
-    "graduated-q2": "\u23F1\uFE0F",
-    "race-winner": "\u{1F3C1}",
-    "understeer-proof": "\u{1F3AF}",
-    "grand-slam": "\u{1F4A5}",
-    "overtake-mode": "\u{1F680}",
-  };
-  return map[icon] ?? "\u{1F3C6}";
-}
-
 // --- CSV Export ---
 
 function buildCSV(
@@ -201,10 +202,7 @@ function buildCSV(
   for (const disc of disciplines) {
     const meta = DISCIPLINE_META[disc];
     const progress = userState.disciplines[disc];
-    const levelName =
-      XP_THRESHOLDS.slice()
-        .reverse()
-        .find((t) => progress.xp >= t.xp)?.name ?? "—";
+    const levelName = getFormulaLevel(progress.xp, XP_THRESHOLDS);
     lines.push(`Discipline,${meta.label},${progress.xp},${levelName}`);
   }
 
@@ -212,10 +210,7 @@ function buildCSV(
   for (const topicId of Object.keys(TOPIC_META) as TopicId[]) {
     const meta = TOPIC_META[topicId];
     const xp = topicXP[topicId] ?? 0;
-    const levelName =
-      XP_THRESHOLDS.slice()
-        .reverse()
-        .find((t) => xp >= t.xp)?.name ?? "—";
+    const levelName = getFormulaLevel(xp, XP_THRESHOLDS);
     lines.push(`Topic,${meta.label},${xp},${levelName}`);
   }
 
@@ -239,7 +234,7 @@ interface ProgressTabProps {
 }
 
 export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
-  const { userState, resetUserState, updateUserState } = useUserStateContext();
+  const { userState, updateUserState } = useUserStateContext();
   const [driverPickerOpen, setDriverPickerOpen] = useState(false);
 
   const missionCountByTopic = useMemo(() => {
@@ -275,6 +270,9 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
 
   const topicXP = userState.topicXP ?? {};
   const earnedBadges = new Set(userState.badges);
+  const totalXP = Object.values(userState.disciplines).reduce((sum, discipline) => sum + discipline.xp, 0);
+  const currentStop = [...SEASON_STOPS].reverse().find((stop) => totalXP >= stop.xp) ?? SEASON_STOPS[0];
+  const nextStop = SEASON_STOPS.find((stop) => totalXP < stop.xp);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -284,6 +282,11 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
           Export CSV
         </Button>
       </div>
+
+      <section style={{ padding: 18, border: "1px solid var(--dt-colors-border-neutral-default)", borderRadius: 8, background: "var(--dt-colors-background-container-neutral-subdued)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}><div><Heading level={5}>Season progression</Heading><span style={{ fontSize: 11, color: "var(--dt-colors-text-neutral-disabled)" }}>Season 2026 · {currentStop.formula} {currentStop.name}</span></div><span style={{ fontSize: 12, color: "var(--dt-colors-text-neutral-subdued)" }}>{nextStop ? `${Math.max(0, nextStop.xp - totalXP)} XP to ${nextStop.formula}` : "Season complete"}</span></div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginTop: 18 }}>{SEASON_STOPS.map((stop, index) => { const passed = totalXP >= stop.xp; const next = SEASON_STOPS[index + 1]; const fill = next ? Math.min(100, Math.max(0, ((totalXP - stop.xp) / (next.xp - stop.xp)) * 100)) : 100; return <div key={stop.formula}><div style={{ display: "flex", alignItems: "center", gap: 7 }}><span style={{ width: 26, height: 26, borderRadius: "50%", display: "grid", placeItems: "center", border: `1px solid ${passed ? "#999bed" : "var(--dt-colors-border-neutral-disabled)"}`, color: passed ? "#999bed" : "var(--dt-colors-text-neutral-disabled)", fontSize: 10, fontWeight: 700 }}>{passed ? "✓" : stop.formula}</span><span style={{ fontSize: 11, fontWeight: 600 }}>{stop.name}</span></div><div style={{ height: 5, margin: "9px 0 5px", background: "var(--dt-colors-background-container-neutral-default)", borderRadius: 3 }}><div style={{ width: `${fill}%`, height: "100%", background: passed ? "#999bed" : "transparent", borderRadius: 3 }} /></div><span style={{ fontSize: 10, color: "var(--dt-colors-text-neutral-disabled)" }}>{stop.xp.toLocaleString()} XP{totalXP >= stop.xp && stop.xp === currentStop.xp ? " · You are here" : ""}</span></div>; })}</div>
+      </section>
 
       {/* Achievements */}
       <div>
@@ -315,7 +318,7 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   }}
                 >
                   <span style={{ fontSize: "18px", flexShrink: 0 }}>
-                    {getBadgeEmoji(badge.icon)}
+                    {getBadgeMonogram(badge.icon)}
                   </span>
                   <span style={{ fontSize: "13px", fontWeight: isEarned ? 600 : 400 }}>
                     {badge.name}
@@ -327,10 +330,10 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
         </div>
       </div>
 
-      {/* Driver Circuits */}
+      {/* XP by discipline */}
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Heading level={5}>Driver Circuits</Heading>
+          <Heading level={5}>XP by discipline</Heading>
           <Button variant="default" onClick={() => setDriverPickerOpen((prev) => !prev)}>
             {driverPickerOpen ? "Close" : "Change Driver"}
           </Button>
@@ -351,10 +354,10 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
             const progress = userState.disciplines[disc];
             const meta = DISCIPLINE_META[disc];
             const driverInfo: Record<Discipline, { name: string; driverName: string; helmet: string }> = {
-              sre: { name: "Reliability Driver", driverName: "Max Verstappen", helmet: "/ui/assets/helmets/verstappen.png" },
-              developer: { name: "Speed Driver", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
-              "incident-commander": { name: "The Strategist", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
-              "platform-engineer": { name: "The Builder", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
+              sre: { name: "SRE", driverName: "Max Verstappen", helmet: "/ui/assets/helmets/verstappen.png" },
+              developer: { name: "Developer", driverName: "Liam Lawson", helmet: "/ui/assets/helmets/lawson.png" },
+              "incident-commander": { name: "Incident Command Grand Prix", driverName: "Arvid Lindblad", helmet: "/ui/assets/helmets/lindblad.png" },
+              "platform-engineer": { name: "Platform Ops Grand Prix", driverName: "Isack Hadjar", helmet: "/ui/assets/helmets/hadjar.png" },
             };
             const difficultyTierMap: Record<Discipline, string> = {
               "incident-commander": "Rookie",
@@ -403,10 +406,10 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <span style={{ fontSize: "13px", fontWeight: 600 }}>{info.name}</span>
                     <span style={{ fontSize: "11px", opacity: 0.5 }}>
-                      {info.driverName} &middot; {difficultyTier}
+                      {DISCIPLINE_CIRCUITS[disc]}
                     </span>
                     <span style={{ fontSize: "11px", color: meta.color, fontWeight: 500 }}>
-                      {progress.levelName} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
+                      {getFormulaLevel(progress.xp, XP_THRESHOLDS)} &middot; {progress.xp} / {isMax ? "MAX" : `${next.xp} XP`}
                     </span>
                   </div>
                 </div>
@@ -544,16 +547,6 @@ export const ProgressTab = ({ onSwitchTab }: ProgressTabProps) => {
         </div>
       </div>
 
-      {/* Dev reset */}
-      <div style={{ marginTop: "32px", display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="default"
-          onClick={() => void resetUserState()}
-          style={{ opacity: 0.4, fontSize: "11px" }}
-        >
-          Reset Onboarding (Dev)
-        </Button>
-      </div>
     </div>
   );
 };

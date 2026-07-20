@@ -1,4 +1,5 @@
 export type DataMode = 'playground' | 'live';
+export type Department = "d1" | "engineering";
 
 export interface TenantCapabilities {
   hasProblems: boolean;
@@ -164,6 +165,7 @@ export function deriveTopicPriority(selectedAreaIds: string[]): TopicId[] {
 export interface UserState {
   userId: string;
   userEmail: string;
+  displayName?: string;
   startingDiscipline: Discipline;
   disciplines: Record<Discipline, DisciplineProgress>;
   topicXP: Partial<Record<TopicId, number>>;
@@ -182,6 +184,7 @@ export interface UserState {
   startingCircuit?: string;
   dataMode: DataMode;
   tenantCapabilities: TenantCapabilities | null;
+  department: Department;
 }
 
 export function migrateUserState(loaded: Record<string, unknown>): UserState {
@@ -207,6 +210,8 @@ export function migrateUserState(loaded: Record<string, unknown>): UserState {
     startingCircuit: (loaded.startingCircuit as string | undefined) ?? undefined,
     dataMode: (loaded.dataMode as DataMode | undefined) ?? 'playground',
     tenantCapabilities: (loaded.tenantCapabilities as TenantCapabilities | undefined) ?? null,
+    department: (loaded.department as Department | undefined) ?? "engineering",
+    displayName: (loaded.displayName as string | undefined) ?? "",
   };
 }
 
